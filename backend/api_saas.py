@@ -32,6 +32,9 @@ from auth import (
 from processor_custom import SizerProcessor, LoanApplication as LoanAppModel
 from pdf_parser import PDFLoanParser
 
+# Import email processing router
+from email_api import router as email_router
+
 # Initialize app
 app = FastAPI(
     title="Loan Sizer SaaS Platform",
@@ -57,6 +60,9 @@ PDFS_DIR = UPLOAD_DIR / "pdfs"
 PDFS_DIR.mkdir(exist_ok=True)
 OUTPUTS_DIR = UPLOAD_DIR / "outputs"
 OUTPUTS_DIR.mkdir(exist_ok=True)
+
+# Include email processing router
+app.include_router(email_router)
 
 # ==================== AUTH SCHEMAS ====================
 

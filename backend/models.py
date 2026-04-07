@@ -37,6 +37,16 @@ class Client(Base):
     email_template_header = Column(Text)
     email_template_footer = Column(Text)
     
+    # Email Processing Settings
+    email_provider = Column(String(50), default="sendgrid")  # sendgrid, mailgun, ses
+    custom_domain = Column(String(255))  # e.g., abclending.com
+    sendgrid_api_key = Column(String(255))
+    mailgun_api_key = Column(String(255))
+    mailgun_domain = Column(String(255))
+    
+    # Forwarding address
+    forwarding_email = Column(String(255))  # e.g., abclending@process.loansizer.com
+    
     # Settings
     settings = Column(JSON, default=dict)  # Custom settings per client
     
@@ -49,6 +59,7 @@ class Client(Base):
     templates = relationship("ExcelTemplate", back_populates="client", cascade="all, delete-orphan")
     applications = relationship("LoanApplication", back_populates="client", cascade="all, delete-orphan")
     api_keys = relationship("ApiKey", back_populates="client", cascade="all, delete-orphan")
+    email_logs = relationship("EmailProcessingLog", back_populates="client", cascade="all, delete-orphan")
 
 
 class User(Base):
@@ -274,6 +285,43 @@ class EmailIntegration(Base):
     is_active = Column(Boolean, default=True)
     last_check_at = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class EmailProcessingLog(Base):
+    """Log of processed forwarded emails"""
+    __tablename__ = "email_processing_logs"
+    
+    id = Column(Integer, primary_key=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    application_id = Column(Integer, ForeignKey("loan_applications.id"))
+    
+    # Email details
+    forwarder_email = Column(String(255), nullable=False)
+    to_email = Column(String(255), nullable=False)
+    subject = Column(String(500))
+    original_sender = Column(String(255))  # The applicant's email
+    
+    # Processing results
+    status = Column(String(50), default="processing")  # processing, completed, failed, rejected
+    decision = Column(String(50))  # APPROVE, DECLINE, CONDITIONAL
+    processing_time_ms = Column(Integer)
+    error_message = Column(Text)
+    
+    # Email delivery
+    email_sent = Column(Boolean, default=False)
+    email_sent_at = Column(DateTime)
+    email_error = Column(Text)
+    
+    # Raw data storage (for debugging)
+    raw_email_body = Column(Text)
+    extracted_data = Column(JSON)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    client = relationship("Client", back_populates="email_logs")
+    user = relationship("User")
 
 
 # ==================== DATABASE SETUP ====================
