@@ -1,0 +1,45 @@
+# Loan Sizer SaaS - Render Deployment Configuration
+# This file tells Render how to deploy your application
+
+services:
+  # Backend API Service
+  - type: web
+    name: loan-sizer-api
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r backend/requirements-saas.txt
+    startCommand: cd backend && uvicorn api_saas:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: loan-sizer-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false  # You'll set this manually in Render dashboard
+      - key: DEFAULT_RATE
+        value: "8.50"
+      - key: CORS_ORIGINS
+        value: "*"  # Restrict this in production
+    healthCheckPath: /health
+
+  # Frontend Static Site
+  - type: web
+    name: loan-sizer-dashboard
+    runtime: static
+    buildCommand: echo "Static site - no build needed"
+    staticPublishPath: ./frontend
+    routes:
+      - type: rewrite
+        source: /
+        destination: /saas-dashboard.html
+    envVars:
+      - key: API_URL
+        value: https://loan-sizer-api.onrender.com
+
+databases:
+  - name: loan-sizer-db
+    plan: starter
+    databaseName: loansizer
+    user: loansizer

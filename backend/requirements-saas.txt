@@ -1,0 +1,54 @@
+# Loan Sizer SaaS Platform - Requirements
+# Python 3.9+
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9; sys_platform != "darwin"  # PostgreSQL for production
+# sqlite3 is built-in for development
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-slugify==8.0.1
+
+# Excel Processing
+openpyxl==3.1.2
+
+# PDF Processing
+PyPDF2==3.0.1
+pdfplumber==0.10.0
+
+# AI/ML
+anthropic==0.8.1
+
+# Environment
+python-dotenv==1.0.0
+
+# Validation
+pydantic==2.5.0
+email-validator==2.1.0
+
+# Utilities
+python-dateutil==2.8.2
+httpx==0.25.2
+
+# Optional: For async database
+asyncpg==0.29.0; sys_platform != "darwin"
+
+# Optional: For caching
+redis==5.0.1
+
+# Optional: For monitoring
+sentry-sdk==1.38.0
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Sizer SaaS - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --secondary: #334155;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a365d 100%);
+        }
+        
+        .login-box {
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        
+        .login-box h1 {
+            font-size: 1.875rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        .login-box .subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text);
+        }
+        
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+        }
+        
+        .dashboard.active {
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--primary);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-change {
+            font-size: 0.75rem;
+            color: var(--success);
+            margin-top: 0.25rem;
+        }
+        
+        /* Main Processing Area */
+        .process-section {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .process-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .process-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        
+        .process-tab:hover {
+            color: var(--text);
+        }
+        
+        .process-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .process-content {
+            padding: 2rem;
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: rgba(5, 150, 105, 0.05);
+        }
+        
+        .dropzone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .dropzone-text {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dropzone-hint {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        /* Email Input */
+        .email-input-area {
+            margin-bottom: 1.5rem;
+        }
+        
+        .email-input-area textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+        }
+        
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+        }
+        
+        /* Recent Applications */
+        .recent-apps {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .app-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .app-table th,
+        .app-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .app-table th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        
+        .status-review {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        /* Template Upload Section */
+        .template-section {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+        
+        .template-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .template-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .template-info .meta {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .template-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            width: auto;
+        }
+        
+        /* Admin Badge */
+        .admin-badge {
+            background: var(--warning);
+            color: var(--bg);
+            font-size: 0.625rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>🏦 Loan Sizer</h1>
+            <p class="subtitle">AI-Powered Loan Processing Platform</p>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@company.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Sign In
+                </button>
+            </form>
+            
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <p style="color: var(--text-muted); font-size: 0.875rem;">
+                    Don't have an account? 
+                    <a href="#" onclick="showSignup()" style="color: var(--primary);">Start free trial</a>
+                </p>
+            </div>
+            
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <p style="color: var(--text-muted); font-size: 0.75rem; text-align: center;">
+                    🔒 Secure, multi-tenant platform.<br>
+                    Your data is isolated and encrypted.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                🏦 Loan Sizer
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" onclick="showSection('process')">
+                    ⚡ Process Application
+                </div>
+                <div class="nav-item" onclick="showSection('applications')">
+                    📋 Applications
+                </div>
+                <div class="nav-item" onclick="showSection('analytics')">
+                    📊 Analytics
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <div class="nav-item" onclick="showSection('templates')">
+                    📄 Excel Templates
+                </div>
+                <div class="nav-item" onclick="showSection('team')">
+                    👥 Team Members
+                    <span class="admin-badge">Admin</span>
+                </div>
+                <div class="nav-item" onclick="showSection('integrations')">
+                    🔌 Integrations
+                </div>
+            </div>
+            
+            <div class="nav-section" style="margin-top: auto;">
+                <div class="nav-item" onclick="logout()">
+                    🚪 Logout
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h2>Process New Application</h2>
+                    <p style="color: var(--text-muted); margin-top: 0.25rem;">
+                        ABC Lending Corp
+                    </p>
+                </div>
+                <div class="user-menu">
+                    <span style="color: var(--text-muted);">John Smith</span>
+                    <div class="user-avatar">JS</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Applications This Month</div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-change">↑ 23% vs last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Approval Rate</div>
+                    <div class="stat-value">68%</div>
+                    <div class="stat-change">↑ 5% vs last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Time Saved</div>
+                    <div class="stat-value">18h</div>
+                    <div class="stat-change">~$1,800 value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg Processing Time</div>
+                    <div class="stat-value">1.8s</div>
+                    <div class="stat-change">93% faster than manual</div>
+                </div>
+            </div>
+
+            <!-- Processing Section -->
+            <div class="process-section" id="processSection">
+                <div class="process-tabs">
+                    <div class="process-tab active" onclick="switchTab('email')">
+                        📧 From Email
+                    </div>
+                    <div class="process-tab" onclick="switchTab('pdf')">
+                        📄 Upload PDF
+                    </div>
+                    <div class="process-tab" onclick="switchTab('manual')">
+                        ✏️ Manual Entry
+                    </div>
+                </div>
+
+                <div class="process-content">
+                    <!-- Email Tab -->
+                    <div class="tab-panel active" id="emailTab">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" step="0.01" value="8.50" id="interestRate">
+                            </div>
+                            <div class="form-group">
+                                <label>Applicant Email</label>
+                                <input type="email" placeholder="applicant@email.com" id="applicantEmail">
+                            </div>
+                            <div class="form-group">
+                                <label>Excel Template</label>
+                                <select id="templateSelect">
+                                    <option>Multi and Mixed-Use Term Sizer (Default)</option>
+                                    <option>Commercial Property Sizer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assigned Officer</label>
+                                <select>
+                                    <option>John Smith (You)</option>
+                                    <option>Sarah Johnson</option>
+                                    <option>Mike Chen</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="email-input-area">
+                            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                                Paste Applicant Email
+                            </label>
+                            <textarea id="emailContent" placeholder="Paste the full email from the applicant here...
+
+Example:
+Subject: Loan Application - 8 Unit Property
+
+Hi,
+
+I'm interested in financing for:
+- 8 units at 307 S Main Street, Hopkinsville, KY 44240
+- Estimated value: $1,200,000
+- Purchase price: $980,000
+- Loan amount: $784,000
+- Credit scores: 688, 712, 703
+
+Please let me know if I qualify.
+
+Thanks,
+James Whitfield"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary" style="width: auto;" onclick="processApplication()">
+                                🚀 Process Application
+                            </button>
+                            <button class="btn btn-secondary" style="width: auto;" onclick="loadDemo()">
+                                Load Demo Scenario
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PDF Tab -->
+                    <div class="tab-panel" id="pdfTab">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" step="0.01" value="8.50">
+                            </div>
+                            <div class="form-group">
+                                <label>Applicant Email</label>
+                                <input type="email" placeholder="applicant@email.com">
+                            </div>
+                        </div>
+
+                        <div class="dropzone" onclick="document.getElementById('pdfInput').click()">
+                            <div class="dropzone-icon">📄</div>
+                            <div class="dropzone-text">Drop PDF file here or click to browse</div>
+                            <div class="dropzone-hint">Supports: Loan applications, property documents, credit reports</div>
+                            <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
+                        </div>
+
+                        <button class="btn btn-primary" style="width: auto; margin-top: 1.5rem;">
+                            📤 Upload & Process
+                        </button>
+                    </div>
+
+                    <!-- Manual Tab -->
+                    <div class="tab-panel" id="manualTab">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Units</label>
+                                <input type="number" placeholder="8">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" placeholder="307 S Main Street">
+                            </div>
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" placeholder="Hopkinsville">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" placeholder="KY" maxlength="2">
+                            </div>
+                            <div class="form-group">
+                                <label>ZIP</label>
+                                <input type="text" placeholder="44240">
+                            </div>
+                            <div class="form-group">
+                                <label>Estimated Value</label>
+                                <input type="number" placeholder="1200000">
+                            </div>
+                            <div class="form-group">
+                                <label>Purchase Price</label>
+                                <input type="number" placeholder="980000">
+                            </div>
+                            <div class="form-group">
+                                <label>Loan Amount</label>
+                                <input type="number" placeholder="784000">
+                            </div>
+                            <div class="form-group">
+                                <label>Credit Score 1</label>
+                                <input type="number" placeholder="688">
+                            </div>
+                            <div class="form-group">
+                                <label>Credit Score 2</label>
+                                <input type="number" placeholder="712">
+                            </div>
+                            <div class="form-group">
+                                <label>Credit Score 3</label>
+                                <input type="number" placeholder="703">
+                            </div>
+                            <div class="form-group">
+                                <label>Note Type</label>
+                                <select>
+                                    <option>30 YR Fixed</option>
+                                    <option>15 YR Fixed</option>
+                                    <option>ARM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" style="width: auto;">
+                            🚀 Process Application
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applications -->
+            <div class="recent-apps">
+                <div class="section-header">
+                    <h3>Recent Applications</h3>
+                    <a href="#" style="color: var(--primary); font-size: 0.875rem;">View All →</a>
+                </div>
+
+                <table class="app-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Property</th>
+                            <th>Loan Amount</th>
+                            <th>Decision</th>
+                            <th>Status</th>
+                            <th>Officer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2 hours ago</td>
+                            <td>307 S Main St, Hopkinsville, KY</td>
+                            <td>$784,000</td>
+                            <td><span class="status-badge status-approved">Approved</span></td>
+                            <td>Email Sent</td>
+                            <td>John Smith</td>
+                        </tr>
+                        <tr>
+                            <td>5 hours ago</td>
+                            <td>456 Oak Ave, Chicago, IL</td>
+                            <td>$950,000</td>
+                            <td><span class="status-badge status-review">Review</span></td>
+                            <td>Officer Review</td>
+                            <td>Sarah Johnson</td>
+                        </tr>
+                        <tr>
+                            <td>Yesterday</td>
+                            <td>789 Pine Rd, Miami, FL</td>
+                            <td>$450,000</td>
+                            <td><span class="status-badge status-rejected">Declined</span></td>
+                            <td>Email Sent</td>
+                            <td>Mike Chen</td>
+                        </tr>
+                        <tr>
+                            <td>Yesterday</td>
+                            <td>321 Elm St, Dallas, TX</td>
+                            <td>$1,200,000</td>
+                            <td><span class="status-badge status-approved">Approved</span></td>
+                            <td>Processing</td>
+                            <td>John Smith</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Templates Section (Hidden by default) -->
+            <div class="template-section" id="templatesSection" style="display: none;">
+                <div class="section-header">
+                    <h3>Excel Templates</h3>
+                    <button class="btn btn-primary btn-sm">+ Upload New Template</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-info">
+                        <h4>Multi and Mixed-Use Term Sizer 3.18.2026</h4>
+                        <div class="meta">
+                            Default Template • 4.0 MB • 13 mapped cells • Uploaded Jan 7, 2025
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn btn-secondary btn-sm">Download</button>
+                        <button class="btn btn-primary btn-sm">Edit Mapping</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-info">
+                        <h4>Commercial Property Sizer</h4>
+                        <div class="meta">
+                            Active • 2.1 MB • 8 mapped cells • Uploaded Dec 15, 2024
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn btn-secondary btn-sm">Set as Default</button>
+                        <button class="btn btn-secondary btn-sm">Download</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // API Configuration - Change this to your Render URL after deployment
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5050' 
+            : 'https://loan-sizer-api.onrender.com';
+        
+        let authToken = localStorage.getItem('loanSizerToken');
+        let currentUser = null;
+
+        // Check if already logged in
+        if (authToken) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            loadRecentApplications();
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+                
+                const data = await response.json();
+                authToken = data.access_token;
+                currentUser = data.user;
+                localStorage.setItem('loanSizerToken', authToken);
+                
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadRecentApplications();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loanSizerToken');
+            authToken = null;
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+        }
+        
+        async function loadRecentApplications() {
+            // This would fetch real applications from the API
+            console.log('Loading recent applications...');
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.process-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show correct panel
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function showSection(section) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show section content (simplified)
+            if (section === 'templates') {
+                document.getElementById('processSection').style.display = 'none';
+                document.querySelector('.recent-apps').style.display = 'none';
+                document.getElementById('templatesSection').style.display = 'block';
+            } else {
+                document.getElementById('processSection').style.display = 'block';
+                document.querySelector('.recent-apps').style.display = 'block';
+                document.getElementById('templatesSection').style.display = 'none';
+            }
+        }
+
+        async function processApplication() {
+            const email = document.getElementById('emailContent').value;
+            const applicantEmail = document.getElementById('applicantEmail').value;
+            const dailyRate = document.getElementById('dailyRate').value || '8.50';
+            
+            if (!email) {
+                alert('Please paste an email');
+                return;
+            }
+            
+            const btn = document.querySelector('.process-btn');
+            btn.textContent = '⏳ Processing...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/process`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: new URLSearchParams({
+                        email_content: email,
+                        daily_rate: dailyRate,
+                        applicant_email: applicantEmail
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Processing failed');
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                let programsText = data.sizer_result.programs.map(p => 
+                    `${p.program_name}: ${p.status}`
+                ).join('\n');
+                
+                alert(`✅ Application processed successfully!\n\nDecision: ${data.sizer_result.overall_decision}\n\nPrograms:\n${programsText}\n\nTime saved: ${data.time_saved}`);
+                
+                // Refresh recent applications
+                loadRecentApplications();
+                
+            } catch (error) {
+                alert('Processing failed: ' + error.message);
+            } finally {
+                btn.textContent = '🚀 Process Application';
+                btn.disabled = false;
+            }
+        }
+
+        function loadDemo() {
+            document.getElementById('emailContent').value = `Subject: Loan Application - 8 Unit Multifamily
+
+Hello,
+
+I'm interested in financing for an 8-unit multifamily property at 307 S Main Street, Hopkinsville, KY 44240.
+
+Property Details:
+- 8 units, approximately 750 sq ft each
+- Estimated value: $1,200,000
+- Purchase price: $980,000
+- Requested loan amount: $784,000
+- Note type: 30 YR Fixed
+
+My credit scores are 688, 712, and 703.
+Points to lender: 1%
+
+Please let me know what programs I qualify for.
+
+Thanks,
+James Whitfield
+james.whitfield@email.com`;
+
+            document.getElementById('applicantEmail').value = 'james.whitfield@email.com';
+        }
+
+        function showSignup() {
+            alert('In production, this would show a signup form for starting a 14-day free trial.');
+        }
+    </script>
+</body>
+</html>
