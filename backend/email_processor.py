@@ -65,10 +65,19 @@ class EmailForwardProcessor:
         r'--- Original Message ---\s*\nFrom:\s*([^<\n]+)(?:<([^>]+)>)?\s*\nSubject:\s*([^\n]+)\s*\n\n(.*)',
     ]
     
-    def __init__(self, daily_rate: float = 8.50):
+    def __init__(self, daily_rate: float = 8.50, template_path: str = None):
         self.daily_rate = daily_rate
         self.pdf_parser = PDFLoanParser()
-        self.sizer_processor = SizerProcessor()
+        self.template_path = template_path
+        self.sizer_processor = None
+        
+    def _get_sizer_processor(self, template_path: str = None):
+        """Lazy load sizer processor with template"""
+        if self.sizer_processor is None:
+            path = template_path or self.template_path
+            if path and Path(path).exists():
+                self.sizer_processor = SizerProcessor(path)
+        return self.sizer_processor
         
     def parse_forwarded_email(self, 
                              raw_email_content: str,
@@ -234,7 +243,18 @@ class EmailForwardProcessor:
             application = self._create_application(merged_data)
             
             # Step 5: Run sizer
-            sizer_result = self.sizer_processor.process_application(application, self.daily_rate)
+            sizer = self._get_sizer_processor()
+            if sizer is None:
+                return ProcessingResult(
+                    success=False,
+                    application_data=merged_data,
+                    sizer_result=None,
+                    generated_email=None,
+                    excel_file_path=None,
+                    error_message="No Excel template configured. Please upload a template first.",
+                    processing_time_seconds=time.time() - start_time
+                )
+            sizer_result = sizer.process_application(application, self.daily_rate)
             
             # Step 6: Generate filled Excel
             excel_path = self._generate_excel_output(application, sizer_result)
@@ -356,15 +376,13 @@ class EmailForwardProcessor:
     
     def _generate_excel_output(self, application: LoanApplication, sizer_result: Dict) -> str:
         """Generate filled Excel template with results"""
-        # Create output filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_address = re.sub(r'[^\w]', '_', application.address)[:30]
-        output_path = f"/tmp/sizer_{safe_address}_{timestamp}.xlsx"
-        
-        # Use processor to generate filled Excel
-        self.sizer_processor.populate_excel_sizer(application, output_path)
-        
-        return output_path
+        # The sizer_result already contains the output file path from process_application
+        if isinstance(sizer_result, dict):
+            return sizer_result.get('output_file', '')
+        # If sizer_result is a ProcessingResult object
+        elif hasattr(sizer_result, 'output_file'):
+            return sizer_result.output_file
+        return ''
     
     def _generate_response_email(self, 
                                 forwarded_email: ForwardedEmail,
