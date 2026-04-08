@@ -22,8 +22,14 @@ from email_processor import EmailForwardProcessor, ForwardedEmail
 # Router
 router = APIRouter(prefix="/email", tags=["Email Processing"])
 
-# Initialize processor
-email_processor = EmailForwardProcessor()
+# Initialize processor (lazy loading)
+email_processor = None
+
+def get_email_processor():
+    global email_processor
+    if email_processor is None:
+        email_processor = EmailForwardProcessor()
+    return email_processor
 
 
 class IncomingEmailWebhook(BaseModel):
@@ -251,8 +257,11 @@ async def process_incoming_email(
             'processing_time_ms': int((time.time() - start_time) * 1000)
         }
     
+    # Get email processor
+    processor = get_email_processor()
+    
     # Step 3: Parse the forwarded email
-    forwarded = email_processor.parse_forwarded_email(
+    forwarded = processor.parse_forwarded_email(
         raw_email_content=body,
         forwarder_email=from_email,
         forwarder_name=from_name,
@@ -261,7 +270,7 @@ async def process_incoming_email(
     forwarded.client_id = client.id
     
     # Step 4: Process the application
-    result = email_processor.process_forwarded_email(forwarded)
+    result = processor.process_forwarded_email(forwarded)
     
     # Step 5: Save to database
     application_record = None
@@ -292,7 +301,7 @@ async def process_incoming_email(
     if result.success and result.generated_email:
         try:
             # Create email with attachment
-            email_msg = email_processor.create_email_with_attachment(
+            email_msg = processor.create_email_with_attachment(
                 to_email=from_email,
                 to_name=from_name,
                 subject=f"RE: {subject} - {result.sizer_result.get('overall_decision', 'ANALYSIS')}",
