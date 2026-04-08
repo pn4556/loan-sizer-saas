@@ -309,7 +309,7 @@ class EmailForwardProcessor:
             'units': r'(\d+)\s*(?:unit|door|plex)',
             'address': r'(?:at|located at|address[:\s]+)\s*([^,\n]+(?:,[^,\n]+)*)',
             'city': r'([^,]+),\s*(?:[A-Z]{2}|\w+)',
-            'state': r'[A-Z]{2}',
+            'state': r'([A-Z]{2})',
             'zip': r'\b(\d{5}(?:-\d{4})?)\b',
             'estimated_value': r'(?:estimated value|value|worth)[:\s]*\$?([\d,]+)',
             'purchase_price': r'(?:purchase price|price)[:\s]*\$?([\d,]+)',
