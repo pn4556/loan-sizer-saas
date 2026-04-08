@@ -1,7 +1,7 @@
 # Loan Sizer SaaS Platform - Requirements
-# Python 3.14 compatible
+# Python 3.11+ compatible
 
-# Web Framework - Latest stable for Python 3.14
+# Web Framework
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 python-multipart==0.0.6
@@ -30,7 +30,7 @@ anthropic==0.8.1
 # Environment
 python-dotenv==1.0.0
 
-# Validation - Pydantic v2 for Python 3.14 compatibility
+# Validation
 pydantic==2.5.3
 pydantic-settings==2.1.0
 email-validator==2.1.0
