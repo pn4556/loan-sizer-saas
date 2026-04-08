@@ -619,7 +619,7 @@ class EmailForwardProcessor:
         
         msg = MIMEMultipart('mixed')
         msg['Subject'] = subject
-        msg['From'] = 'Loan Sizer AI <processing@loansizer.com>'
+        msg['From'] = 'ComplAiCore Loan Sizer <pn@complaicore.com>'
         msg['To'] = f"{to_name} <{to_email}>"
         
         # Attach HTML body

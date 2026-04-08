@@ -456,7 +456,7 @@ async def send_via_sendgrid(email_msg: dict, client: Client):
         'personalizations': [{
             'to': [{'email': email_msg['to']}]
         }],
-        'from': {'email': 'loans@complaicore.com', 'name': 'ComplAiCore Loan Sizer'},
+        'from': {'email': 'pn@complaicore.com', 'name': 'ComplAiCore Loan Sizer'},
         'subject': email_msg['subject'],
         'content': [{
             'type': 'text/html',
