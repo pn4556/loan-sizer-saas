@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Client, User, LoanApplication as LoanApplicationModel, EmailProcessingLog
+from models import Client, User, LoanApplication as LoanApplicationModel, EmailProcessingLog, ExcelTemplate
 from auth import get_current_user
 from email_processor import EmailForwardProcessor, ForwardedEmail
 
@@ -257,8 +257,27 @@ async def process_incoming_email(
             'processing_time_ms': int((time.time() - start_time) * 1000)
         }
     
-    # Get email processor
-    processor = get_email_processor()
+    # Get client's default template
+    default_template = db.query(ExcelTemplate).filter(
+        ExcelTemplate.client_id == client.id,
+        ExcelTemplate.is_default == True
+    ).first()
+    
+    if not default_template:
+        # Try any template for this client
+        default_template = db.query(ExcelTemplate).filter(
+            ExcelTemplate.client_id == client.id
+        ).first()
+    
+    if not default_template:
+        return {
+            'success': False,
+            'message': 'No Excel template configured. Please upload a template first.',
+            'processing_time_ms': int((time.time() - start_time) * 1000)
+        }
+    
+    # Get email processor with template
+    processor = EmailForwardProcessor(template_path=default_template.file_path)
     
     # Step 3: Parse the forwarded email
     forwarded = processor.parse_forwarded_email(
