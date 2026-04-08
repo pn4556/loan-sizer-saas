@@ -3,9 +3,9 @@
 
 # Web Framework - Using stable versions known to work together
 fastapi==0.95.2
-uvicorn[standard]==0.23.2
+uvicorn[standard]==0.22.0
 python-multipart==0.0.6
-starlette==0.27.0
+starlette==0.26.1
 
 # Database
 sqlalchemy==2.0.23
