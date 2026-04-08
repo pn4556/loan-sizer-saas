@@ -2,15 +2,14 @@
 # Python 3.9+
 
 # Web Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+fastapi==0.103.2
+uvicorn[standard]==0.23.2
 python-multipart==0.0.6
 
 # Database
 sqlalchemy==2.0.23
 alembic==1.12.1
-psycopg2-binary==2.9.9; sys_platform != "darwin"  # PostgreSQL for production
-# sqlite3 is built-in for development
+psycopg2-binary==2.9.9
 
 # Authentication
 python-jose[cryptography]==3.3.0
@@ -30,8 +29,8 @@ anthropic==0.8.1
 # Environment
 python-dotenv==1.0.0
 
-# Validation
-pydantic==2.5.0
+# Validation - Using Pydantic v1 for Render compatibility
+pydantic==1.10.13
 email-validator==2.1.0
 
 # Utilities
@@ -39,16 +38,10 @@ python-dateutil==2.8.2
 httpx==0.25.2
 
 # Optional: For async database
-asyncpg==0.29.0; sys_platform != "darwin"
+asyncpg==0.29.0
 
 # Optional: For caching
 redis==5.0.1
 
 # Optional: For monitoring
 sentry-sdk==1.38.0
-
-# Development
-pytest==7.4.3
-pytest-asyncio==0.21.1
-black==23.11.0
-flake8==6.1.0
