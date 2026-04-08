@@ -64,6 +64,24 @@ OUTPUTS_DIR.mkdir(exist_ok=True)
 # Include email processing router
 app.include_router(email_router)
 
+# ==================== ROOT ROUTE ====================
+
+@app.get("/")
+async def root():
+    """Root endpoint - API info"""
+    return {
+        "service": "Loan Sizer SaaS Platform",
+        "version": "2.0.0",
+        "status": "running",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
+@app.get("/health")
+async def health():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "loan-sizer-api"}
+
 # ==================== AUTH SCHEMAS ====================
 
 class LoginRequest(BaseModel):
