@@ -27,26 +27,26 @@ from sizer_config import (
 @dataclass
 class LoanApplication:
     """Loan application data structure"""
-    # Property Details
+    # Property Details (required)
     units: int
     address: str
     city: str
     state: str
     zip_code: str
     
-    # Financial
+    # Financial (required)
     estimated_value: float
     purchase_price: float
     loan_amount: float
     note_type: str
-    points_to_lender: float = 0.0
     
-    # Credit (3 scores - will calculate middle)
+    # Credit (3 scores - will calculate middle) (required)
     credit_score_1: int
     credit_score_2: int
     credit_score_3: int
     
-    # Optional fields
+    # Optional fields (all have defaults)
+    points_to_lender: float = 0.0
     unit_size: Optional[str] = None
     property_type: str = "Multifamily"
     asset_class: str = "C"
