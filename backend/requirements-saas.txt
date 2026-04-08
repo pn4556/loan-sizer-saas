@@ -1,10 +1,11 @@
 # Loan Sizer SaaS Platform - Requirements
 # Python 3.14 compatible
 
-# Web Framework - Using latest stable versions
+# Web Framework - Latest stable for Python 3.14
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 python-multipart==0.0.6
+starlette==0.35.1
 
 # Database
 sqlalchemy==2.0.23
