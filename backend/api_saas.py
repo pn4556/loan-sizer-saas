@@ -705,45 +705,109 @@ async def list_applications(
 # ==================== HELPER FUNCTIONS ====================
 
 def _extract_with_regex(email_content: str) -> dict:
-    """Simple regex extraction (fallback)"""
+    """Simple regex extraction (fallback) - FIXED VERSION"""
     import re
     
-    patterns = {
-        'units': r'(\d+)\s*units?',
-        'address': r'(\d+\s+[^,\n]+?(?:Street|St|Avenue|Ave|Road|Rd))',
-        'city': r'(?:City[:\s]+)?([A-Za-z\s]+?)(?=,\s*[A-Z]{2})',
-        'state': r',\s*([A-Z]{2})\s*\d{5}',
-        'zip': r'\b(\d{5})\b',
-        'estimated_value': r'(?:value|price)[:\s]+\$?([\d,]+)',
-        'purchase_price': r'(?:purchase|buy)[:\s]+\$?([\d,]+)',
-        'loan_amount': r'(?:loan|requested)[:\s]+\$?([\d,]+)',
-        'note_type': r'(30|15|20)\s*YR',
-        'points': r'points[:\s]+(\d+(?:\.\d+)?)',
-        'credit_scores': r'(\d{3})[\s,]+(\d{3})[\s,]+(\d{3})',
-    }
-    
+    text = email_content
     extracted = {}
-    for field, pattern in patterns.items():
-        match = re.search(pattern, email_content, re.IGNORECASE)
-        if match:
-            if field == 'credit_scores':
-                extracted['credit_score_1'] = int(match.group(1))
-                extracted['credit_score_2'] = int(match.group(2))
-                extracted['credit_score_3'] = int(match.group(3))
-            elif field == 'units':
-                extracted[field] = int(match.group(1))
-            elif field == 'points':
-                extracted[field] = float(match.group(1))
-            elif field == 'note_type':
-                extracted[field] = f"{match.group(1)} YR Fixed"
-            elif field in ['estimated_value', 'purchase_price', 'loan_amount']:
-                extracted[field] = float(match.group(1).replace(',', ''))
-            else:
-                extracted[field] = match.group(1).strip()
     
+    # Extract units - must be followed by unit/units/doors (not just any number)
+    units_match = re.search(r'(?:^|\n)\s*units?[:\s]+(\d+)', text, re.IGNORECASE)
+    if not units_match:
+        units_match = re.search(r'(\d+)\s*(?:unit|units|door|doors|plex)(?:\s|$|\n)', text, re.IGNORECASE)
+    if units_match:
+        extracted['units'] = int(units_match.group(1))
+    
+    # Extract address - look for "Address:" prefix or street patterns
+    addr_match = re.search(r'address[:\s]+([^\n]+)', text, re.IGNORECASE)
+    if addr_match:
+        extracted['address'] = addr_match.group(1).strip()
+    else:
+        # Fallback to street pattern
+        addr_match = re.search(r'(\d+\s+[^,\n]+?(?:Street|St|Avenue|Ave|Road|Rd|Blvd|Drive|Dr))', text, re.IGNORECASE)
+        if addr_match:
+            extracted['address'] = addr_match.group(1).strip()
+    
+    # Extract city - look for "City:" prefix
+    city_match = re.search(r'city[:\s]+([^\n,]+)', text, re.IGNORECASE)
+    if city_match:
+        extracted['city'] = city_match.group(1).strip()
+    else:
+        # Fallback to pattern: City, ST
+        city_match = re.search(r'([^,\n]+?),\s*[A-Z]{2}', text)
+        if city_match:
+            extracted['city'] = city_match.group(1).strip()
+    
+    # Extract state - look for "State:" prefix
+    state_match = re.search(r'state[:\s]+([A-Z]{2})', text, re.IGNORECASE)
+    if state_match:
+        extracted['state'] = state_match.group(1).upper()
+    else:
+        # Fallback to pattern after city
+        state_match = re.search(r',\s*([A-Z]{2})\s*\d{5}', text)
+        if state_match:
+            extracted['state'] = state_match.group(1).upper()
+    
+    # Extract zip - look for "Zip:" prefix first
+    zip_match = re.search(r'zip(?:[_\s]?code)?:\s*\b(\d{5})\b', text, re.IGNORECASE)
+    if zip_match:
+        extracted['zip_code'] = zip_match.group(1)
+    else:
+        # Fallback to any 5-digit number that's not part of a larger number
+        zip_match = re.search(r'\b(\d{5})\b(?!\d)', text)
+        if zip_match:
+            extracted['zip_code'] = zip_match.group(1)
+    
+    # Extract purchase price
+    price_match = re.search(r'purchase[_\s]?price[:\s]+\$?([\d,]+)', text, re.IGNORECASE)
+    if price_match:
+        extracted['purchase_price'] = float(price_match.group(1).replace(',', ''))
+    
+    # Extract loan amount
+    loan_match = re.search(r'loan[_\s]?amount[:\s]+\$?([\d,]+)', text, re.IGNORECASE)
+    if loan_match:
+        extracted['loan_amount'] = float(loan_match.group(1).replace(',', ''))
+    
+    # Extract estimated value (for refinances)
+    value_match = re.search(r'estimated[_\s]?value[:\s]+\$?([\d,]+)', text, re.IGNORECASE)
+    if value_match:
+        extracted['estimated_value'] = float(value_match.group(1).replace(',', ''))
+    
+    # Extract credit score(s)
+    # First try to find 3 scores
+    three_scores = re.search(r'credit[_\s]?scores?[:\s]+(\d{3})[\s,]+(\d{3})[\s,]+(\d{3})', text, re.IGNORECASE)
+    if three_scores:
+        extracted['credit_score_1'] = int(three_scores.group(1))
+        extracted['credit_score_2'] = int(three_scores.group(2))
+        extracted['credit_score_3'] = int(three_scores.group(3))
+    else:
+        # Try to find single score
+        single_score = re.search(r'credit[_\s]?scores?[:\s]+(\d{3})', text, re.IGNORECASE)
+        if single_score:
+            score = int(single_score.group(1))
+            extracted['credit_score_1'] = score
+            extracted['credit_score_2'] = score
+            extracted['credit_score_3'] = score
+    
+    # Extract note type
+    note_match = re.search(r'(30|15|20)\s*YR', text, re.IGNORECASE)
+    if note_match:
+        extracted['note_type'] = f"{note_match.group(1)} YR Fixed"
+    else:
+        extracted['note_type'] = "30 YR Fixed"  # Default
+    
+    # Extract points
+    points_match = re.search(r'points?[:\s]+(\d+(?:\.\d+)?)', text, re.IGNORECASE)
+    if points_match:
+        extracted['points_to_lender'] = float(points_match.group(1))
+    else:
+        extracted['points_to_lender'] = 0.0
+    
+    # Set defaults
     extracted.setdefault('property_type', 'Multifamily')
     extracted.setdefault('asset_class', 'C')
-    extracted.setdefault('points_to_lender', 0.0)
+    if 'estimated_value' not in extracted and 'purchase_price' in extracted:
+        extracted['estimated_value'] = extracted['purchase_price']
     
     return extracted
 
