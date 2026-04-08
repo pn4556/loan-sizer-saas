@@ -64,6 +64,14 @@ OUTPUTS_DIR.mkdir(exist_ok=True)
 # Include email processing router
 app.include_router(email_router)
 
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    print("🚀 Loan Sizer API starting up...")
+    print(f"📍 Root path: /")
+    print(f"📍 Health path: /health")
+    print(f"📍 API docs: /docs")
+
 # ==================== ROOT ROUTE ====================
 
 @app.get("/")
