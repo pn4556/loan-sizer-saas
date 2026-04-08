@@ -279,6 +279,9 @@ class EmailForwardProcessor:
             )
             
         except Exception as e:
+            import traceback
+            error_detail = f"{str(e)}\n{traceback.format_exc()}"
+            print(error_detail)  # Log for debugging
             return ProcessingResult(
                 success=False,
                 application_data=None,
