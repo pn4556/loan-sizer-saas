@@ -37,8 +37,7 @@ email-validator==2.1.0
 python-dateutil==2.8.2
 httpx==0.25.2
 
-# Optional: For async database
-asyncpg==0.29.0
+# Note: Using psycopg2-binary for sync operations (asyncpg removed due to Python 3.14 compatibility)
 
 # Optional: For caching
 redis==5.0.1
