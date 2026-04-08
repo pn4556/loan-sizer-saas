@@ -38,8 +38,8 @@ from email_api import router as email_router
 # Initialize app
 app = FastAPI(
     title="Loan Sizer SaaS Platform",
-    version="2.0.1",
-    description="Multi-tenant loan processing platform"
+    version="2.0.2",
+    description="Multi-tenant loan processing platform - Email fix deployed"
 )
 
 # CORS
