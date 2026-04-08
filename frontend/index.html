@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Sizer Automation - Dashboard</title>
+    <title>Agentic Workflows | Loan Sizer Automation - ComplAiCore</title>
     <style>
         * {
             margin: 0;
@@ -20,9 +20,57 @@
         
         .header {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            padding: 2rem;
-            text-align: center;
+            padding: 1.5rem 2rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto 1rem auto;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .brand span {
+            opacity: 0.8;
+            font-weight: 400;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        .nav-links a.active {
+            opacity: 1;
+            font-weight: 600;
+        }
+        
+        .header-content {
+            text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
         .header h1 {
@@ -32,6 +80,15 @@
         
         .header p {
             opacity: 0.9;
+        }
+        
+        .workflow-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         
         .container {
@@ -455,8 +512,22 @@
 </head>
 <body>
     <div class="header">
-        <h1>🏦 Loan Sizer Automation</h1>
-        <p>AI-Powered Loan Application Processing | 20-30 min → Under 2 min</p>
+        <div class="header-top">
+            <a href="https://complaicore.com" class="brand">
+                ComplAiCore <span>| AI Solutions</span>
+            </a>
+            <nav class="nav-links">
+                <a href="https://complaicore.com">Home</a>
+                <a href="https://complaicore.com/services">Services</a>
+                <a href="/" class="active">🤖 Agentic Workflows</a>
+                <a href="https://complaicore.com/contact">Contact</a>
+            </nav>
+        </div>
+        <div class="header-content">
+            <div class="workflow-badge">🤖 AGENTIC WORKFLOW</div>
+            <h1>🏦 Loan Sizer Automation</h1>
+            <p>AI-Powered Loan Application Processing | 20-30 min → Under 2 min</p>
+        </div>
     </div>
 
     <div class="container">
