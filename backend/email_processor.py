@@ -391,98 +391,180 @@ class EmailForwardProcessor:
                                 forwarded_email: ForwardedEmail,
                                 application: LoanApplication,
                                 sizer_result: Dict) -> str:
-        """Generate HTML email response with highlighted results"""
+        """Generate HTML email response with highlighted results and detailed feedback"""
         
         overall_decision = sizer_result.get('overall_decision', 'PENDING')
         decision_color = '#10b981' if overall_decision == 'APPROVE' else '#ef4444'
         decision_bg = '#d1fae5' if overall_decision == 'APPROVE' else '#fee2e2'
+        decision_icon = '✓' if overall_decision == 'APPROVE' else '✗'
         
         # Build programs table
         programs_html = ""
         for prog in sizer_result.get('programs', []):
             status_color = '#10b981' if prog['status'] == 'PASS' else '#ef4444'
+            status_icon = '✓' if prog['status'] == 'PASS' else '✗'
             programs_html += f"""
             <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{prog['program_name']}</td>
                 <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; color: {status_color}; font-weight: bold;">
-                    {prog['status']}
+                    {status_icon} {prog['status']}
                 </td>
-                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${prog.get('max_loan_amount', 0):,.0f}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${prog.get('max_loan_amount', 0):,.0f}</td>
             </tr>
             """
+        
+        # Generate failure reasons if declined
+        failure_reasons_html = ""
+        if overall_decision == 'DECLINE':
+            failure_reasons = self._extract_failure_reasons(sizer_result)
+            if failure_reasons:
+                reasons_list = "".join([f"<li style='margin-bottom: 8px;'>{reason}</li>" for reason in failure_reasons])
+                failure_reasons_html = f"""
+                <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                    <h3 style="margin-top: 0; color: #dc2626;">Why This Application Did Not Pass</h3>
+                    <ul style="color: #7f1d1d; margin: 0; padding-left: 20px;">
+                        {reasons_list}
+                    </ul>
+                    <p style="margin: 15px 0 0 0; color: #991b1b; font-size: 14px;">
+                        <strong>Recommendation:</strong> Consider adjusting loan terms or exploring alternative programs.
+                    </p>
+                </div>
+                """
+        
+        # Calculate LTV safely
+        try:
+            ltv = (application.loan_amount / application.estimated_value * 100) if application.estimated_value > 0 else 0
+        except:
+            ltv = 0
         
         email_html = f"""
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #374151; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                .header {{ background: #f3f4f6; padding: 20px; border-radius: 8px; margin-bottom: 20px; }}
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #374151; background: #f3f4f6; margin: 0; padding: 20px; }}
+                .container {{ max-width: 650px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }}
+                .header {{ background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); padding: 30px; color: white; text-align: center; }}
+                .header h1 {{ margin: 0; font-size: 24px; font-weight: 600; }}
+                .header p {{ margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; }}
+                .content {{ padding: 30px; }}
                 .decision-box {{ 
                     background: {decision_bg}; 
                     border: 3px solid {decision_color}; 
-                    padding: 20px; 
-                    border-radius: 8px; 
+                    padding: 30px; 
+                    border-radius: 12px; 
                     text-align: center;
-                    margin: 20px 0;
+                    margin: 0 0 25px 0;
+                }}
+                .decision-icon {{ 
+                    font-size: 48px; 
+                    color: {decision_color}; 
+                    margin-bottom: 10px;
                 }}
                 .decision-text {{ 
                     color: {decision_color}; 
-                    font-size: 28px; 
-                    font-weight: bold;
+                    font-size: 32px; 
+                    font-weight: 800;
                     text-transform: uppercase;
+                    letter-spacing: 2px;
                 }}
-                .details {{ background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-                th {{ background: #f3f4f6; padding: 10px; text-align: left; font-weight: bold; }}
-                .footer {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; }}
+                .decision-subtext {{ 
+                    color: #4b5563; 
+                    font-size: 16px; 
+                    margin-top: 10px;
+                }}
+                .details {{ background: #f9fafb; padding: 20px; border-radius: 8px; margin: 25px 0; border: 1px solid #e5e7eb; }}
+                .details h3 {{ margin-top: 0; color: #111827; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }}
+                .detail-row {{ display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }}
+                .detail-row:last-child {{ border-bottom: none; }}
+                .detail-label {{ font-weight: 600; color: #6b7280; }}
+                .detail-value {{ color: #111827; font-weight: 500; }}
+                table {{ width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }}
+                th {{ background: #1e3a5f; color: white; padding: 12px; text-align: left; font-weight: 600; }}
+                td {{ padding: 12px 8px; }}
+                tr:nth-child(even) {{ background: #f9fafb; }}
+                .footer {{ background: #f3f4f6; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 13px; border-top: 1px solid #e5e7eb; }}
+                .attachment-note {{ background: #ecfdf5; border: 2px dashed #10b981; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; color: #065f46; }}
+                .pass {{ color: #10b981; }}
+                .fail {{ color: #ef4444; }}
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <h2 style="margin: 0; color: #111827;">Loan Application Analysis Complete</h2>
-                    <p style="margin: 10px 0 0 0; color: #6b7280;">
-                        Processed: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
-                    </p>
+                    <h1>🏠 Loan Application Complete</h1>
+                    <p>ComplAiCore Automated Analysis</p>
                 </div>
                 
-                <div class="decision-box">
-                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">OVERALL DECISION</div>
-                    <div class="decision-text">{overall_decision}</div>
-                    <p style="margin: 10px 0 0 0; color: #4b5563;">
-                        {sizer_result.get('decision_reason', '')}
-                    </p>
+                <div class="content">
+                    <div class="decision-box">
+                        <div class="decision-icon">{decision_icon}</div>
+                        <div class="decision-text">{overall_decision}</div>
+                        <div class="decision-subtext">
+                            {sizer_result.get('decision_reason', 'Application has been analyzed')}
+                        </div>
+                    </div>
+                    
+                    {failure_reasons_html}
+                    
+                    <div class="details">
+                        <h3>📋 Property Details</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Address</span>
+                            <span class="detail-value">{application.address}, {application.city}, {application.state} {application.zip_code}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Units</span>
+                            <span class="detail-value">{application.units}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Loan Amount</span>
+                            <span class="detail-value">${application.loan_amount:,.0f}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Estimated Value</span>
+                            <span class="detail-value">${application.estimated_value:,.0f}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">LTV Ratio</span>
+                            <span class="detail-value">{ltv:.1f}%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Credit Score (Middle)</span>
+                            <span class="detail-value">{application.credit_score_middle}</span>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #1e3a5f; margin-top: 30px;">📊 Program Results</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Program</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Max Loan Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {programs_html}
+                        </tbody>
+                    </table>
+                    
+                    <div class="attachment-note">
+                        <strong>📎 Complete Analysis Attached</strong><br>
+                        Download the Excel file below for full underwriting details
+                    </div>
                 </div>
-                
-                <div class="details">
-                    <h3 style="margin-top: 0;">Property Details</h3>
-                    <p><strong>Address:</strong> {application.address}, {application.city}, {application.state} {application.zip_code}</p>
-                    <p><strong>Units:</strong> {application.units}</p>
-                    <p><strong>Loan Amount:</strong> ${application.loan_amount:,.0f}</p>
-                    <p><strong>LTV:</strong> {(application.loan_amount / application.estimated_value * 100):.1f}%</p>
-                    <p><strong>Credit Score:</strong> {application.credit_score_middle}</p>
-                </div>
-                
-                <h3>Program Results</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Program</th>
-                            <th>Status</th>
-                            <th>Max Loan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {programs_html}
-                    </tbody>
-                </table>
                 
                 <div class="footer">
-                    <p>This analysis was generated automatically by Loan Sizer AI.</p>
-                    <p>Please review the attached Excel sizer for complete details.</p>
+                    <p><strong>ComplAiCore Loan Sizer AI</strong></p>
+                    <p>This analysis was generated automatically on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
                     <p>Processing time: {sizer_result.get('processing_time', 'N/A')} seconds</p>
+                    <p style="margin-top: 15px; font-size: 11px; color: #9ca3af;">
+                        This is an automated analysis. Please verify all figures before proceeding.<br>
+                        © 2026 ComplAiCore. All rights reserved.
+                    </p>
                 </div>
             </div>
         </body>
@@ -490,6 +572,41 @@ class EmailForwardProcessor:
         """
         
         return email_html
+    
+    def _extract_failure_reasons(self, sizer_result: Dict) -> List[str]:
+        """Extract specific reasons why the application failed"""
+        reasons = []
+        
+        programs = sizer_result.get('programs', [])
+        
+        for prog in programs:
+            if prog['status'] == 'FAIL':
+                # Extract specific failure reasons from each program
+                fails = prog.get('fails', [])
+                for fail in fails:
+                    if isinstance(fail, dict):
+                        rule = fail.get('rule', 'Unknown rule')
+                        actual = fail.get('actual', 'N/A')
+                        required = fail.get('required', 'N/A')
+                        reasons.append(f"{prog['program_name']}: {rule} (Got: {actual}, Required: {required})")
+                    elif isinstance(fail, str):
+                        reasons.append(f"{prog['program_name']}: {fail}")
+        
+        # Check for common issues if no specific reasons found
+        if not reasons:
+            credit_score = sizer_result.get('credit_score_middle', 0)
+            if credit_score < 620:
+                reasons.append(f"Credit score ({credit_score}) below minimum threshold (620)")
+            
+            ltv = sizer_result.get('ltv', 0)
+            if ltv > 80:
+                reasons.append(f"LTV ratio ({ltv:.1f}%) exceeds maximum (80%)")
+            
+            dscr = sizer_result.get('dscr', 0)
+            if dscr < 1.0:
+                reasons.append(f"DSCR ({dscr:.2f}) below minimum requirement (1.0)")
+        
+        return reasons if reasons else ["Application does not meet program requirements"]
     
     def create_email_with_attachment(self,
                                     to_email: str,

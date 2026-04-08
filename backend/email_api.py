@@ -417,12 +417,55 @@ async def send_email_via_provider(email_msg: dict, client: Client):
 
 
 async def send_via_sendgrid(email_msg: dict, client: Client):
-    """Send email via SendGrid API"""
+    """Send email via SendGrid API with attachments"""
     import httpx
+    import base64
     
     api_key = client.sendgrid_api_key or os.getenv('SENDGRID_API_KEY')
     if not api_key:
         raise ValueError("SendGrid API key not configured")
+    
+    # Decode the MIME message to extract parts
+    mime_bytes = base64.urlsafe_b64decode(email_msg['raw'])
+    
+    # Parse MIME message to extract HTML body and attachments
+    from email import message_from_bytes
+    msg = message_from_bytes(mime_bytes)
+    
+    html_content = ""
+    attachments = []
+    
+    for part in msg.walk():
+        content_type = part.get_content_type()
+        content_disposition = part.get('Content-Disposition', '')
+        
+        if content_type == 'text/html' and 'attachment' not in content_disposition:
+            html_content = part.get_payload(decode=True).decode('utf-8')
+        elif 'attachment' in content_disposition:
+            filename = part.get_filename()
+            content = part.get_payload(decode=True)
+            attachments.append({
+                'content': base64.b64encode(content).decode(),
+                'filename': filename,
+                'type': content_type,
+                'disposition': 'attachment'
+            })
+    
+    # Build SendGrid payload
+    payload = {
+        'personalizations': [{
+            'to': [{'email': email_msg['to']}]
+        }],
+        'from': {'email': 'loans@complaicore.com', 'name': 'ComplAiCore Loan Sizer'},
+        'subject': email_msg['subject'],
+        'content': [{
+            'type': 'text/html',
+            'value': html_content
+        }]
+    }
+    
+    if attachments:
+        payload['attachments'] = attachments
     
     async with httpx.AsyncClient() as client_http:
         response = await client_http.post(
@@ -431,17 +474,7 @@ async def send_via_sendgrid(email_msg: dict, client: Client):
                 'Authorization': f'Bearer {api_key}',
                 'Content-Type': 'application/json'
             },
-            json={
-                'personalizations': [{
-                    'to': [{'email': email_msg['to']}]
-                }],
-                'from': {'email': 'processing@loansizer.com', 'name': 'Loan Sizer AI'},
-                'subject': email_msg['subject'],
-                'content': [{
-                    'type': 'text/html',
-                    'value': email_msg['raw']  # This should be parsed properly
-                }]
-            }
+            json=payload
         )
         response.raise_for_status()
 
@@ -501,14 +534,21 @@ async def get_forwarding_address(
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
-    # Generate forwarding address
-    forwarding_address = f"{client.slug}@process.loansizer.com"
+    # Generate forwarding address - use complaicore.com domain
+    domain = client.custom_domain or 'complaicore.com'
+    forwarding_address = f"loans+{client.slug}@{domain}"
     
     return {
         'client_id': client.id,
         'client_name': client.company_name,
         'forwarding_address': forwarding_address,
-        'instructions': f"Forward loan application emails to: {forwarding_address}"
+        'instructions': f"Forward loan application emails to: {forwarding_address}",
+        'setup_guide': {
+            'step1': f'Forward loan application emails to: {forwarding_address}',
+            'step2': 'Our AI will automatically extract loan data and run analysis',
+            'step3': 'You will receive an email back with PASS/FAIL decision and completed Excel file',
+            'format': 'Simply forward any email containing loan application details'
+        }
     }
 
 
