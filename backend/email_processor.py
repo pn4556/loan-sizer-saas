@@ -339,6 +339,13 @@ class EmailForwardProcessor:
                 else:
                     extracted[field] = value
         
+        # If only one credit score found, copy it to all three borrowers
+        if 'credit_score_1' in extracted:
+            if 'credit_score_2' not in extracted:
+                extracted['credit_score_2'] = extracted['credit_score_1']
+            if 'credit_score_3' not in extracted:
+                extracted['credit_score_3'] = extracted['credit_score_1']
+        
         return extracted
     
     def _merge_data_sources(self, body_data: Optional[Dict], attachment_data: Optional[Dict]) -> Optional[Dict]:
