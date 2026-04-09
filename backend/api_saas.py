@@ -433,16 +433,21 @@ async def process_from_email(
     db.commit()
     
     try:
-        # Extract data (use AI if available, else regex)
-        import anthropic
-        try:
-            client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-            # AI extraction would go here
-            extracted = _extract_with_regex(request.email_content)  # Fallback for now
-            app_record.extraction_method = "regex"
-        except:
-            extracted = _extract_with_regex(request.email_content)
-            app_record.extraction_method = "regex"
+        # Use provided extracted data if available, else extract
+        if request.extracted_data:
+            extracted = request.extracted_data
+            app_record.extraction_method = "frontend"
+        else:
+            # Extract data (use AI if available, else regex)
+            import anthropic
+            try:
+                client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+                # AI extraction would go here
+                extracted = _extract_with_regex(request.email_content)  # Fallback for now
+                app_record.extraction_method = "regex"
+            except:
+                extracted = _extract_with_regex(request.email_content)
+                app_record.extraction_method = "regex"
         
         # Validate extraction
         required = ['units', 'address', 'city', 'state', 'zip_code',
