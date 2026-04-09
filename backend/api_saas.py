@@ -492,7 +492,7 @@ async def process_from_email(
         app_record.ltv_ratio = loan_app.ltv_ratio
         app_record.extraction_confidence = 0.85
         app_record.programs_results = [{
-            "name": p.name,
+            "program_name": p.program_name,
             "status": p.status,
             "max_loan": p.max_loan_amount,
             "dscr": p.dscr,
