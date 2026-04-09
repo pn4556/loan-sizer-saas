@@ -277,7 +277,7 @@ class SizerProcessor:
             state_status != "Fail"):
             
             programs.append(ProgramResult(
-                name="Insurance Program",
+                program_name="Insurance Program",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -293,7 +293,7 @@ class SizerProcessor:
                 fail_reasons.append("State not eligible")
             
             programs.append(ProgramResult(
-                name="Insurance Program",
+                program_name="Insurance Program",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
@@ -304,7 +304,7 @@ class SizerProcessor:
         # Criteria: LTV <= 75%, Credit >= 680
         if application.ltv_ratio <= 75 and application.credit_score_middle >= 680:
             programs.append(ProgramResult(
-                name="Short Term Sale",
+                program_name="Short Term Sale",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -312,7 +312,7 @@ class SizerProcessor:
             ))
         else:
             programs.append(ProgramResult(
-                name="Short Term Sale",
+                program_name="Short Term Sale",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
@@ -323,7 +323,7 @@ class SizerProcessor:
         # Criteria: LTV <= 70%, Credit >= 720
         if application.ltv_ratio <= 70 and application.credit_score_middle >= 720:
             programs.append(ProgramResult(
-                name="Deephaven",
+                program_name="Deephaven",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -331,7 +331,7 @@ class SizerProcessor:
             ))
         else:
             programs.append(ProgramResult(
-                name="Deephaven",
+                program_name="Deephaven",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
