@@ -81,7 +81,9 @@ REQUIRED_FIELDS = [
     'purchase_price',
     'loan_amount',
     'note_type',
-    'credit_score'
+    'credit_score_1',
+    'credit_score_2',
+    'credit_score_3'
 ]
 
 # State abbreviations (for validation)
