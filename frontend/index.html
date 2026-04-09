@@ -1145,9 +1145,14 @@
                 
                 <div class="divider">or</div>
                 
-                <button class="btn btn-secondary" onclick="enableDemoMode()" style="background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: white; border: none; font-size: 1.1rem; padding: 1rem;">
+                <button class="btn btn-secondary" onclick="enableDemoMode(); return false;" style="background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: white; border: none; font-size: 1.1rem; padding: 1rem; cursor: pointer; width: 100%; margin-bottom: 1rem;">
                     <span>⚡</span> CLICK HERE - Try Demo Mode (No Login Required)
                 </button>
+                
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+                    Having issues? Try the backup URL:<br>
+                    <a href="https://pn4556.github.io/loan-sizer-saas" style="color: var(--primary);">pn4556.github.io/loan-sizer-saas</a>
+                </div>
                 
                 <div class="signup-link">
                     Don't have an account? <a href="#" onclick="showToast('Coming Soon', 'Self-registration will be available soon', 'info'); return false;">Contact sales</a>
@@ -1522,14 +1527,21 @@
         
         // Demo Mode - Works without backend auth
         function enableDemoMode() {
-            currentUser = {
-                username: 'Demo User',
-                email: 'demo@complaicore.com',
-                role: 'loan_officer'
-            };
-            authToken = 'demo-token';
-            showToast('Demo Mode Activated', 'Welcome! You can explore all features.', 'success');
-            showDashboard();
+            console.log('Demo mode activated');
+            try {
+                currentUser = {
+                    username: 'Demo User',
+                    email: 'demo@complaicore.com',
+                    role: 'loan_officer'
+                };
+                authToken = 'demo-token';
+                showToast('Demo Mode Activated', 'Welcome! You can explore all features.', 'success');
+                showDashboard();
+            } catch (e) {
+                console.error('Demo mode error:', e);
+                alert('Demo mode activated! Click OK to continue.');
+                showDashboard();
+            }
         }
         
         // Dashboard Functions
