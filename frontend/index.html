@@ -1145,7 +1145,7 @@
                 
                 <div class="divider">or</div>
                 
-                <button class="btn btn-secondary" onclick="showToast('Demo mode activated', 'Using demo credentials: demo / demo123', 'info')">
+                <button class="btn btn-secondary" onclick="enableDemoMode()">
                     <span>⚡</span> Try Demo Mode
                 </button>
                 
@@ -1426,7 +1426,7 @@
         // Configuration
         const API_BASE = window.location.hostname === 'localhost' 
             ? 'http://localhost:5050' 
-            : 'https://loan-sizer-api.onrender.com';
+            : 'https://loan-sizer-saas.onrender.com';
         
         // State
         let currentUser = null;
@@ -1452,10 +1452,10 @@
             btn.innerHTML = '<span class="spinner"></span> Signing in...';
             
             try {
-                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ email: username, password })
                 });
                 
                 const data = await response.json();
@@ -1479,7 +1479,7 @@
         
         async function validateToken() {
             try {
-                const response = await fetch(`${API_BASE}/api/auth/me`, {
+                const response = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 
@@ -1516,6 +1516,18 @@
             document.getElementById('dashboard').classList.remove('active');
             document.getElementById('loginScreen').style.display = 'flex';
             showToast('Signed out', 'You have been logged out successfully', 'info');
+        }
+        
+        // Demo Mode - Works without backend auth
+        function enableDemoMode() {
+            currentUser = {
+                username: 'Demo User',
+                email: 'demo@complaicore.com',
+                role: 'loan_officer'
+            };
+            authToken = 'demo-token';
+            showToast('Demo Mode Activated', 'Welcome! You can explore all features.', 'success');
+            showDashboard();
         }
         
         // Dashboard Functions
