@@ -8,6 +8,25 @@
     <meta http-equiv="Expires" content="-1">
     <meta name="version" content="2.0.1">
     <title>LoanSizer Pro | ComplAiCore</title>
+    
+    <!-- Cache buster for Chrome -->
+    <script>
+        (function() {
+            // Force cache bust on Chrome
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                const meta = document.querySelector('meta[name="version"]');
+                const version = meta ? meta.content : '1.0';
+                const lastVersion = localStorage.getItem('app_version');
+                if (lastVersion !== version) {
+                    localStorage.setItem('app_version', version);
+                    if (lastVersion) {
+                        // Force reload once to get fresh content
+                        window.location.reload(true);
+                    }
+                }
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
