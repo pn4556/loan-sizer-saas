@@ -987,6 +987,29 @@
             color: var(--danger);
         }
         
+        .program-status.conditional {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .decision-badge.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         /* Toast Notifications */
         .toast-container {
             position: fixed;
@@ -1632,17 +1655,151 @@
             }
         }
         
+        // Extract data from file content
+        function extractLoanData(text) {
+            const data = {};
+            
+            // Property details
+            const addressMatch = text.match(/Property Address:\s*([^\n]+)/i);
+            data.address = addressMatch ? addressMatch[1].trim() : 'N/A';
+            
+            const cityMatch = text.match(/City:\s*([^\n]+)/i);
+            data.city = cityMatch ? cityMatch[1].trim() : 'N/A';
+            
+            const stateMatch = text.match(/State:\s*([^\n]+)/i);
+            data.state = stateMatch ? stateMatch[1].trim() : 'N/A';
+            
+            const zipMatch = text.match(/ZIP Code:\s*(\d+)/i);
+            data.zip = zipMatch ? zipMatch[1] : '00000';
+            
+            const unitsMatch = text.match(/Units:\s*(\d+)/i);
+            data.units = unitsMatch ? parseInt(unitsMatch[1]) : 1;
+            
+            // Financial
+            const valueMatch = text.match(/Estimated (?:Value|ARV).*?[:\$]\s*([\d,]+)/i);
+            data.estimatedValue = valueMatch ? parseInt(valueMatch[1].replace(/,/g, '')) : 500000;
+            
+            const priceMatch = text.match(/Purchase Price.*?[:\$]\s*([\d,]+)/i);
+            data.purchasePrice = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : data.estimatedValue;
+            
+            const loanMatch = text.match(/Loan Amount.*?[:\$]\s*([\d,]+)/i);
+            data.loanAmount = loanMatch ? parseInt(loanMatch[1].replace(/,/g, '')) : Math.round(data.estimatedValue * 0.75);
+            
+            // Credit scores
+            const scoreMatches = text.matchAll(/Credit Score \d+[:\s]+(\d+)/gi);
+            const scores = [];
+            for (const match of scoreMatches) {
+                scores.push(parseInt(match[1]));
+            }
+            if (scores.length >= 3) {
+                scores.sort((a, b) => a - b);
+                data.middleCredit = scores[1];
+                data.creditScore1 = scores[0];
+                data.creditScore2 = scores[1];
+                data.creditScore3 = scores[2];
+            } else {
+                data.middleCredit = scores[0] || 700;
+                data.creditScore1 = scores[0] || 700;
+                data.creditScore2 = scores[1] || 705;
+                data.creditScore3 = scores[2] || 710;
+            }
+            
+            // Income & DSCR
+            const rentalMatch = text.match(/Monthly Rental Income.*?[:\$]\s*([\d,]+)/i);
+            data.monthlyRent = rentalMatch ? parseInt(rentalMatch[1].replace(/,/g, '')) : 0;
+            
+            const dscrMatch = text.match(/DSCR[:\s]+(\d+\.?\d*)/i);
+            data.dscr = dscrMatch ? parseFloat(dscrMatch[1]) : 0;
+            
+            // Borrower
+            const borrowerMatch = text.match(/Borrower Name:\s*([^\n]+)/i);
+            data.borrowerName = borrowerMatch ? borrowerMatch[1].trim() : 'Unknown';
+            
+            // Loan type indicators
+            data.isFixFlip = text.toLowerCase().includes('fix & flip') || text.toLowerCase().includes('fix and flip');
+            data.isConstruction = text.toLowerCase().includes('construction') || text.toLowerCase().includes('ground-up');
+            data.isBridge = text.toLowerCase().includes('bridge');
+            data.isMixedUse = text.toLowerCase().includes('mixed-use') || text.toLowerCase().includes('mixed use');
+            
+            return data;
+        }
+        
+        // Evaluate programs based on extracted data
+        function evaluatePrograms(data) {
+            const programs = [];
+            const ltv = (data.loanAmount / data.estimatedValue) * 100;
+            const credit = data.middleCredit;
+            
+            // DSCR 1-4 Unit
+            if (data.units <= 4 && credit >= 680 && ltv <= 80) {
+                programs.push({ name: 'DSCR 1-4 Unit', status: 'pass', reason: 'Qualified' });
+            } else if (data.units <= 4) {
+                programs.push({ name: 'DSCR 1-4 Unit', status: data.units <= 4 && credit >= 640 ? 'conditional' : 'fail', 
+                    reason: data.units > 4 ? 'Too many units' : credit < 640 ? 'Credit score too low' : 'LTV too high' });
+            }
+            
+            // DSCR 5-9 Unit
+            if (data.units >= 5 && data.units <= 9 && credit >= 700 && ltv <= 75) {
+                programs.push({ name: 'DSCR 5-9 Unit', status: 'pass', reason: 'Qualified' });
+            } else if (data.units >= 5) {
+                programs.push({ name: 'DSCR 5-9 Unit', status: credit >= 680 ? 'conditional' : 'fail', 
+                    reason: data.units > 9 ? 'Too many units' : credit < 680 ? 'Credit score too low' : 'LTV too high' });
+            }
+            
+            // Mixed Use DSCR
+            if (data.isMixedUse && credit >= 680 && ltv <= 75) {
+                programs.push({ name: 'Mixed Use DSCR', status: 'pass', reason: 'Qualified' });
+            } else if (data.isMixedUse) {
+                programs.push({ name: 'Mixed Use DSCR', status: credit >= 640 ? 'conditional' : 'fail', reason: 'Does not meet criteria' });
+            }
+            
+            // Bridge Loan
+            if (credit >= 650 && ltv <= 85) {
+                programs.push({ name: 'Bridge Loan', status: 'pass', reason: 'Qualified' });
+            } else {
+                programs.push({ name: 'Bridge Loan', status: 'conditional', reason: 'Review required' });
+            }
+            
+            // Fix & Flip
+            if (data.isFixFlip && credit >= 640 && ltv <= 90) {
+                programs.push({ name: 'Fix & Flip', status: 'pass', reason: 'Qualified for flip financing' });
+            } else if (data.isFixFlip) {
+                programs.push({ name: 'Fix & Flip', status: 'conditional', reason: 'Experience review needed' });
+            } else {
+                programs.push({ name: 'Fix & Flip', status: 'fail', reason: 'Not a flip project' });
+            }
+            
+            // Construction
+            if (data.isConstruction && credit >= 700 && ltv <= 75) {
+                programs.push({ name: 'Ground Up Construction', status: 'pass', reason: 'Qualified for construction' });
+            } else if (data.isConstruction) {
+                programs.push({ name: 'Ground Up Construction', status: 'conditional', reason: 'Additional docs needed' });
+            } else {
+                programs.push({ name: 'Ground Up Construction', status: 'fail', reason: 'Not a construction project' });
+            }
+            
+            return programs;
+        }
+        
         // Processing
         async function processApplication() {
             const modal = document.getElementById('processingModal');
             const progressFill = document.getElementById('progressFill');
             modal.classList.add('active');
             
+            // Read file content
+            let fileContent = '';
+            try {
+                fileContent = await currentFile.text();
+            } catch (e) {
+                console.error('Error reading file:', e);
+            }
+            
             // Simulate progress
             const steps = [
-                { id: 'step1', progress: 33, delay: 800 },
-                { id: 'step2', progress: 66, delay: 1600 },
-                { id: 'step3', progress: 100, delay: 2400 }
+                { id: 'step1', progress: 33, delay: 800, label: 'Extracting data...' },
+                { id: 'step2', progress: 66, delay: 1600, label: 'Analyzing...' },
+                { id: 'step3', progress: 100, delay: 2400, label: 'Evaluating programs...' }
             ];
             
             for (const step of steps) {
@@ -1659,40 +1816,68 @@
             await new Promise(r => setTimeout(r, 500));
             modal.classList.remove('active');
             
-            // Show results
-            showResults();
+            // Show results with extracted data
+            showResults(fileContent);
         }
         
-        function showResults() {
+        function showResults(fileContent) {
             const resultsSection = document.getElementById('resultsSection');
             const resultsGrid = document.getElementById('resultsGrid');
             const programsList = document.getElementById('programsList');
             
-            // Mock results
+            // Extract data from file
+            const data = extractLoanData(fileContent);
+            const programs = evaluatePrograms(data);
+            
+            // Calculate derived values
+            const ltv = ((data.loanAmount / data.estimatedValue) * 100).toFixed(1);
+            const dscr = data.dscr || (data.monthlyRent * 12 / (data.loanAmount * 0.08)).toFixed(2);
+            
+            // Determine overall decision
+            const passCount = programs.filter(p => p.status === 'pass').length;
+            const overallDecision = passCount >= 2 ? 'approve' : passCount >= 1 ? 'conditional' : 'reject';
+            
+            // Format currency
+            const formatCurrency = (num) => '$' + num.toLocaleString();
+            
             const results = {
                 appId: 'APP-' + Date.now().toString().slice(-6),
-                decision: 'approve',
-                propertyValue: '$520,000',
-                loanAmount: '$416,000',
-                ltv: '80%',
-                dscr: '1.35',
-                programs: [
-                    { name: 'DSCR 1-4 Unit', status: 'pass' },
-                    { name: 'DSCR 5-9 Unit', status: 'pass' },
-                    { name: 'Bridge Loan', status: 'pass' },
-                    { name: 'Fix & Flip', status: 'fail' },
-                    { name: 'Ground Up Construction', status: 'fail' },
-                    { name: 'Mixed Use DSCR', status: 'pass' }
-                ]
+                borrower: data.borrowerName,
+                address: `${data.address}, ${data.city}, ${data.state} ${data.zip}`,
+                units: data.units,
+                decision: overallDecision,
+                propertyValue: formatCurrency(data.estimatedValue),
+                loanAmount: formatCurrency(data.loanAmount),
+                ltv: ltv + '%',
+                dscr: dscr,
+                creditScore: data.middleCredit,
+                programs: programs
             };
             
             document.getElementById('appId').textContent = results.appId;
             document.getElementById('decisionBadge').textContent = 
-                results.decision === 'approve' ? '✅ APPROVED' : '❌ REJECTED';
+                results.decision === 'approve' ? '✅ APPROVED' : 
+                results.decision === 'conditional' ? '⚠️ CONDITIONAL' : '❌ REJECTED';
             document.getElementById('decisionBadge').className = 
-                'decision-badge ' + results.decision;
+                'decision-badge ' + (results.decision === 'conditional' ? 'warning' : results.decision);
             
             resultsGrid.innerHTML = `
+                <div class="result-card">
+                    <h4>Borrower</h4>
+                    <div class="value" style="font-size: 1.1rem;">${results.borrower}</div>
+                </div>
+                <div class="result-card">
+                    <h4>Property</h4>
+                    <div class="value" style="font-size: 0.9rem;">${results.address}</div>
+                </div>
+                <div class="result-card">
+                    <h4>Units</h4>
+                    <div class="value">${results.units}</div>
+                </div>
+                <div class="result-card">
+                    <h4>Credit Score</h4>
+                    <div class="value">${results.creditScore}</div>
+                </div>
                 <div class="result-card">
                     <h4>Property Value</h4>
                     <div class="value">${results.propertyValue}</div>
@@ -1714,7 +1899,7 @@
             programsList.innerHTML = results.programs.map(p => `
                 <div class="program-item">
                     <span class="program-name">${p.name}</span>
-                    <span class="program-status ${p.status}">${p.status.toUpperCase()}</span>
+                    <span class="program-status ${p.status}">${p.status === 'conditional' ? '⚠️ ' : ''}${p.status.toUpperCase()}</span>
                 </div>
             `).join('');
             
