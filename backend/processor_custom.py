@@ -99,14 +99,11 @@ class LoanApplication:
 @dataclass
 class ProgramResult:
     """Result from a single program evaluation"""
-    name: str
+    program_name: str
     status: str  # "PASS", "FAIL", or "REVIEW"
-    max_loan_amount: Optional[float]
-    interest_rate: Optional[float]
-    dscr: Optional[float] = None
-    ltv_max: Optional[float] = None
+    decision: str  # "APPROVE", "DECLINE", "CONDITIONAL"
+    interest_rate: float = 0.0
     reason: Optional[str] = None
-    details: Optional[Dict] = None
 
 
 @dataclass
@@ -280,7 +277,7 @@ class SizerProcessor:
             state_status != "Fail"):
             
             programs.append(ProgramResult(
-                program_name="Insurance Program",
+                name="Insurance Program",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -296,7 +293,7 @@ class SizerProcessor:
                 fail_reasons.append("State not eligible")
             
             programs.append(ProgramResult(
-                program_name="Insurance Program",
+                name="Insurance Program",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
@@ -307,7 +304,7 @@ class SizerProcessor:
         # Criteria: LTV <= 75%, Credit >= 680
         if application.ltv_ratio <= 75 and application.credit_score_middle >= 680:
             programs.append(ProgramResult(
-                program_name="Short Term Sale",
+                name="Short Term Sale",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -315,7 +312,7 @@ class SizerProcessor:
             ))
         else:
             programs.append(ProgramResult(
-                program_name="Short Term Sale",
+                name="Short Term Sale",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
@@ -326,7 +323,7 @@ class SizerProcessor:
         # Criteria: LTV <= 70%, Credit >= 720
         if application.ltv_ratio <= 70 and application.credit_score_middle >= 720:
             programs.append(ProgramResult(
-                program_name="Deephaven",
+                name="Deephaven",
                 status="PASS",
                 decision="APPROVE",
                 interest_rate=7.5,
@@ -334,7 +331,7 @@ class SizerProcessor:
             ))
         else:
             programs.append(ProgramResult(
-                program_name="Deephaven",
+                name="Deephaven",
                 status="FAIL",
                 decision="DECLINE",
                 interest_rate=0.0,
