@@ -282,6 +282,8 @@ class SizerProcessor:
                 program_name="Insurance Program",
                 status="PASS",
                 decision="APPROVE",
+                max_loan_amount=application.estimated_value * 0.80,
+                dscr=final_dscr if final_dscr else 1.20,
                 interest_rate=7.5,
                 reason="Meets all requirements"
             ))
@@ -309,6 +311,8 @@ class SizerProcessor:
                 program_name="Short Term Sale",
                 status="PASS",
                 decision="APPROVE",
+                max_loan_amount=application.estimated_value * 0.75,
+                dscr=final_dscr if final_dscr else 1.25,
                 interest_rate=7.5,
                 reason="Meets Short Term Sale requirements"
             ))
@@ -328,6 +332,8 @@ class SizerProcessor:
                 program_name="Deephaven",
                 status="PASS",
                 decision="APPROVE",
+                max_loan_amount=application.estimated_value * 0.70,
+                dscr=final_dscr if final_dscr else 1.30,
                 interest_rate=7.5,
                 reason="Meets Deephaven requirements"
             ))
