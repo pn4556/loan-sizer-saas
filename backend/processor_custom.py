@@ -102,6 +102,8 @@ class ProgramResult:
     program_name: str
     status: str  # "PASS", "FAIL", or "REVIEW"
     decision: str  # "APPROVE", "DECLINE", "CONDITIONAL"
+    max_loan_amount: Optional[float] = None
+    dscr: Optional[float] = None
     interest_rate: float = 0.0
     reason: Optional[str] = None
 
