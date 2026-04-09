@@ -280,12 +280,10 @@ class SizerProcessor:
             state_status != "Fail"):
             
             programs.append(ProgramResult(
-                name="Insurance Program",
+                program_name="Insurance Program",
                 status="PASS",
-                max_loan_amount=application.estimated_value * 0.80,
-                interest_rate=None,  # Would read from sheet
-                dscr=final_dscr if final_dscr else 1.20,
-                ltv_max=80.0,
+                decision="APPROVE",
+                interest_rate=7.5,
                 reason="Meets all requirements"
             ))
         else:
@@ -298,10 +296,10 @@ class SizerProcessor:
                 fail_reasons.append("State not eligible")
             
             programs.append(ProgramResult(
-                name="Insurance Program",
+                program_name="Insurance Program",
                 status="FAIL",
-                max_loan_amount=None,
-                interest_rate=None,
+                decision="DECLINE",
+                interest_rate=0.0,
                 reason="; ".join(fail_reasons) if fail_reasons else "Does not meet requirements"
             ))
         
@@ -309,18 +307,18 @@ class SizerProcessor:
         # Criteria: LTV <= 75%, Credit >= 680
         if application.ltv_ratio <= 75 and application.credit_score_middle >= 680:
             programs.append(ProgramResult(
-                name="Short Term Sale",
+                program_name="Short Term Sale",
                 status="PASS",
-                max_loan_amount=application.estimated_value * 0.75,
-                interest_rate=None,
-                dscr=final_dscr if final_dscr else 1.25,
-                ltv_max=75.0
+                decision="APPROVE",
+                interest_rate=7.5,
+                reason="Meets Short Term Sale requirements"
             ))
         else:
             programs.append(ProgramResult(
-                name="Short Term Sale",
+                program_name="Short Term Sale",
                 status="FAIL",
-                max_loan_amount=None,
+                decision="DECLINE",
+                interest_rate=0.0,
                 reason="LTV or credit below requirements"
             ))
         
@@ -328,18 +326,18 @@ class SizerProcessor:
         # Criteria: LTV <= 70%, Credit >= 720
         if application.ltv_ratio <= 70 and application.credit_score_middle >= 720:
             programs.append(ProgramResult(
-                name="Deephaven",
+                program_name="Deephaven",
                 status="PASS",
-                max_loan_amount=application.estimated_value * 0.70,
-                interest_rate=None,
-                dscr=final_dscr if final_dscr else 1.30,
-                ltv_max=70.0
+                decision="APPROVE",
+                interest_rate=7.5,
+                reason="Meets Deephaven requirements"
             ))
         else:
             programs.append(ProgramResult(
-                name="Deephaven",
+                program_name="Deephaven",
                 status="FAIL",
-                max_loan_amount=None,
+                decision="DECLINE",
+                interest_rate=0.0,
                 reason="LTV or credit below requirements"
             ))
         
