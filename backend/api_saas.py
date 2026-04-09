@@ -390,7 +390,9 @@ class ProcessFromEmailRequest(BaseModel):
     email_content: str
     interest_rate: float
     applicant_email: str
+    applicant_name: Optional[str] = None
     template_id: Optional[int] = None
+    extracted_data: Optional[dict] = None  # Allow frontend to provide parsed data
 
 @app.post("/applications/process/email")
 async def process_from_email(
