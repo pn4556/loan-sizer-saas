@@ -28,11 +28,20 @@ jobs:
       
       - name: Verify frontend content
         run: |
+          echo "Current directory:"
+          pwd
+          echo ""
+          echo "All files:"
+          ls -la
+          echo ""
           echo "Frontend directory contents:"
           ls -la frontend/
           echo ""
           echo "index.html size:"
           wc -c frontend/index.html
+          echo ""
+          echo "First 500 chars of index.html:"
+          head -c 500 frontend/index.html
           echo ""
           echo "Version check:"
           grep -o 'version.*content.*2\.0\.[0-9]' frontend/index.html || echo "No version meta tag found"
