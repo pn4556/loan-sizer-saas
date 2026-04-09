@@ -46,7 +46,7 @@
             color: #374151;
             font-weight: 600;
         }
-        input[type="email"], textarea, select {
+        input[type="email"], textarea, select, input[type="text"], input[type="number"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
@@ -78,6 +78,17 @@
         }
         .btn:hover { background: #2563eb; transform: translateY(-2px); }
         .btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+        .btn.secondary {
+            background: #6b7280;
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+        .btn.secondary:hover { background: #4b5563; }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
         .spinner {
             width: 20px;
             height: 20px;
@@ -95,168 +106,136 @@
         }
         .result.success { background: #d1fae5; border: 2px solid #10b981; display: block; }
         .result.error { background: #fee2e2; border: 2px solid #ef4444; display: block; }
+        .result.review { background: #fef3c7; border: 2px solid #f59e0b; display: block; }
         .decision-box {
             padding: 30px;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 20px;
         }
-        .decision-box.approve { background: #d1fae5; border: 3px solid #10b981; }
-        .decision-box.decline { background: #fee2e2; border: 3px solid #ef4444; }
-        .decision-icon { font-size: 48px; margin-bottom: 10px; }
-        .decision-text { font-size: 32px; font-weight: 800; text-transform: uppercase; }
-        .decision-box.approve .decision-text { color: #10b981; }
-        .decision-box.decline .decision-text { color: #ef4444; }
+        .decision-box.approve {
+            background: #10b981;
+            color: white;
+        }
+        .decision-box.decline {
+            background: #ef4444;
+            color: white;
+        }
+        .decision-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .decision-text {
+            font-size: 2em;
+            font-weight: bold;
+        }
         .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            margin: 20px 0;
+            margin-top: 20px;
         }
         .detail-item {
             background: white;
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #e5e7eb;
         }
-        .detail-label { color: #6b7280; font-size: 0.9em; margin-bottom: 5px; }
-        .detail-value { color: #111827; font-weight: 600; font-size: 1.1em; }
+        .detail-label {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1f2937;
+        }
         .error-list {
             background: white;
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
+            border-left: 4px solid #ef4444;
         }
-        .error-list h3 { color: #dc2626; margin-bottom: 15px; }
-        .error-list ul { list-style: none; }
+        .error-list h3 {
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+        .error-list ul {
+            list-style: none;
+            padding: 0;
+        }
         .error-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #fee2e2;
-            color: #7f1d1d;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
         }
-        .error-list li:before { content: "✗"; color: #ef4444; font-weight: bold; }
-        .preset-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+        .error-list li:before {
+            content: "•";
+            color: #ef4444;
+            font-weight: bold;
+            margin-right: 10px;
         }
-        .preset-btn {
+        pre {
             background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
             font-size: 0.9em;
         }
-        .preset-btn:hover { background: #e5e7eb; }
-        .info-box {
-            background: #dbeafe;
-            border-left: 4px solid #3b82f6;
-            padding: 20px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 20px;
-        }
-        .info-box h3 { color: #1e40af; margin-bottom: 10px; }
-        .info-box p { color: #1e3a8a; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🏠 Loan Email Processor</h1>
-            <p>Process loan applications instantly - No email setup required!</p>
+            <p>AI-powered loan application processing for ComplAiCore</p>
         </div>
 
         <div class="card">
-            <div class="info-box">
-                <h3>💡 How It Works</h3>
-                <p>While we wait for DNS propagation, use this form to test the loan processing workflow. 
-                Paste any email content with loan details and get instant PASS/FAIL analysis with a completed Excel file.</p>
+            <h2>📝 Paste Loan Application Email</h2>
+            <div class="btn-group">
+                <button class="btn secondary" onclick="loadExample('approve')">Load APPROVE Example</button>
+                <button class="btn secondary" onclick="loadExample('decline')">Load DECLINE Example</button>
+                <button class="btn secondary" onclick="clearForm()">Clear</button>
             </div>
-
-            <h2>📧 Paste Email Content</h2>
-            
-            <div class="preset-buttons">
-                <button class="preset-btn" onclick="loadExample('approve')">Load APPROVE Example</button>
-                <button class="preset-btn" onclick="loadExample('decline')">Load DECLINE Example</button>
-                <button class="preset-btn" onclick="clearForm()">Clear</button>
-            </div>
-
             <form id="processorForm">
                 <div class="form-group">
-                    <label for="fromEmail">From Email</label>
-                    <input type="email" id="fromEmail" placeholder="prospect@email.com" value="prospect@email.com">
+                    <label>From Email</label>
+                    <input type="email" id="fromEmail" placeholder="prospect@email.com" value="prospect@email.com" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <input type="text" id="subject" placeholder="Loan Application - 123 Main St" value="Loan Application - 123 Main St">
+                    <label>Subject</label>
+                    <input type="text" id="subject" placeholder="Loan Application - Property Address">
                 </div>
-
                 <div class="form-group">
-                    <label for="emailBody">Email Body (Loan Details)</label>
-                    <textarea id="emailBody" placeholder="Paste email content here..."></textarea>
+                    <label>Email Content</label>
+                    <textarea id="emailBody" placeholder="Paste the loan application email here..." required></textarea>
                 </div>
-
                 <div class="form-group">
-                    <label for="interestRate">Interest Rate (%)</label>
-                    <input type="number" id="interestRate" value="7.5" step="0.1">
+                    <label>Interest Rate (%)</label>
+                    <input type="number" id="interestRate" step="0.01" value="7.5" required>
                 </div>
-
                 <button type="submit" class="btn" id="submitBtn">
                     <span>🚀 Process Loan Application</span>
                 </button>
             </form>
-
             <div id="result" class="result"></div>
         </div>
 
         <div class="card">
-            <h2>📊 Supported Data Fields</h2>
-            <p style="color: #6b7280; margin-bottom: 15px;">Our AI automatically extracts these fields from your email:</p>
-            <div class="details-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Purchase Price</div>
-                    <div class="detail-value">$500,000</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Loan Amount</div>
-                    <div class="detail-value">$400,000</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Property Address</div>
-                    <div class="detail-value">123 Main St</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Credit Score</div>
-                    <div class="detail-value">720</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Units</div>
-                    <div class="detail-value">1</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">LTV / DSCR</div>
-                    <div class="detail-value">80% / 1.25</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>🔗 API Integration</h2>
-            <p style="color: #6b7280; margin-bottom: 15px;">Once DNS propagates, you can use the webhook directly:</p>
-            <div style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 0.9em; overflow-x: auto;">
-POST https://loan-sizer-saas.onrender.com/email/webhook/sendgrid<br>
-Content-Type: multipart/form-data<br><br>
-to: loans+complaicore-test@complaicore.com<br>
-from: prospect@email.com<br>
-subject: Loan App<br>
-text: [email body]
-            </div>
+            <h2>📊 Expected Format</h2>
+            <p style="color: #6b7280; margin-bottom: 15px;">Paste emails with these fields (order doesn't matter):</p>
+            <pre style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+Purchase Price: 500000
+Loan Amount: 400000
+Address: 123 Main St
+City: Los Angeles
+State: CA
+Zip: 90210
+Units: 1
+Credit Score: 720</pre>
         </div>
     </div>
 
@@ -264,40 +243,93 @@ text: [email body]
         const API_BASE = 'https://loan-sizer-saas.onrender.com';
 
         const examples = {
-            approve: `Purchase Price: $500,000
-Loan Amount: $400,000
-Property Type: Single Family
+            approve: `Purchase Price: 500000
+Loan Amount: 400000
 Address: 123 Main St
 City: Los Angeles
 State: CA
-Zip Code: 90210
+Zip: 90210
 Units: 1
-Credit Score: 720, 720, 720
-LTV: 80%
-DSCR: 1.25`,
-            decline: `Purchase Price: $300,000
-Loan Amount: $280,000
-Property Type: Multifamily
+Credit Score: 720`,
+            decline: `Purchase Price: 500000
+Loan Amount: 400000
 Address: 456 Oak Ave
-City: Phoenix
-State: AZ
-Zip Code: 85001
-Units: 4
-Credit Score: 580, 580, 580
-LTV: 93%
-DSCR: 0.85`
+City: Miami
+State: FL
+Zip: 33101
+Units: 1
+Credit Score: 580`
         };
 
         function loadExample(type) {
             document.getElementById('emailBody').value = examples[type];
-            if (type === 'decline') {
-                document.getElementById('subject').value = 'Loan Application - 456 Oak Ave';
-            }
+            document.getElementById('subject').value = type === 'decline' 
+                ? 'Loan Application - 456 Oak Ave' 
+                : 'Loan Application - 123 Main St';
         }
 
         function clearForm() {
             document.getElementById('emailBody').value = '';
             document.getElementById('subject').value = '';
+            document.getElementById('fromEmail').value = 'prospect@email.com';
+        }
+
+        // Client-side field extraction
+        function parseFields(text) {
+            const data = {};
+            
+            // Purchase Price
+            const priceMatch = text.match(/purchase[_\s]?price[:\s]+\$?([\d,]+)/i);
+            if (priceMatch) data.purchase_price = parseFloat(priceMatch[1].replace(/,/g, ''));
+            
+            // Loan Amount
+            const loanMatch = text.match(/loan[_\s]?amount[:\s]+\$?([\d,]+)/i);
+            if (loanMatch) data.loan_amount = parseFloat(loanMatch[1].replace(/,/g, ''));
+            
+            // Address
+            const addrMatch = text.match(/address[:\s]+([^\n]+)/i);
+            if (addrMatch) data.address = addrMatch[1].trim();
+            
+            // City
+            const cityMatch = text.match(/city[:\s]+([^\n,]+)/i);
+            if (cityMatch) data.city = cityMatch[1].trim();
+            
+            // State
+            const stateMatch = text.match(/state[:\s]+([a-z]{2})/i);
+            if (stateMatch) data.state = stateMatch[1].toUpperCase();
+            
+            // Zip
+            const zipMatch = text.match(/zip[:\s]+(\d{5})/i);
+            if (zipMatch) data.zip_code = zipMatch[1];
+            
+            // Units
+            const unitsMatch = text.match(/units?[:\s]+(\d+)/i);
+            if (unitsMatch) data.units = parseInt(unitsMatch[1]);
+            
+            // Credit Score - handle single or multiple
+            const threeScores = text.match(/credit[_\s]?scores?[:\s]+(\d{3})[\s,]+(\d{3})[\s,]+(\d{3})/i);
+            if (threeScores) {
+                data.credit_score_1 = parseInt(threeScores[1]);
+                data.credit_score_2 = parseInt(threeScores[2]);
+                data.credit_score_3 = parseInt(threeScores[3]);
+            } else {
+                const singleScore = text.match(/credit[_\s]?scores?[:\s]+(\d{3})/i);
+                if (singleScore) {
+                    const score = parseInt(singleScore[1]);
+                    data.credit_score_1 = score;
+                    data.credit_score_2 = score;
+                    data.credit_score_3 = score;
+                }
+            }
+            
+            // Defaults
+            data.property_type = 'Multifamily';
+            data.asset_class = 'C';
+            if (!data.estimated_value && data.purchase_price) {
+                data.estimated_value = data.purchase_price;
+            }
+            
+            return data;
         }
 
         document.getElementById('processorForm').addEventListener('submit', async (e) => {
@@ -305,6 +337,7 @@ DSCR: 0.85`
             
             const btn = document.getElementById('submitBtn');
             const resultDiv = document.getElementById('result');
+            const emailBody = document.getElementById('emailBody').value;
             
             btn.disabled = true;
             btn.innerHTML = '<div class="spinner"></div> Processing...';
@@ -312,20 +345,51 @@ DSCR: 0.85`
             resultDiv.innerHTML = '';
 
             try {
+                // Parse fields client-side
+                const extractedData = parseFields(emailBody);
+                console.log('Extracted fields:', extractedData);
+
+                // Check if we have minimum required fields
+                const required = ['purchase_price', 'loan_amount', 'address', 'city', 'state', 'zip_code', 'units', 'credit_score_1'];
+                const missing = required.filter(f => !extractedData[f]);
+                
+                if (missing.length > 0) {
+                    resultDiv.className = 'result review';
+                    resultDiv.innerHTML = `
+                        <h3>⚠️ Missing Required Fields</h3>
+                        <p>Could not extract the following fields:</p>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            ${missing.map(f => `<li>${f.replace(/_/g, ' ').toUpperCase()}</li>`).join('')}
+                        </ul>
+                        <p style="margin-top: 15px; color: #666;">
+                            Make sure your email includes fields like:<br>
+                            Purchase Price: 500000<br>
+                            Loan Amount: 400000<br>
+                            Credit Score: 720
+                        </p>
+                    `;
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>🚀 Process Loan Application</span>';
+                    return;
+                }
+
                 // First login to get token
                 const loginRes = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        email: 'testbroker@complaicore.com',
+                        email: 'test1775682675@complaicore.com',
                         password: 'TestPass123!'
                     })
                 });
                 
-                if (!loginRes.ok) throw new Error('Login failed');
+                if (!loginRes.ok) {
+                    throw new Error('Login failed - creating new test user...');
+                }
+                
                 const { access_token } = await loginRes.json();
 
-                // Process the email
+                // Process the email with extracted data
                 const processRes = await fetch(`${API_BASE}/applications/process/email`, {
                     method: 'POST',
                     headers: {
@@ -333,16 +397,24 @@ DSCR: 0.85`
                         'Authorization': `Bearer ${access_token}`
                     },
                     body: JSON.stringify({
+                        email_content: emailBody,
+                        subject: document.getElementById('subject').value || 'Loan Application',
                         applicant_email: document.getElementById('fromEmail').value,
-                        email_content: document.getElementById('emailBody').value,
-                        interest_rate: parseFloat(document.getElementById('interestRate').value)
+                        interest_rate: parseFloat(document.getElementById('interestRate').value),
+                        extracted_data: extractedData
                     })
                 });
 
                 const data = await processRes.json();
+                
+                if (!processRes.ok) {
+                    throw new Error(data.detail || 'Processing failed');
+                }
+                
                 displayResult(data);
 
             } catch (error) {
+                console.error('Error:', error);
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
                     <h3>❌ Error</h3>
@@ -360,49 +432,70 @@ DSCR: 0.85`
         function displayResult(data) {
             const resultDiv = document.getElementById('result');
             
-            if (data.status === 'completed' || data.decision) {
-                const isApprove = data.decision === 'APPROVE' || data.overall_decision === 'APPROVE';
+            if (data.status === 'success' && data.decision) {
+                const isApprove = data.decision === 'PASS' || data.decision === 'APPROVE';
                 const decisionClass = isApprove ? 'approve' : 'decline';
                 const decisionIcon = isApprove ? '✓' : '✗';
-                const decisionText = isApprove ? 'APPROVE' : 'DECLINE';
+                const decisionText = isApprove ? 'PASS' : 'FAIL';
                 
-                let errorListHtml = '';
-                if (!isApprove && data.failure_reasons) {
-                    errorListHtml = `
-                        <div class="error-list">
-                            <h3>Why This Application Did Not Pass:</h3>
-                            <ul>
-                                ${data.failure_reasons.map(r => `<li>${r}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                }
-
+                const app = data.application || {};
+                
                 resultDiv.className = 'result success';
                 resultDiv.innerHTML = `
                     <div class="decision-box ${decisionClass}">
                         <div class="decision-icon">${decisionIcon}</div>
                         <div class="decision-text">${decisionText}</div>
                     </div>
-                    ${errorListHtml}
-                    <div style="margin-top: 20px;">
-                        <p><strong>Application ID:</strong> ${data.application_id}</p>
-                        <p><strong>Status:</strong> ${data.status}</p>
-                        ${data.message ? `<p><strong>Message:</strong> ${data.message}</p>` : ''}
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Property</div>
+                            <div class="detail-value">${app.address || 'N/A'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Loan Amount</div>
+                            <div class="detail-value">$${(app.loan_amount || 0).toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">LTV Ratio</div>
+                            <div class="detail-value">${(app.ltv_ratio || 0).toFixed(1)}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Credit Score</div>
+                            <div class="detail-value">${app.credit_score || 'N/A'}</div>
+                        </div>
                     </div>
+                    ${data.decision_reason ? `
+                        <div style="margin-top: 20px; padding: 15px; background: ${isApprove ? '#d1fae5' : '#fee2e2'}; border-radius: 8px;">
+                            <strong>${isApprove ? '✓' : '✗'} ${data.decision_reason}</strong>
+                        </div>
+                    ` : ''}
+                    ${!isApprove && data.programs ? `
+                        <div class="error-list" style="margin-top: 20px;">
+                            <h3>Program Results:</h3>
+                            <ul>
+                                ${data.programs.map(p => `<li>${p.name}: ${p.status}${p.reason ? ' - ' + p.reason : ''}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            } else if (data.status === 'review') {
+                resultDiv.className = 'result review';
+                resultDiv.innerHTML = `
+                    <h3>⏳ Application Needs Review</h3>
+                    <p>${data.message || 'Unable to fully process this application.'}</p>
+                    ${data.extracted_data ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Extracted Data:</strong>
+                            <pre>${JSON.stringify(data.extracted_data, null, 2)}</pre>
+                        </div>
+                    ` : ''}
                 `;
             } else {
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
                     <h3>⚠️ Processing Result</h3>
                     <p><strong>Status:</strong> ${data.status}</p>
-                    <p><strong>Message:</strong> ${data.message}</p>
-                    ${data.extracted_data ? `
-                        <div style="margin-top: 15px;">
-                            <strong>Extracted Data:</strong>
-                            <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 10px; overflow-x: auto;">${JSON.stringify(data.extracted_data, null, 2)}</pre>
-                        </div>
-                    ` : ''}
+                    ${data.message ? `<p><strong>Message:</strong> ${data.message}</p>` : ''}
                 `;
             }
         }
