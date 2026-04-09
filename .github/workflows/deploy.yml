@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -15,10 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,42 +23,47 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Verify frontend content
+      - name: Debug - List all files
         run: |
-          echo "Current directory:"
+          echo "=== Repository root ==="
           pwd
-          echo ""
-          echo "All files:"
           ls -la
           echo ""
-          echo "Frontend directory contents:"
+          echo "=== Frontend directory ==="
           ls -la frontend/
           echo ""
-          echo "index.html size:"
+          echo "=== index.html details ==="
           wc -c frontend/index.html
-          echo ""
-          echo "First 500 chars of index.html:"
-          head -c 500 frontend/index.html
-          echo ""
-          echo "Version check:"
-          grep -o 'version.*content.*2\.0\.[0-9]' frontend/index.html || echo "No version meta tag found"
+          head -20 frontend/index.html
       
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
-      - name: Copy CNAME to frontend
-        run: cp CNAME frontend/CNAME
-      
-      - name: Add cache buster
-        run: |
-          # Add timestamp to force cache invalidation
-          echo "<!-- Build: $(date -u +%Y%m%d%H%M%S) -->" >> frontend/index.html
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          path: './frontend'
+          node-version: '20'
+      
+      - name: Prepare deployment
+        run: |
+          # Create deployment directory
+          mkdir -p _site
+          
+          # Copy all frontend files
+          cp -r frontend/* _site/
+          
+          # Copy CNAME
+          cp CNAME _site/CNAME
+          
+          # Add cache buster
+          echo "<!-- Build: $(date -u +%Y%m%d%H%M%S) -->" >> _site/index.html
+          
+          echo "=== Deployment directory ==="
+          ls -la _site/
+          wc -c _site/index.html
       
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
+          commit_message: "🚀 Deploy to GitHub Pages"
