@@ -33,7 +33,7 @@ services:
     routes:
       - type: rewrite
         source: /
-        destination: /saas-dashboard.html
+        destination: /index.html
     envVars:
       - key: API_URL
         value: https://loan-sizer-api.onrender.com
