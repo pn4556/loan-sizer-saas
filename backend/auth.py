@@ -213,10 +213,11 @@ def get_tenant_context(current_user: User = Depends(get_current_user)) -> Tenant
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     """Authenticate user credentials"""
-    # Demo account - always works
-    if email == "demo@complaicore.com" and password == "demo123":
+    # Demo account - always works (accept both "demo" and full email)
+    demo_email = "demo@complaicore.com"
+    if email.lower() in ["demo", demo_email] and password == "demo123":
         # Check if demo user exists, create if not
-        user = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.email == demo_email).first()
         if not user:
             # Create demo client if needed
             from slugify import slugify
@@ -236,7 +237,7 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
             # Create demo user
             user = User(
                 client_id=client.id,
-                email=email,
+                email=demo_email,
                 first_name="Demo",
                 last_name="User",
                 role="admin"

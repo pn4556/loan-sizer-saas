@@ -76,7 +76,7 @@ Add a CNAME record in your Cloudflare dashboard for complaicore.com:
 - **GitHub Repo**: https://github.com/pn4556/loan-sizer-saas
 
 ### Demo Credentials:
-- Username: `demo`
+- Username: `demo` or `demo@complaicore.com`
 - Password: `demo123`
 
 ---

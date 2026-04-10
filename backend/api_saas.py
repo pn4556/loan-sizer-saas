@@ -75,6 +75,13 @@ async def startup_event():
     print(f"📍 Root path: /")
     print(f"📍 Health path: /health")
     print(f"📍 API docs: /docs")
+    
+    # Initialize database tables
+    try:
+        init_database()
+        print("✅ Database initialized")
+    except Exception as e:
+        print(f"⚠️ Database initialization warning: {e}")
 
 # ==================== ROOT ROUTE ====================
 
