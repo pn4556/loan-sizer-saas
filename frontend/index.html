@@ -6,37 +6,15 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">
-    <meta name="version" content="2.0.2">
-    <meta name="build-time" content="2026-04-09T20:35:00Z">
+    <meta name="version" content="2.1.0">
+    <meta name="build-time" content="2026-04-09T22:00:00Z">
     <title>LoanSizer Pro | ComplAiCore</title>
     
-    <!-- Cache buster for Chrome -->
-    <script>
-        (function() {
-            // Force cache bust on Chrome
-            if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                const meta = document.querySelector('meta[name="version"]');
-                const version = meta ? meta.content : '1.0';
-                const lastVersion = localStorage.getItem('app_version');
-                if (lastVersion !== version) {
-                    localStorage.setItem('app_version', version);
-                    if (lastVersion) {
-                        // Force reload once to get fresh content
-                        window.location.reload(true);
-                    }
-                }
-            }
-        })();
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
             --primary: #0066FF;
@@ -68,24 +46,17 @@
             line-height: 1.6;
         }
         
-        /* Animated Background */
         .bg-animation {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
         }
         
         .bg-animation::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
             background: 
                 radial-gradient(circle at 20% 80%, rgba(0, 102, 255, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%),
@@ -239,37 +210,6 @@
             background: var(--border);
         }
         
-        .form-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-        }
-        
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-        
-        .checkbox-wrapper input {
-            width: auto;
-            padding: 0;
-        }
-        
-        .forgot-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .forgot-link:hover {
-            text-decoration: underline;
-        }
-        
         .divider {
             display: flex;
             align-items: center;
@@ -279,84 +219,63 @@
             font-size: 0.875rem;
         }
         
-        .divider::before,
-        .divider::after {
+        .divider::before, .divider::after {
             content: '';
             flex: 1;
             height: 1px;
             background: var(--border);
         }
         
-        .signup-link {
-            text-align: center;
-            margin-top: 2rem;
+        .demo-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 102, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+        
+        .demo-box h4 {
+            font-size: 0.875rem;
             color: var(--text-secondary);
+            margin-bottom: 0.5rem;
         }
         
-        .signup-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
+        .demo-credentials {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: monospace;
         }
         
-        /* Right Side - Features */
         .login-right {
             flex: 1;
-            background: var(--surface);
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .login-right::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 30% 70%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
         }
         
         .features-title {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 2rem;
-            position: relative;
         }
         
         .feature-list {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            position: relative;
         }
         
         .feature-item {
             display: flex;
             gap: 1rem;
-            padding: 1.25rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            transition: all 0.2s;
-        }
-        
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-            transform: translateX(4px);
         }
         
         .feature-icon {
             width: 48px;
             height: 48px;
-            background: var(--gradient-1);
+            background: var(--surface);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -366,45 +285,17 @@
         }
         
         .feature-content h3 {
-            font-size: 1rem;
+            font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
         }
         
         .feature-content p {
-            font-size: 0.875rem;
             color: var(--text-secondary);
+            font-size: 0.9375rem;
         }
         
-        .stats-banner {
-            display: flex;
-            gap: 2rem;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            position: relative;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-        
-        /* Dashboard Layout */
+        /* Dashboard */
         .dashboard {
             display: none;
             min-height: 100vh;
@@ -416,107 +307,93 @@
         
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 260px;
             background: var(--surface);
             border-right: 1px solid var(--border);
-            min-height: 100vh;
-            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
+            height: 100vh;
             z-index: 100;
         }
         
         .sidebar-brand {
+            padding: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border);
         }
         
-        .sidebar-brand .brand-logo {
-            width: 40px;
-            height: 40px;
-            font-size: 1.25rem;
-        }
-        
-        .sidebar-brand .brand-text {
-            font-size: 1.25rem;
+        .sidebar nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
         }
         
         .nav-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         
         .nav-section-title {
+            padding: 0 1.5rem;
             font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            letter-spacing: 0.1em;
-            margin-bottom: 0.75rem;
-            padding-left: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         
         .nav-item {
-            padding: 0.875rem 1rem;
-            border-radius: 10px;
-            cursor: pointer;
+            padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.875rem;
-            color: var(--text-secondary);
+            gap: 0.75rem;
+            cursor: pointer;
             transition: all 0.2s;
-            margin-bottom: 0.25rem;
-            font-size: 0.9375rem;
+            color: var(--text-secondary);
         }
         
-        .nav-item:hover,
+        .nav-item:hover {
+            background: var(--surface-light);
+            color: var(--text);
+        }
+        
         .nav-item.active {
             background: var(--primary-light);
             color: var(--primary);
-        }
-        
-        .nav-item.active {
-            font-weight: 500;
+            border-right: 3px solid var(--primary);
         }
         
         .nav-icon {
             font-size: 1.25rem;
-            width: 24px;
-            text-align: center;
         }
         
         .sidebar-footer {
-            margin-top: auto;
-            padding-top: 1.5rem;
+            padding: 1rem;
             border-top: 1px solid var(--border);
         }
         
         .user-card {
             display: flex;
             align-items: center;
-            gap: 0.875rem;
-            padding: 0.875rem;
-            background: var(--surface-light);
+            gap: 0.75rem;
+            padding: 0.75rem;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
         }
         
         .user-card:hover {
-            background: var(--border);
+            background: var(--surface-light);
         }
         
         .user-avatar {
             width: 40px;
             height: 40px;
-            border-radius: 10px;
             background: var(--gradient-1);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -526,15 +403,11 @@
         
         .user-info {
             flex: 1;
-            min-width: 0;
         }
         
         .user-name {
-            font-weight: 600;
+            font-weight: 500;
             font-size: 0.9375rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .user-role {
@@ -545,7 +418,7 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 280px;
+            margin-left: 260px;
             padding: 2rem;
             min-height: 100vh;
         }
@@ -554,11 +427,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
         
         .header-title h2 {
-            font-size: 1.875rem;
+            font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
         }
@@ -569,7 +442,7 @@
         
         .header-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
         }
         
         .btn-icon {
@@ -592,7 +465,7 @@
             border-color: var(--primary);
         }
         
-        /* Stats Cards */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -693,8 +566,7 @@
             background: rgba(255, 255, 255, 0.02);
         }
         
-        .upload-area:hover,
-        .upload-area.dragover {
+        .upload-area:hover, .upload-area.dragover {
             border-color: var(--primary);
             background: var(--primary-light);
         }
@@ -724,21 +596,22 @@
         
         .upload-formats {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             margin-top: 1.5rem;
         }
         
         .format-badge {
-            padding: 0.375rem 0.875rem;
+            padding: 0.375rem 0.75rem;
             background: var(--surface-light);
             border-radius: 20px;
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
             border: 1px solid var(--border);
         }
         
-        /* Recent Activity */
+        /* Activity Section */
         .activity-section {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -751,6 +624,8 @@
             flex-direction: column;
             gap: 1rem;
             margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .activity-item {
@@ -778,8 +653,8 @@
         }
         
         .activity-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .activity-icon.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
         .activity-icon.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .activity-icon.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
         
         .activity-content {
             flex: 1;
@@ -803,14 +678,210 @@
             white-space: nowrap;
         }
         
-        /* Processing Modal */
+        /* Results Section */
+        .results-section {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .results-section.active {
+            display: block;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .decision-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .decision-badge.approve {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .decision-badge.reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .decision-badge.review {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-item {
+            padding: 1rem;
+            background: var(--surface-light);
+            border-radius: 12px;
+        }
+        
+        .result-label {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .result-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .programs-list {
+            margin-top: 1.5rem;
+        }
+        
+        .program-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--surface-light);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .program-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .program-status.pass {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .program-status.fail {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        /* Page Content */
+        .page-content {
+            display: none;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        /* Applications List */
+        .applications-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .applications-table th,
+        .applications-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .applications-table th {
+            background: var(--surface-light);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .applications-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        /* Templates Grid */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .template-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            border-color: var(--primary);
+        }
+        
+        .template-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .template-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             z-index: 1000;
@@ -830,7 +901,6 @@
             max-width: 500px;
             width: 90%;
             text-align: center;
-            box-shadow: var(--shadow-lg);
         }
         
         .processing-animation {
@@ -853,23 +923,12 @@
             to { transform: rotate(360deg); }
         }
         
-        .modal h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .modal p {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-        
         .progress-bar {
             height: 6px;
             background: var(--border);
             border-radius: 3px;
             overflow: hidden;
-            margin-bottom: 1rem;
+            margin: 1.5rem 0;
         }
         
         .progress-fill {
@@ -880,162 +939,11 @@
             width: 0%;
         }
         
-        .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-        }
-        
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-        
-        .progress-step.active {
-            color: var(--primary);
-        }
-        
-        .progress-step.completed {
-            color: var(--success);
-        }
-        
-        /* Results Section */
-        .results-section {
-            display: none;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 1.5rem;
-        }
-        
-        .results-section.active {
-            display: block;
-        }
-        
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .decision-badge {
-            padding: 0.625rem 1.25rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .decision-badge.approve {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .decision-badge.reject {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        
-        .result-card {
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-        }
-        
-        .result-card h4 {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .result-card .value {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        .programs-list {
-            margin-top: 1.5rem;
-        }
-        
-        .program-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--surface-light);
-            border-radius: 10px;
-            margin-bottom: 0.75rem;
-            border: 1px solid var(--border);
-        }
-        
-        .program-name {
-            font-weight: 500;
-        }
-        
-        .program-status {
-            padding: 0.375rem 0.875rem;
-            border-radius: 20px;
-            font-size: 0.8125rem;
-            font-weight: 600;
-        }
-        
-        .program-status.pass {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-        
-        .program-status.fail {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-        
-        .program-status.conditional {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-        
-        .decision-badge.warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        
-        @media (max-width: 1200px) {
-            .results-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        /* Toast Notifications */
+        /* Toast */
         .toast-container {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
+            top: 1.5rem;
+            right: 1.5rem;
             z-index: 2000;
             display: flex;
             flex-direction: column;
@@ -1046,14 +954,19 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1rem 1.25rem;
+            padding: 1rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.875rem;
+            gap: 0.75rem;
             box-shadow: var(--shadow-lg);
             animation: slideIn 0.3s ease;
             min-width: 300px;
         }
+        
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+        .toast.info { border-left: 4px solid var(--primary); }
         
         @keyframes slideIn {
             from {
@@ -1066,71 +979,24 @@
             }
         }
         
-        .toast-icon {
-            font-size: 1.25rem;
-        }
-        
-        .toast-content {
-            flex: 1;
-        }
-        
-        .toast-title {
-            font-weight: 600;
-            font-size: 0.9375rem;
-        }
-        
-        .toast-message {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-        
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.25rem;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
         /* Responsive */
         @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+            .templates-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
         @media (max-width: 768px) {
-            .login-left {
-                padding: 2rem;
-            }
-            .login-right {
-                display: none;
-            }
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            .login-left { padding: 2rem; }
+            .login-right { display: none; }
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .templates-grid { grid-template-columns: 1fr; }
         }
         
-        /* Loading Spinner */
         .spinner {
             width: 20px;
             height: 20px;
@@ -1144,8 +1010,6 @@
 </head>
 <body>
     <div class="bg-animation"></div>
-    
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
     
     <!-- Login Screen -->
@@ -1162,10 +1026,10 @@
                 
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Email</label>
                         <div class="input-wrapper">
-                            <span class="input-icon">👤</span>
-                            <input type="text" id="username" placeholder="Enter your username" required>
+                            <span class="input-icon">📧</span>
+                            <input type="email" id="username" placeholder="Enter your email" required>
                         </div>
                     </div>
                     
@@ -1177,39 +1041,18 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary" id="loginBtn">
-                        Sign In
-                    </button>
-                    
-                    <div class="form-footer">
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="#" class="forgot-link">Forgot password?</a>
-                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
                 </form>
                 
                 <div class="divider">or</div>
                 
-                <button class="btn btn-secondary" onclick="enableDemoMode(); return false;" style="background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: white; border: none; font-size: 1.1rem; padding: 1rem; cursor: pointer; width: 100%; margin-bottom: 1rem;">
-                    <span>⚡</span> CLICK HERE - Try Demo Mode (No Login Required)
+                <button class="btn btn-primary" onclick="enableDemoMode()" style="background: linear-gradient(135deg, #00C9A7 0%, #0066FF 100%);">
+                    <span>⚡</span> Try Demo Mode
                 </button>
                 
-                <div style="text-align: center; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-                    Having issues? Try the backup URL:<br>
-                    <a href="https://pn4556.github.io/loan-sizer-saas" style="color: var(--primary);">pn4556.github.io/loan-sizer-saas</a>
-                </div>
-                
-                <div class="signup-link">
-                    Don't have an account? <a href="#" onclick="showToast('Coming Soon', 'Self-registration will be available soon', 'info'); return false;">Contact sales</a>
-                </div>
-                
-                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 102, 255, 0.1); border-radius: 8px; border: 1px solid rgba(0, 102, 255, 0.2);">
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                        🎯 <strong>Demo Credentials</strong>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">
+                <div class="demo-box">
+                    <h4>🎯 Demo Credentials</h4>
+                    <div class="demo-credentials">
                         Email: demo@complaicore.com<br>
                         Password: demo123
                     </div>
@@ -1219,7 +1062,6 @@
         
         <div class="login-right">
             <div class="features-title">Why Loan Officers Choose Us</div>
-            
             <div class="feature-list">
                 <div class="feature-item">
                     <div class="feature-icon">⚡</div>
@@ -1228,15 +1070,13 @@
                         <p>Process loans in 2 minutes instead of 25 minutes manually</p>
                     </div>
                 </div>
-                
                 <div class="feature-item">
                     <div class="feature-icon">🤖</div>
                     <div class="feature-content">
-                        <h3>AI-Powered Extraction</h3>
-                        <p>Automatically extract data from emails and PDFs with Claude AI</p>
+                        <h3>Universal File Support</h3>
+                        <p>PDF, Word, Images (OCR), Emails, Excel, and more</p>
                     </div>
                 </div>
-                
                 <div class="feature-item">
                     <div class="feature-icon">📊</div>
                     <div class="feature-content">
@@ -1244,28 +1084,12 @@
                         <p>Evaluate against 6 loan programs instantly with pass/fail results</p>
                     </div>
                 </div>
-                
                 <div class="feature-item">
-                    <div class="feature-icon">🔒</div>
+                    <div class="feature-icon">📥</div>
                     <div class="feature-content">
-                        <h3>Enterprise Security</h3>
-                        <p>Bank-grade encryption with full audit trails and compliance</p>
+                        <h3>Excel Export</h3>
+                        <p>Download processed applications in your original sizer format</p>
                     </div>
-                </div>
-            </div>
-            
-            <div class="stats-banner">
-                <div class="stat-item">
-                    <div class="stat-value">$2.4B+</div>
-                    <div class="stat-label">Loans Processed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">50K+</div>
-                    <div class="stat-label">Applications</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">99.9%</div>
-                    <div class="stat-label">Uptime</div>
                 </div>
             </div>
         </div>
@@ -1282,35 +1106,27 @@
             <nav>
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
-                    <div class="nav-item active" onclick="switchTab('dashboard')">
+                    <div class="nav-item active" onclick="switchTab('dashboard')" data-tab="dashboard">
                         <span class="nav-icon">📊</span>
                         <span>Dashboard</span>
                     </div>
-                    <div class="nav-item" onclick="switchTab('applications')">
+                    <div class="nav-item" onclick="switchTab('applications')" data-tab="applications">
                         <span class="nav-icon">📋</span>
                         <span>Applications</span>
                     </div>
-                    <div class="nav-item" onclick="switchTab('templates')">
+                    <div class="nav-item" onclick="switchTab('templates')" data-tab="templates">
                         <span class="nav-icon">📄</span>
                         <span>Templates</span>
-                    </div>
-                    <div class="nav-item" onclick="switchTab('reports')">
-                        <span class="nav-icon">📈</span>
-                        <span>Reports</span>
                     </div>
                 </div>
                 
                 <div class="nav-section">
                     <div class="nav-section-title">Settings</div>
-                    <div class="nav-item" onclick="switchTab('team')">
+                    <div class="nav-item" onclick="switchTab('team')" data-tab="team">
                         <span class="nav-icon">👥</span>
                         <span>Team</span>
                     </div>
-                    <div class="nav-item" onclick="switchTab('integrations')">
-                        <span class="nav-icon">🔌</span>
-                        <span>Integrations</span>
-                    </div>
-                    <div class="nav-item" onclick="switchTab('settings')">
+                    <div class="nav-item" onclick="switchTab('settings')" data-tab="settings">
                         <span class="nav-icon">⚙️</span>
                         <span>Settings</span>
                     </div>
@@ -1330,128 +1146,208 @@
         </aside>
         
         <main class="main-content">
-            <header class="header">
-                <div class="header-title">
-                    <h2>Dashboard</h2>
-                    <p>Process and manage loan applications efficiently</p>
-                </div>
-                <div class="header-actions">
-                    <button class="btn-icon" onclick="showToast('Notifications', 'No new notifications', 'info')">🔔</button>
-                    <button class="btn-icon" onclick="showToast('Help', 'Support documentation coming soon', 'info')">❓</button>
-                </div>
-            </header>
-            
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Total Applications</span>
-                        <div class="stat-card-icon blue">📋</div>
+            <!-- Dashboard Tab -->
+            <div class="page-content active" id="page-dashboard">
+                <header class="header">
+                    <div class="header-title">
+                        <h2>Dashboard</h2>
+                        <p>Process and manage loan applications efficiently</p>
                     </div>
-                    <div class="stat-card-value" id="statTotal">0</div>
-                    <div class="stat-card-change positive">
-                        <span>↑</span> 12% this month
+                    <div class="header-actions">
+                        <button class="btn-icon" onclick="refreshDashboard()">🔄</button>
+                        <button class="btn-icon" onclick="showToast('Notifications', 'No new notifications', 'info')">🔔</button>
+                    </div>
+                </header>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Total Applications</span>
+                            <div class="stat-card-icon blue">📋</div>
+                        </div>
+                        <div class="stat-card-value" id="statTotal">-</div>
+                        <div class="stat-card-change positive" id="statTotalChange">
+                            <span>↑</span> --% this month
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Approved</span>
+                            <div class="stat-card-icon green">✅</div>
+                        </div>
+                        <div class="stat-card-value" id="statApproved">-</div>
+                        <div class="stat-card-change positive">
+                            <span>Total approved loans</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Time Saved</span>
+                            <div class="stat-card-icon purple">⏱️</div>
+                        </div>
+                        <div class="stat-card-value" id="statTimeSaved">-</div>
+                        <div class="stat-card-change positive">
+                            <span>↑</span> 93% efficiency
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Pending Review</span>
+                            <div class="stat-card-icon orange">⏳</div>
+                        </div>
+                        <div class="stat-card-value" id="statPending">-</div>
+                        <div class="stat-card-change">
+                            <span>Avg 2 min processing</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Approved</span>
-                        <div class="stat-card-icon green">✅</div>
+                <div class="content-grid">
+                    <div class="main-column">
+                        <div class="upload-section">
+                            <div class="section-header">
+                                <h3 class="section-title">Process New Application</h3>
+                            </div>
+                            
+                            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                                <div class="upload-icon">📁</div>
+                                <div class="upload-text">Drop file here or click to browse</div>
+                                <div class="upload-hint">Supports PDF, Word, Images, Emails, Excel & more</div>
+                                <div class="upload-formats">
+                                    <span class="format-badge">.pdf</span>
+                                    <span class="format-badge">.docx</span>
+                                    <span class="format-badge">.eml</span>
+                                    <span class="format-badge">.png</span>
+                                    <span class="format-badge">.jpg</span>
+                                    <span class="format-badge">.xlsx</span>
+                                    <span class="format-badge">.csv</span>
+                                </div>
+                                <input type="file" id="fileInput" hidden onchange="handleFileSelect(event)">
+                            </div>
+                        </div>
+                        
+                        <div class="results-section" id="resultsSection">
+                            <div class="results-header">
+                                <div>
+                                    <h3 class="section-title">Processing Results</h3>
+                                    <p style="color: var(--text-secondary); margin-top: 0.25rem;">Application #<span id="appId">-</span></p>
+                                </div>
+                                <span class="decision-badge approve" id="decisionBadge">✅ APPROVED</span>
+                            </div>
+                            
+                            <div class="results-grid" id="resultsGrid"></div>
+                            
+                            <div class="programs-list">
+                                <h4 style="margin-bottom: 1rem; font-size: 1rem;">Program Evaluation</h4>
+                                <div id="programsList"></div>
+                            </div>
+                            
+                            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                                <button class="btn btn-primary" onclick="downloadExcel()">
+                                    <span>📥</span> Download Excel
+                                </button>
+                                <button class="btn btn-secondary" onclick="newApplication()">
+                                    <span>🔄</span> Process Another
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card-value" id="statApproved">0</div>
-                    <div class="stat-card-change positive">
-                        <span>↑</span> 8% this month
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Time Saved</span>
-                        <div class="stat-card-icon purple">⏱️</div>
-                    </div>
-                    <div class="stat-card-value" id="statTimeSaved">0h</div>
-                    <div class="stat-card-change positive">
-                        <span>↑</span> 93% efficiency
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Pending Review</span>
-                        <div class="stat-card-icon orange">⏳</div>
-                    </div>
-                    <div class="stat-card-value" id="statPending">0</div>
-                    <div class="stat-card-change">
-                        <span>Avg 2 min processing</span>
+                    
+                    <div class="activity-section">
+                        <div class="section-header">
+                            <h3 class="section-title">Recent Activity</h3>
+                        </div>
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-item">
+                                <div class="activity-icon pending">⏳</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Loading...</div>
+                                    <div class="activity-meta">Please wait</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Content Grid -->
-            <div class="content-grid">
-                <div class="main-column">
-                    <!-- Upload Section -->
-                    <div class="upload-section">
-                        <div class="section-header">
-                            <h3 class="section-title">Process New Application</h3>
-                        </div>
-                        
-                        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon">📧</div>
-                            <div class="upload-text">Drop email or PDF here</div>
-                            <div class="upload-hint">or click to browse files</div>
-                            <div class="upload-formats">
-                                <span class="format-badge">.eml</span>
-                                <span class="format-badge">.pdf</span>
-                                <span class="format-badge">.txt</span>
-                                <span class="format-badge">.msg</span>
-                            </div>
-                            <input type="file" id="fileInput" hidden accept=".eml,.pdf,.txt,.msg" onchange="handleFileSelect(event)">
-                        </div>
+            <!-- Applications Tab -->
+            <div class="page-content" id="page-applications">
+                <header class="header">
+                    <div class="header-title">
+                        <h2>Applications</h2>
+                        <p>View and manage all loan applications</p>
                     </div>
-                    
-                    <!-- Results Section -->
-                    <div class="results-section" id="resultsSection">
-                        <div class="results-header">
-                            <div>
-                                <h3 class="section-title">Processing Results</h3>
-                                <p style="color: var(--text-secondary); margin-top: 0.25rem;">Application #<span id="appId">-</span></p>
-                            </div>
-                            <span class="decision-badge approve" id="decisionBadge">✅ APPROVED</span>
-                        </div>
-                        
-                        <div class="results-grid" id="resultsGrid">
-                            <!-- Results populated dynamically -->
-                        </div>
-                        
-                        <div class="programs-list">
-                            <h4 style="margin-bottom: 1rem; font-size: 1rem;">Program Evaluation</h4>
-                            <div id="programsList">
-                                <!-- Programs populated dynamically -->
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-                            <button class="btn btn-primary" onclick="downloadResults()">
-                                <span>📥</span> Download Excel
-                            </button>
-                            <button class="btn btn-secondary" onclick="newApplication()">
-                                <span>🔄</span> Process Another
-                            </button>
-                        </div>
+                </header>
+                
+                <div class="upload-section">
+                    <table class="applications-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Applicant</th>
+                                <th>Property</th>
+                                <th>Loan Amount</th>
+                                <th>Decision</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem;">Loading applications...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Templates Tab -->
+            <div class="page-content" id="page-templates">
+                <header class="header">
+                    <div class="header-title">
+                        <h2>Templates</h2>
+                        <p>Manage Excel sizer templates</p>
+                    </div>
+                </header>
+                
+                <div class="templates-grid" id="templatesGrid">
+                    <div class="template-card">
+                        <div class="template-icon">📄</div>
+                        <h3>Loading...</h3>
+                        <p>Please wait while we load your templates</p>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Team Tab -->
+            <div class="page-content" id="page-team">
+                <header class="header">
+                    <div class="header-title">
+                        <h2>Team</h2>
+                        <p>Manage team members</p>
+                    </div>
+                </header>
                 
-                <!-- Activity Sidebar -->
-                <div class="activity-section">
-                    <div class="section-header">
-                        <h3 class="section-title">Recent Activity</h3>
+                <div class="upload-section">
+                    <p style="color: var(--text-secondary);">Team management coming soon...</p>
+                </div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div class="page-content" id="page-settings">
+                <header class="header">
+                    <div class="header-title">
+                        <h2>Settings</h2>
+                        <p>Configure your account</p>
                     </div>
-                    
-                    <div class="activity-list" id="activityList">
-                        <!-- Activity items populated dynamically -->
-                    </div>
+                </header>
+                
+                <div class="upload-section">
+                    <p style="color: var(--text-secondary);">Settings coming soon...</p>
                 </div>
             </div>
         </main>
@@ -1470,16 +1366,10 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
             
-            <div class="progress-steps">
-                <div class="progress-step active" id="step1">
-                    <span>📄</span> Extract
-                </div>
-                <div class="progress-step" id="step2">
-                    <span>📊</span> Analyze
-                </div>
-                <div class="progress-step" id="step3">
-                    <span>✅</span> Decide
-                </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-muted);">
+                <span id="step1">📄 Extract</span>
+                <span id="step2">📊 Analyze</span>
+                <span id="step3">✅ Decide</span>
             </div>
         </div>
     </div>
@@ -1494,10 +1384,12 @@
         let currentUser = null;
         let authToken = localStorage.getItem('loanSizerToken');
         let currentFile = null;
+        let currentApplicationId = null;
+        let dashboardStats = null;
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            if (authToken) {
+            if (authToken && authToken !== 'demo-token') {
                 validateToken();
             }
             setupDragAndDrop();
@@ -1527,11 +1419,9 @@
                     localStorage.setItem('loanSizerToken', authToken);
                     currentUser = data.user;
                     showDashboard();
-                    showToast('Welcome back!', `Signed in as ${data.user.username}`, 'success');
+                    showToast('Welcome back!', `Signed in as ${data.user.first_name} ${data.user.last_name}`, 'success');
                 } else {
-                    // Auto-fallback to demo mode for testing
-                    showToast('Login Failed', 'Auto-activating demo mode for testing...', 'warning');
-                    setTimeout(() => enableDemoMode(), 1500);
+                    showToast('Login Failed', data.detail || 'Invalid credentials', 'error');
                 }
             } catch (error) {
                 showToast('Error', 'Unable to connect to server', 'error');
@@ -1563,11 +1453,11 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').classList.add('active');
             
-            // Update user info
             if (currentUser) {
-                document.getElementById('userName').textContent = currentUser.username;
+                document.getElementById('userName').textContent = 
+                    `${currentUser.first_name} ${currentUser.last_name}`;
                 document.getElementById('userAvatar').textContent = 
-                    currentUser.username.substring(0, 2).toUpperCase();
+                    `${currentUser.first_name[0]}${currentUser.last_name[0]}`.toUpperCase();
             }
             
             loadDashboardData();
@@ -1579,63 +1469,234 @@
             currentUser = null;
             document.getElementById('dashboard').classList.remove('active');
             document.getElementById('loginScreen').style.display = 'flex';
-            showToast('Signed out', 'You have been logged out successfully', 'info');
+            showToast('Signed out', 'You have been logged out', 'info');
         }
         
-        // Demo Mode - Works without backend auth
+        // Demo Mode
         function enableDemoMode() {
-            console.log('Demo mode activated v2.0.1 - File parsing enabled');
-            try {
-                currentUser = {
-                    username: 'Demo User',
-                    email: 'demo@complaicore.com',
-                    role: 'loan_officer'
-                };
-                authToken = 'demo-token';
-                showToast('Demo Mode Activated', 'Welcome! You can explore all features.', 'success');
-                showDashboard();
-            } catch (e) {
-                console.error('Demo mode error:', e);
-                alert('Demo mode activated! Click OK to continue.');
-                showDashboard();
+            currentUser = {
+                first_name: 'Demo',
+                last_name: 'User',
+                email: 'demo@complaicore.com',
+                role: 'loan_officer',
+                client: { company_name: 'Demo Lending' }
+            };
+            authToken = 'demo-token';
+            showToast('Demo Mode', 'Using demo data', 'info');
+            showDashboard();
+        }
+        
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update sidebar
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page-${tabName}`)?.classList.add('active');
+            
+            // Load tab-specific data
+            if (tabName === 'applications') {
+                loadApplications();
+            } else if (tabName === 'templates') {
+                loadTemplates();
+            } else if (tabName === 'dashboard') {
+                loadDashboardData();
             }
         }
         
-        // Dashboard Functions
+        // Dashboard Data
         async function loadDashboardData() {
-            // Load stats
-            const stats = {
-                total: 127,
-                approved: 98,
-                timeSaved: 48,
-                pending: 5
-            };
+            if (authToken === 'demo-token') {
+                // Use demo data
+                updateDashboardUI({
+                    total_applications: 127,
+                    approved: 98,
+                    time_saved_hours: 48.5,
+                    pending_review: 5,
+                    month_change_percent: 12
+                });
+                updateActivityList([
+                    { icon: 'success', title: 'Application Approved', meta: 'DSCR Program • $450,000', time: '2 min ago' },
+                    { icon: 'success', title: 'Application Approved', meta: 'Bridge Loan • $320,000', time: '15 min ago' },
+                    { icon: 'pending', title: 'Processing Started', meta: 'Fix & Flip • $280,000', time: '1 hour ago' },
+                ]);
+                return;
+            }
             
-            document.getElementById('statTotal').textContent = stats.total;
-            document.getElementById('statApproved').textContent = stats.approved;
-            document.getElementById('statTimeSaved').textContent = stats.timeSaved + 'h';
-            document.getElementById('statPending').textContent = stats.pending;
+            try {
+                // Load stats
+                const statsResponse = await fetch(`${API_BASE}/dashboard/stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (statsResponse.ok) {
+                    dashboardStats = await statsResponse.json();
+                    updateDashboardUI(dashboardStats);
+                }
+                
+                // Load activity
+                const activityResponse = await fetch(`${API_BASE}/dashboard/activity`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (activityResponse.ok) {
+                    const activityData = await activityResponse.json();
+                    updateActivityList(activityData.activities);
+                }
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+        
+        function updateDashboardUI(stats) {
+            document.getElementById('statTotal').textContent = stats.total_applications || 0;
+            document.getElementById('statApproved').textContent = stats.approved || 0;
+            document.getElementById('statTimeSaved').textContent = (stats.time_saved_hours || 0) + 'h';
+            document.getElementById('statPending').textContent = stats.pending_review || 0;
             
-            // Load recent activity
-            const activities = [
-                { icon: 'success', title: 'Application Approved', meta: 'DSCR Program • $450,000', time: '2 min ago' },
-                { icon: 'success', title: 'Application Approved', meta: 'Bridge Loan • $320,000', time: '15 min ago' },
-                { icon: 'pending', title: 'Processing Started', meta: 'Fix & Flip • $280,000', time: '1 hour ago' },
-                { icon: 'error', title: 'Application Rejected', meta: 'DSCR Program • Credit score', time: '2 hours ago' },
-                { icon: 'success', title: 'Template Updated', meta: 'Icecap Lending v2.1', time: '3 hours ago' }
-            ];
+            const changeEl = document.getElementById('statTotalChange');
+            if (stats.month_change_percent >= 0) {
+                changeEl.innerHTML = `<span>↑</span> ${stats.month_change_percent}% this month`;
+                changeEl.className = 'stat-card-change positive';
+            } else {
+                changeEl.innerHTML = `<span>↓</span> ${Math.abs(stats.month_change_percent)}% this month`;
+                changeEl.className = 'stat-card-change negative';
+            }
+        }
+        
+        function updateActivityList(activities) {
+            const list = document.getElementById('activityList');
             
-            const activityList = document.getElementById('activityList');
-            activityList.innerHTML = activities.map(a => `
+            if (!activities || activities.length === 0) {
+                list.innerHTML = '<div class="activity-item"><div class="activity-content"><div class="activity-title">No recent activity</div></div></div>';
+                return;
+            }
+            
+            list.innerHTML = activities.map(a => `
                 <div class="activity-item">
                     <div class="activity-icon ${a.icon}">
-                        ${a.icon === 'success' ? '✓' : a.icon === 'pending' ? '⏳' : a.icon === 'error' ? '✕' : '⚙'}
+                        ${a.icon === 'success' ? '✓' : a.icon === 'error' ? '✕' : '⏳'}
                     </div>
                     <div class="activity-content">
                         <div class="activity-title">${a.title}</div>
                         <div class="activity-meta">${a.meta}</div>
                     </div>
                     <div class="activity-time">${a.time}</div>
+                </div>
+            `).join('');
+        }
+        
+        function refreshDashboard() {
+            loadDashboardData();
+            showToast('Refreshed', 'Dashboard data updated', 'success');
+        }
+        
+        // Applications List
+        async function loadApplications() {
+            if (authToken === 'demo-token') {
+                document.getElementById('applicationsTableBody').innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td>john@example.com</td>
+                        <td>123 Main St, New York, NY</td>
+                        <td>$450,000</td>
+                        <td><span class="status-badge approved">Approved</span></td>
+                        <td><span class="status-badge approved">Complete</span></td>
+                        <td>2026-04-09</td>
+                        <td><button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Export</button></td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/applications`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    renderApplicationsTable(data.applications);
+                }
+            } catch (error) {
+                console.error('Failed to load applications:', error);
+            }
+        }
+        
+        function renderApplicationsTable(applications) {
+            const tbody = document.getElementById('applicationsTableBody');
+            
+            if (!applications || applications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No applications found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = applications.map(app => `
+                <tr>
+                    <td>#${app.id}</td>
+                    <td>${app.applicant_email || 'N/A'}</td>
+                    <td>${app.property_address || 'N/A'}, ${app.property_city || ''}</td>
+                    <td>$${(app.loan_amount || 0).toLocaleString()}</td>
+                    <td><span class="status-badge ${(app.decision || '').toLowerCase()}">${app.decision || 'Pending'}</span></td>
+                    <td><span class="status-badge ${app.status}">${app.status}</span></td>
+                    <td>${new Date(app.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" 
+                                onclick="exportApplication(${app.id})">
+                            📥 Export
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Templates
+        async function loadTemplates() {
+            if (authToken === 'demo-token') {
+                document.getElementById('templatesGrid').innerHTML = `
+                    <div class="template-card">
+                        <div class="template-icon">📊</div>
+                        <h3>Multi-Use Term Sizer</h3>
+                        <p>Default template for DSCR and Bridge loans</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/templates`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    renderTemplates(data.templates);
+                }
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+            }
+        }
+        
+        function renderTemplates(templates) {
+            const grid = document.getElementById('templatesGrid');
+            
+            if (!templates || templates.length === 0) {
+                grid.innerHTML = '<div class="template-card"><h3>No templates found</h3><p>Upload a template to get started</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = templates.map(t => `
+                <div class="template-card">
+                    <div class="template-icon">📊</div>
+                    <h3>${t.name}</h3>
+                    <p>${t.description || 'No description'}</p>
+                    ${t.is_default ? '<span style="color: var(--success); font-size: 0.875rem;">✓ Default</span>' : ''}
                 </div>
             `).join('');
         }
@@ -1686,279 +1747,227 @@
             }
         }
         
-        // Extract data from file content
-        function extractLoanData(text) {
-            const data = {};
-            
-            // Property details
-            const addressMatch = text.match(/Property Address:\s*([^\n]+)/i);
-            data.address = addressMatch ? addressMatch[1].trim() : 'N/A';
-            
-            const cityMatch = text.match(/City:\s*([^\n]+)/i);
-            data.city = cityMatch ? cityMatch[1].trim() : 'N/A';
-            
-            const stateMatch = text.match(/State:\s*([^\n]+)/i);
-            data.state = stateMatch ? stateMatch[1].trim() : 'N/A';
-            
-            const zipMatch = text.match(/ZIP Code:\s*(\d+)/i);
-            data.zip = zipMatch ? zipMatch[1] : '00000';
-            
-            const unitsMatch = text.match(/Units:\s*(\d+)/i);
-            data.units = unitsMatch ? parseInt(unitsMatch[1]) : 1;
-            
-            // Financial
-            const valueMatch = text.match(/Estimated (?:Value|ARV).*?[:\$]\s*([\d,]+)/i);
-            data.estimatedValue = valueMatch ? parseInt(valueMatch[1].replace(/,/g, '')) : 500000;
-            
-            const priceMatch = text.match(/Purchase Price.*?[:\$]\s*([\d,]+)/i);
-            data.purchasePrice = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : data.estimatedValue;
-            
-            const loanMatch = text.match(/Loan Amount.*?[:\$]\s*([\d,]+)/i);
-            data.loanAmount = loanMatch ? parseInt(loanMatch[1].replace(/,/g, '')) : Math.round(data.estimatedValue * 0.75);
-            
-            // Credit scores
-            const scoreMatches = text.matchAll(/Credit Score \d+[:\s]+(\d+)/gi);
-            const scores = [];
-            for (const match of scoreMatches) {
-                scores.push(parseInt(match[1]));
-            }
-            if (scores.length >= 3) {
-                scores.sort((a, b) => a - b);
-                data.middleCredit = scores[1];
-                data.creditScore1 = scores[0];
-                data.creditScore2 = scores[1];
-                data.creditScore3 = scores[2];
-            } else {
-                data.middleCredit = scores[0] || 700;
-                data.creditScore1 = scores[0] || 700;
-                data.creditScore2 = scores[1] || 705;
-                data.creditScore3 = scores[2] || 710;
-            }
-            
-            // Income & DSCR
-            const rentalMatch = text.match(/Monthly Rental Income.*?[:\$]\s*([\d,]+)/i);
-            data.monthlyRent = rentalMatch ? parseInt(rentalMatch[1].replace(/,/g, '')) : 0;
-            
-            const dscrMatch = text.match(/DSCR[:\s]+(\d+\.?\d*)/i);
-            data.dscr = dscrMatch ? parseFloat(dscrMatch[1]) : 0;
-            
-            // Borrower
-            const borrowerMatch = text.match(/Borrower Name:\s*([^\n]+)/i);
-            data.borrowerName = borrowerMatch ? borrowerMatch[1].trim() : 'Unknown';
-            
-            // Loan type indicators
-            data.isFixFlip = text.toLowerCase().includes('fix & flip') || text.toLowerCase().includes('fix and flip');
-            data.isConstruction = text.toLowerCase().includes('construction') || text.toLowerCase().includes('ground-up');
-            data.isBridge = text.toLowerCase().includes('bridge');
-            data.isMixedUse = text.toLowerCase().includes('mixed-use') || text.toLowerCase().includes('mixed use');
-            
-            return data;
-        }
-        
-        // Evaluate programs based on extracted data
-        function evaluatePrograms(data) {
-            const programs = [];
-            const ltv = (data.loanAmount / data.estimatedValue) * 100;
-            const credit = data.middleCredit;
-            
-            // DSCR 1-4 Unit
-            if (data.units <= 4 && credit >= 680 && ltv <= 80) {
-                programs.push({ name: 'DSCR 1-4 Unit', status: 'pass', reason: 'Qualified' });
-            } else if (data.units <= 4) {
-                programs.push({ name: 'DSCR 1-4 Unit', status: data.units <= 4 && credit >= 640 ? 'conditional' : 'fail', 
-                    reason: data.units > 4 ? 'Too many units' : credit < 640 ? 'Credit score too low' : 'LTV too high' });
-            }
-            
-            // DSCR 5-9 Unit
-            if (data.units >= 5 && data.units <= 9 && credit >= 700 && ltv <= 75) {
-                programs.push({ name: 'DSCR 5-9 Unit', status: 'pass', reason: 'Qualified' });
-            } else if (data.units >= 5) {
-                programs.push({ name: 'DSCR 5-9 Unit', status: credit >= 680 ? 'conditional' : 'fail', 
-                    reason: data.units > 9 ? 'Too many units' : credit < 680 ? 'Credit score too low' : 'LTV too high' });
-            }
-            
-            // Mixed Use DSCR
-            if (data.isMixedUse && credit >= 680 && ltv <= 75) {
-                programs.push({ name: 'Mixed Use DSCR', status: 'pass', reason: 'Qualified' });
-            } else if (data.isMixedUse) {
-                programs.push({ name: 'Mixed Use DSCR', status: credit >= 640 ? 'conditional' : 'fail', reason: 'Does not meet criteria' });
-            }
-            
-            // Bridge Loan
-            if (credit >= 650 && ltv <= 85) {
-                programs.push({ name: 'Bridge Loan', status: 'pass', reason: 'Qualified' });
-            } else {
-                programs.push({ name: 'Bridge Loan', status: 'conditional', reason: 'Review required' });
-            }
-            
-            // Fix & Flip
-            if (data.isFixFlip && credit >= 640 && ltv <= 90) {
-                programs.push({ name: 'Fix & Flip', status: 'pass', reason: 'Qualified for flip financing' });
-            } else if (data.isFixFlip) {
-                programs.push({ name: 'Fix & Flip', status: 'conditional', reason: 'Experience review needed' });
-            } else {
-                programs.push({ name: 'Fix & Flip', status: 'fail', reason: 'Not a flip project' });
-            }
-            
-            // Construction
-            if (data.isConstruction && credit >= 700 && ltv <= 75) {
-                programs.push({ name: 'Ground Up Construction', status: 'pass', reason: 'Qualified for construction' });
-            } else if (data.isConstruction) {
-                programs.push({ name: 'Ground Up Construction', status: 'conditional', reason: 'Additional docs needed' });
-            } else {
-                programs.push({ name: 'Ground Up Construction', status: 'fail', reason: 'Not a construction project' });
-            }
-            
-            return programs;
-        }
-        
-        // Processing
+        // Process Application
         async function processApplication() {
-            const modal = document.getElementById('processingModal');
-            const progressFill = document.getElementById('progressFill');
-            modal.classList.add('active');
+            if (!currentFile) return;
             
-            // Read file content
-            let fileContent = '';
+            document.getElementById('processingModal').classList.add('active');
+            updateProgress(10, 1);
+            
+            // Demo mode processing
+            if (authToken === 'demo-token') {
+                setTimeout(() => {
+                    updateProgress(50, 2);
+                    setTimeout(() => {
+                        updateProgress(100, 3);
+                        setTimeout(() => {
+                            showDemoResults();
+                        }, 500);
+                    }, 1000);
+                }, 1000);
+                return;
+            }
+            
             try {
-                fileContent = await currentFile.text();
-            } catch (e) {
-                console.error('Error reading file:', e);
-            }
-            
-            // Simulate progress
-            const steps = [
-                { id: 'step1', progress: 33, delay: 800, label: 'Extracting data...' },
-                { id: 'step2', progress: 66, delay: 1600, label: 'Analyzing...' },
-                { id: 'step3', progress: 100, delay: 2400, label: 'Evaluating programs...' }
-            ];
-            
-            for (const step of steps) {
-                await new Promise(r => setTimeout(r, step.delay / 3));
-                progressFill.style.width = step.progress + '%';
+                const formData = new FormData();
+                formData.append('file', currentFile);
+                formData.append('interest_rate', '7.5');
+                formData.append('applicant_email', currentUser?.email || 'unknown@example.com');
                 
-                if (step.id !== 'step1') {
-                    document.getElementById(steps[steps.indexOf(step) - 1].id).classList.add('completed');
-                    document.getElementById(steps[steps.indexOf(step) - 1].id).classList.remove('active');
-                }
-                document.getElementById(step.id).classList.add('active');
+                updateProgress(30, 1);
+                
+                const response = await fetch(`${API_BASE}/applications/process-file`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    body: formData
+                });
+                
+                updateProgress(70, 2);
+                
+                const data = await response.json();
+                
+                updateProgress(100, 3);
+                
+                setTimeout(() => {
+                    document.getElementById('processingModal').classList.remove('active');
+                    
+                    if (response.ok) {
+                        currentApplicationId = data.application_id;
+                        displayResults(data);
+                        loadDashboardData(); // Refresh stats
+                    } else {
+                        showToast('Processing Failed', data.detail || 'Unknown error', 'error');
+                    }
+                }, 500);
+                
+            } catch (error) {
+                document.getElementById('processingModal').classList.remove('active');
+                showToast('Error', 'Failed to process application', 'error');
             }
-            
-            await new Promise(r => setTimeout(r, 500));
-            modal.classList.remove('active');
-            
-            // Show results with extracted data
-            showResults(fileContent);
         }
         
-        function showResults(fileContent) {
+        function updateProgress(percent, step) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+        
+        function showDemoResults() {
+            document.getElementById('processingModal').classList.remove('active');
+            
+            displayResults({
+                decision: 'APPROVE',
+                decision_reason: 'Meets all program requirements',
+                processing_time: 1.8,
+                confidence: 0.95,
+                file_type: 'demo',
+                application: {
+                    id: 'DEMO-001',
+                    units: 4,
+                    address: '123 Main St, New York, NY 10001',
+                    loan_amount: 450000,
+                    ltv_ratio: 75.0,
+                    credit_score: 720
+                },
+                programs: [
+                    { program_name: 'DSCR 1-4 Unit', status: 'PASS', max_loan: 500000, dscr: 1.25 },
+                    { program_name: 'Bridge Loan', status: 'PASS', max_loan: 600000, dscr: null },
+                    { program_name: 'Fix & Flip', status: 'FAIL', max_loan: null, reason: 'Not a fix & flip property' }
+                ]
+            });
+        }
+        
+        function displayResults(data) {
             const resultsSection = document.getElementById('resultsSection');
+            resultsSection.classList.add('active');
+            
+            document.getElementById('appId').textContent = data.application?.id || '-';
+            
+            const decisionBadge = document.getElementById('decisionBadge');
+            decisionBadge.className = 'decision-badge ' + (data.decision?.toLowerCase() || 'review');
+            decisionBadge.textContent = data.decision === 'APPROVE' ? '✅ APPROVED' : 
+                                        data.decision === 'REJECT' ? '❌ REJECTED' : '⏳ REVIEW';
+            
+            // Results grid
             const resultsGrid = document.getElementById('resultsGrid');
-            const programsList = document.getElementById('programsList');
-            
-            // Extract data from file
-            const data = extractLoanData(fileContent);
-            const programs = evaluatePrograms(data);
-            
-            // Calculate derived values
-            const ltv = ((data.loanAmount / data.estimatedValue) * 100).toFixed(1);
-            const dscr = data.dscr || (data.monthlyRent * 12 / (data.loanAmount * 0.08)).toFixed(2);
-            
-            // Determine overall decision
-            const passCount = programs.filter(p => p.status === 'pass').length;
-            const overallDecision = passCount >= 2 ? 'approve' : passCount >= 1 ? 'conditional' : 'reject';
-            
-            // Format currency
-            const formatCurrency = (num) => '$' + num.toLocaleString();
-            
-            const results = {
-                appId: 'APP-' + Date.now().toString().slice(-6),
-                borrower: data.borrowerName,
-                address: `${data.address}, ${data.city}, ${data.state} ${data.zip}`,
-                units: data.units,
-                decision: overallDecision,
-                propertyValue: formatCurrency(data.estimatedValue),
-                loanAmount: formatCurrency(data.loanAmount),
-                ltv: ltv + '%',
-                dscr: dscr,
-                creditScore: data.middleCredit,
-                programs: programs
-            };
-            
-            document.getElementById('appId').textContent = results.appId;
-            document.getElementById('decisionBadge').textContent = 
-                results.decision === 'approve' ? '✅ APPROVED' : 
-                results.decision === 'conditional' ? '⚠️ CONDITIONAL' : '❌ REJECTED';
-            document.getElementById('decisionBadge').className = 
-                'decision-badge ' + (results.decision === 'conditional' ? 'warning' : results.decision);
-            
             resultsGrid.innerHTML = `
-                <div class="result-card">
-                    <h4>Borrower</h4>
-                    <div class="value" style="font-size: 1.1rem;">${results.borrower}</div>
+                <div class="result-item">
+                    <div class="result-label">Units</div>
+                    <div class="result-value">${data.application?.units || '-'}</div>
                 </div>
-                <div class="result-card">
-                    <h4>Property</h4>
-                    <div class="value" style="font-size: 0.9rem;">${results.address}</div>
+                <div class="result-item">
+                    <div class="result-label">Loan Amount</div>
+                    <div class="result-value">$${(data.application?.loan_amount || 0).toLocaleString()}</div>
                 </div>
-                <div class="result-card">
-                    <h4>Units</h4>
-                    <div class="value">${results.units}</div>
+                <div class="result-item">
+                    <div class="result-label">LTV Ratio</div>
+                    <div class="result-value">${data.application?.ltv_ratio?.toFixed(1) || '-'}%</div>
                 </div>
-                <div class="result-card">
-                    <h4>Credit Score</h4>
-                    <div class="value">${results.creditScore}</div>
+                <div class="result-item">
+                    <div class="result-label">Credit Score</div>
+                    <div class="result-value">${data.application?.credit_score || '-'}</div>
                 </div>
-                <div class="result-card">
-                    <h4>Property Value</h4>
-                    <div class="value">${results.propertyValue}</div>
+                <div class="result-item">
+                    <div class="result-label">Processing Time</div>
+                    <div class="result-value">${data.processing_time?.toFixed(1) || '-'}s</div>
                 </div>
-                <div class="result-card">
-                    <h4>Loan Amount</h4>
-                    <div class="value">${results.loanAmount}</div>
-                </div>
-                <div class="result-card">
-                    <h4>LTV Ratio</h4>
-                    <div class="value">${results.ltv}</div>
-                </div>
-                <div class="result-card">
-                    <h4>DSCR</h4>
-                    <div class="value">${results.dscr}</div>
+                <div class="result-item">
+                    <div class="result-label">Confidence</div>
+                    <div class="result-value">${((data.confidence || 0) * 100).toFixed(0)}%</div>
                 </div>
             `;
             
-            programsList.innerHTML = results.programs.map(p => `
-                <div class="program-item">
-                    <span class="program-name">${p.name}</span>
-                    <span class="program-status ${p.status}">${p.status === 'conditional' ? '⚠️ ' : ''}${p.status.toUpperCase()}</span>
-                </div>
-            `).join('');
-            
-            resultsSection.classList.add('active');
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
-            
-            showToast('Processing Complete', 'Application analyzed successfully', 'success');
+            // Programs list
+            const programsList = document.getElementById('programsList');
+            if (data.programs && data.programs.length > 0) {
+                programsList.innerHTML = data.programs.map(p => `
+                    <div class="program-item">
+                        <div>
+                            <div style="font-weight: 600;">${p.program_name}</div>
+                            ${p.reason ? `<div style="font-size: 0.875rem; color: var(--text-muted);">${p.reason}</div>` : ''}
+                        </div>
+                        <span class="program-status ${p.status?.toLowerCase()}">${p.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                programsList.innerHTML = '<p style="color: var(--text-muted);">No program evaluations available</p>';
+            }
         }
         
         function newApplication() {
             document.getElementById('resultsSection').classList.remove('active');
-            document.getElementById('fileInput').value = '';
             currentFile = null;
+            currentApplicationId = null;
+            document.getElementById('fileInput').value = '';
         }
         
-        function downloadResults() {
-            showToast('Download Started', 'Excel file is being generated', 'success');
-        }
-        
-        // Navigation
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
+        // Excel Export
+        async function downloadExcel() {
+            if (!currentApplicationId) {
+                showToast('Error', 'No application to export', 'error');
+                return;
+            }
             
-            if (tab !== 'dashboard') {
-                showToast('Coming Soon', `${tab.charAt(0).toUpperCase() + tab.slice(1)} section is under development`, 'info');
+            if (authToken === 'demo-token') {
+                showToast('Demo Mode', 'Excel export not available in demo', 'warning');
+                return;
+            }
+            
+            try {
+                showToast('Exporting...', 'Preparing Excel file', 'info');
+                
+                const response = await fetch(`${API_BASE}/applications/${currentApplicationId}/export`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `loan_application_${currentApplicationId}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showToast('Success', 'Excel file downloaded', 'success');
+                } else {
+                    showToast('Error', 'Failed to export Excel', 'error');
+                }
+            } catch (error) {
+                showToast('Error', 'Export failed', 'error');
+            }
+        }
+        
+        async function exportApplication(appId) {
+            if (authToken === 'demo-token') {
+                showToast('Demo Mode', 'Export not available in demo', 'warning');
+                return;
+            }
+            
+            try {
+                showToast('Exporting...', 'Preparing Excel file', 'info');
+                
+                const response = await fetch(`${API_BASE}/applications/${appId}/export`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `loan_application_${appId}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showToast('Success', 'Excel file downloaded', 'success');
+                } else {
+                    showToast('Error', 'Failed to export', 'error');
+                }
+            } catch (error) {
+                showToast('Error', 'Export failed', 'error');
             }
         }
         
@@ -1966,32 +1975,26 @@
         function showToast(title, message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            toast.className = `toast ${type}`;
             
-            const icons = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                info: 'ℹ️'
-            };
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
             
             toast.innerHTML = `
-                <span class="toast-icon">${icons[type]}</span>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
+                <span style="font-size: 1.25rem;">${icon}</span>
+                <div>
+                    <div style="font-weight: 600;">${title}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">${message}</div>
                 </div>
-                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
             `;
             
             container.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease reverse';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
         }
     </script>
 </body>
 </html>
-<!-- Deployed: Thu Apr  9 15:21:03 EDT 2026 -->
