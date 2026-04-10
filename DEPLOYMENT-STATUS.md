@@ -63,7 +63,7 @@ Add a CNAME record in your Cloudflare dashboard for complaicore.com:
 | Frontend Code | ✅ Ready | GitHub Repo |
 | GitHub Actions | ✅ Configured | Auto-deploy on push |
 | Custom Domain | ⏳ Pending DNS | loansizer.complaicore.com |
-| Backend API | ⚠️ Check Render | loan-sizer-api.onrender.com |
+| Backend API | ✅ Running | loan-sizer-saas.onrender.com |
 | SSL Certificate | ⏳ Auto (GitHub) | After DNS setup |
 
 ---
@@ -72,7 +72,7 @@ Add a CNAME record in your Cloudflare dashboard for complaicore.com:
 
 ### After Deployment:
 - **Dashboard**: https://loansizer.complaicore.com
-- **Backend API**: https://loan-sizer-api.onrender.com
+- **Backend API**: https://loan-sizer-saas.onrender.com
 - **GitHub Repo**: https://github.com/pn4556/loan-sizer-saas
 
 ### Demo Credentials:

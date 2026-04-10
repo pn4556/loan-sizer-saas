@@ -36,7 +36,7 @@ services:
         destination: /index.html
     envVars:
       - key: API_URL
-        value: https://loan-sizer-api.onrender.com
+        value: https://loan-sizer-saas.onrender.com
 
 databases:
   - name: loan-sizer-db
