@@ -1027,3 +1027,4 @@ async def startup_event():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5050)
+# Deployment trigger: Fri Apr 10 11:07:11 EDT 2026
