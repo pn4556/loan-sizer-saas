@@ -213,6 +213,41 @@ def get_tenant_context(current_user: User = Depends(get_current_user)) -> Tenant
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     """Authenticate user credentials"""
+    # Demo account - always works
+    if email == "demo@complaicore.com" and password == "demo123":
+        # Check if demo user exists, create if not
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            # Create demo client if needed
+            from slugify import slugify
+            client_slug = "demo-client"
+            client = db.query(Client).filter(Client.slug == client_slug).first()
+            if not client:
+                client = Client(
+                    company_name="Demo Lending Corp",
+                    slug=client_slug,
+                    email="admin@demolending.com",
+                    plan="trial",
+                    trial_ends_at=datetime.utcnow() + timedelta(days=365)
+                )
+                db.add(client)
+                db.flush()
+            
+            # Create demo user
+            user = User(
+                client_id=client.id,
+                email=email,
+                first_name="Demo",
+                last_name="User",
+                role="admin"
+            )
+            user.set_password(password)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        return user
+    
+    # Regular authentication
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return None
