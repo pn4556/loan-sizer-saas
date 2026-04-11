@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Email Processor - ComplAiCore</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #1e3a5f;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        input[type="email"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 12px;
+            display: none;
+        }
+        .result.success { background: #d1fae5; border: 2px solid #10b981; display: block; }
+        .result.error { background: #fee2e2; border: 2px solid #ef4444; display: block; }
+        .decision-box {
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .decision-box.approve { background: #d1fae5; border: 3px solid #10b981; }
+        .decision-box.decline { background: #fee2e2; border: 3px solid #ef4444; }
+        .decision-icon { font-size: 48px; margin-bottom: 10px; }
+        .decision-text { font-size: 32px; font-weight: 800; text-transform: uppercase; }
+        .decision-box.approve .decision-text { color: #10b981; }
+        .decision-box.decline .decision-text { color: #ef4444; }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .detail-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .detail-label { color: #6b7280; font-size: 0.9em; margin-bottom: 5px; }
+        .detail-value { color: #111827; font-weight: 600; font-size: 1.1em; }
+        .error-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .error-list h3 { color: #dc2626; margin-bottom: 15px; }
+        .error-list ul { list-style: none; }
+        .error-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #fee2e2;
+            color: #7f1d1d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .error-list li:before { content: "✗"; color: #ef4444; font-weight: bold; }
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .preset-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .preset-btn:hover { background: #e5e7eb; }
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+        .info-box h3 { color: #1e40af; margin-bottom: 10px; }
+        .info-box p { color: #1e3a8a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Loan Email Processor</h1>
+            <p>Process loan applications instantly - No email setup required!</p>
+        </div>
+
+        <div class="card">
+            <div class="info-box">
+                <h3>💡 How It Works</h3>
+                <p>While we wait for DNS propagation, use this form to test the loan processing workflow. 
+                Paste any email content with loan details and get instant PASS/FAIL analysis with a completed Excel file.</p>
+            </div>
+
+            <h2>📧 Paste Email Content</h2>
+            
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="loadExample('approve')">Load APPROVE Example</button>
+                <button class="preset-btn" onclick="loadExample('decline')">Load DECLINE Example</button>
+                <button class="preset-btn" onclick="clearForm()">Clear</button>
+            </div>
+
+            <form id="processorForm">
+                <div class="form-group">
+                    <label for="fromEmail">From Email</label>
+                    <input type="email" id="fromEmail" placeholder="prospect@email.com" value="prospect@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" placeholder="Loan Application - 123 Main St" value="Loan Application - 123 Main St">
+                </div>
+
+                <div class="form-group">
+                    <label for="emailBody">Email Body (Loan Details)</label>
+                    <textarea id="emailBody" placeholder="Paste email content here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%)</label>
+                    <input type="number" id="interestRate" value="7.5" step="0.1">
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    <span>🚀 Process Loan Application</span>
+                </button>
+            </form>
+
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Supported Data Fields</h2>
+            <p style="color: #6b7280; margin-bottom: 15px;">Our AI automatically extracts these fields from your email:</p>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Purchase Price</div>
+                    <div class="detail-value">$500,000</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Loan Amount</div>
+                    <div class="detail-value">$400,000</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Property Address</div>
+                    <div class="detail-value">123 Main St</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Credit Score</div>
+                    <div class="detail-value">720</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Units</div>
+                    <div class="detail-value">1</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">LTV / DSCR</div>
+                    <div class="detail-value">80% / 1.25</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔗 API Integration</h2>
+            <p style="color: #6b7280; margin-bottom: 15px;">Once DNS propagates, you can use the webhook directly:</p>
+            <div style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 0.9em; overflow-x: auto;">
+POST https://loan-sizer-saas.onrender.com/email/webhook/sendgrid<br>
+Content-Type: multipart/form-data<br><br>
+to: loans+complaicore-test@complaicore.com<br>
+from: prospect@email.com<br>
+subject: Loan App<br>
+text: [email body]
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://loan-sizer-saas.onrender.com';
+
+        const examples = {
+            approve: `Purchase Price: $500,000
+Loan Amount: $400,000
+Property Type: Single Family
+Address: 123 Main St
+City: Los Angeles
+State: CA
+Zip Code: 90210
+Units: 1
+Credit Score: 720
+LTV: 80%
+DSCR: 1.25`,
+            decline: `Purchase Price: $300,000
+Loan Amount: $280,000
+Property Type: Multifamily
+Address: 456 Oak Ave
+City: Phoenix
+State: AZ
+Zip Code: 85001
+Units: 4
+Credit Score: 580
+LTV: 93%
+DSCR: 0.85`
+        };
+
+        function loadExample(type) {
+            document.getElementById('emailBody').value = examples[type];
+            if (type === 'decline') {
+                document.getElementById('subject').value = 'Loan Application - 456 Oak Ave';
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('emailBody').value = '';
+            document.getElementById('subject').value = '';
+        }
+
+        document.getElementById('processorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Processing...';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = '';
+
+            try {
+                // First login to get token
+                const loginRes = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'testbroker@complaicore.com',
+                        password: 'TestPass123!'
+                    })
+                });
+                
+                if (!loginRes.ok) throw new Error('Login failed');
+                const { access_token } = await loginRes.json();
+
+                // Process the email
+                const processRes = await fetch(`${API_BASE}/applications/process/email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
+                    },
+                    body: JSON.stringify({
+                        applicant_email: document.getElementById('fromEmail').value,
+                        email_content: document.getElementById('emailBody').value,
+                        interest_rate: parseFloat(document.getElementById('interestRate').value)
+                    })
+                });
+
+                const data = await processRes.json();
+                displayResult(data);
+
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        Make sure the backend is running at ${API_BASE}
+                    </p>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀 Process Loan Application</span>';
+            }
+        });
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            
+            if (data.status === 'completed' || data.decision) {
+                const isApprove = data.decision === 'APPROVE' || data.overall_decision === 'APPROVE';
+                const decisionClass = isApprove ? 'approve' : 'decline';
+                const decisionIcon = isApprove ? '✓' : '✗';
+                const decisionText = isApprove ? 'APPROVE' : 'DECLINE';
+                
+                let errorListHtml = '';
+                if (!isApprove && data.failure_reasons) {
+                    errorListHtml = `
+                        <div class="error-list">
+                            <h3>Why This Application Did Not Pass:</h3>
+                            <ul>
+                                ${data.failure_reasons.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <div class="decision-box ${decisionClass}">
+                        <div class="decision-icon">${decisionIcon}</div>
+                        <div class="decision-text">${decisionText}</div>
+                    </div>
+                    ${errorListHtml}
+                    <div style="margin-top: 20px;">
+                        <p><strong>Application ID:</strong> ${data.application_id}</p>
+                        <p><strong>Status:</strong> ${data.status}</p>
+                        ${data.message ? `<p><strong>Message:</strong> ${data.message}</p>` : ''}
+                    </div>
+                `;
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>⚠️ Processing Result</h3>
+                    <p><strong>Status:</strong> ${data.status}</p>
+                    <p><strong>Message:</strong> ${data.message}</p>
+                    ${data.extracted_data ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Extracted Data:</strong>
+                            <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 10px; overflow-x: auto;">${JSON.stringify(data.extracted_data, null, 2)}</pre>
+                        </div>
+                    ` : ''}
+                `;
+            }
+        }
+
+        // Load approve example by default
+        loadExample('approve');
+    </script>
+</body>
+</html>
