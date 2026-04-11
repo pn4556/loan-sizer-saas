@@ -434,7 +434,9 @@
         .top-actions {
             display: flex;
             align-items: center;
-            gap: var(--space-4);
+            gap: var(--space-3);
+            overflow: visible;
+            padding: 4px;
         }
 
         .icon-btn {
@@ -450,6 +452,8 @@
             cursor: pointer;
             transition: all var(--transition-fast);
             position: relative;
+            overflow: visible;
+            flex-shrink: 0;
         }
 
         .icon-btn:hover {
@@ -1674,25 +1678,29 @@
         .tooltip::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 100%;
+            top: 100%;
             left: 50%;
-            transform: translateX(-50%) translateY(-8px);
-            padding: var(--space-2) var(--space-3);
+            transform: translateX(-50%) translateY(8px);
+            padding: 6px 10px;
             background: var(--gray-900);
             color: var(--gray-0);
-            font-size: var(--text-xs);
+            font-size: 11px;
+            font-weight: 500;
             border-radius: var(--radius-md);
             white-space: nowrap;
             opacity: 0;
             visibility: hidden;
             transition: all var(--transition-fast);
-            z-index: 100;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface-3);
+            letter-spacing: 0.3px;
         }
 
         .tooltip:hover::after {
             opacity: 1;
             visibility: visible;
-            transform: translateX(-50%) translateY(-4px);
+            transform: translateX(-50%) translateY(4px);
         }
 
         /* Responsive */
