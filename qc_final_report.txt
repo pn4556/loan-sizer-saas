@@ -1,0 +1,187 @@
+================================================================================
+LOAN SIZER ACCURACY ANALYSIS - FINAL REPORT
+================================================================================
+Generated: 2026-04-10
+Form: Loan Application (ID: 242686259921063)
+Total Submissions Analyzed: 205
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+✅ COMPLETE (Ready for Processing):    156 submissions (76.1%)
+⚠️  NEEDS REVIEW:                       49 submissions (23.9%)
+
+💰 TOTAL VOLUME: $19,702,390 (Complete submissions only)
+
+================================================================================
+LOAN SIZER ACCURACY SCORE: 84.3%
+================================================================================
+
+Component Breakdown:
+  - Data Completeness:    76.1% (weight: 60%)
+  - Extraction Quality:   96.6% (weight: 40%)
+  
+================================================================================
+FIELD-LEVEL EXTRACTION ACCURACY
+================================================================================
+
+Field                    Accuracy   Status
+--------------------------------------------------------
+Borrower Name            100.0%     ████████████████████ ✅
+Borrower Email           100.0%     ████████████████████ ✅
+Property Type            100.0%     ████████████████████ ✅
+City                     100.0%     ████████████████████ ✅
+State                    100.0%     ████████████████████ ✅
+Property Address         99.5%      ███████████████████  ✅
+Entity Name              97.1%      ███████████████████  ✅
+Zip Code                 96.6%      ███████████████████  ✅
+Purchase Price           95.6%      ███████████████████  ✅
+As-Is Value              90.7%      ██████████████████   ⚠️
+ARV                      90.7%      ██████████████████   ⚠️
+Rehab Amount             80.0%      ████████████████     ⚠️
+
+================================================================================
+QC ISSUES BREAKDOWN
+================================================================================
+
+Issue                           Count    % of Total
+--------------------------------------------------------
+Missing Rehab Amount              41      20.0%     🔴 CRITICAL
+Missing As-Is Value               19       9.3%     🟡 HIGH
+Missing ARV                       19       9.3%     🟡 HIGH
+Missing Purchase Price             9       4.4%     🟡 MEDIUM
+High Rehab Ratio (>85% ARV)        2       1.0%     🟢 LOW
+Missing Property Address           1       0.5%     🟢 LOW
+ARV Less Than As-Is                1       0.5%     🟢 LOW
+
+================================================================================
+FINANCIAL SUMMARY (Complete Submissions Only)
+================================================================================
+
+Total Rehab Volume:     $19,702,390
+Number of Loans:        156
+Average Loan Size:      $126,297
+Median Loan Size:       $80,000
+Loan Size Range:        $30 - $1,800,000
+
+================================================================================
+TOP 10 LOANS BY REHAB AMOUNT
+================================================================================
+
+Rank  Borrower                      Amount        City
+--------------------------------------------------------
+1     Derek Harp                    $1,800,000    Long Island City
+2     Cornelius Middleton             $995,000    Philadelphia
+3     Sean O'Donnell                  $580,000    Haddonfield
+4     Emmanuel Iwuoha                 $500,000    Newark
+5     Thomas Kelly                    $440,000    Landenberg
+6     Rian Bethea                     $435,000    Sicklerville
+7     Lanze McLaurin                  $400,000    Philadelphia
+8     John Eonta                      $350,000    Washington
+9     William Ramey                   $350,000    Sicklerville
+10    Mark Merlino                    $330,000    Sewell
+
+================================================================================
+GEOGRAPHIC DISTRIBUTION
+================================================================================
+
+State                Submissions
+--------------------------------------------------------
+NJ (New Jersey)          142
+PA (Pennsylvania)         35
+DC (Washington DC)         7
+DE (Delaware)              7
+VA (Virginia)              3
+MD (Maryland)              3
+FL (Florida)               2
+TX (Texas)                 2
+CA (California)            1
+NC (North Carolina)        1
+NY (New York)              1
+MI (Michigan)              1
+
+================================================================================
+PROPERTY TYPE BREAKDOWN
+================================================================================
+
+Type                          Count    %
+--------------------------------------------------------
+Single-Family Home              169    82.4%
+Townhouse                        17     8.3%
+Condominium                      10     4.9%
+Multi-Family Home                 9     4.4%
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+🔴 CRITICAL (Immediate Action Required):
+----------------------------------------
+1. MISSING REHAB AMOUNTS (41 submissions - 20%)
+   → Contact borrowers to collect missing rehab estimates
+   → These cannot be processed without loan amounts
+   → Potential volume impact: ~$4-5M
+
+2. MISSING PROPERTY VALUES (19 submissions each - 9.3%)
+   → 19 missing As-Is values
+   → 19 missing ARV values
+   → Required for DSCR calculations
+
+🟡 HIGH PRIORITY:
+----------------------------------------
+3. JOTFORM VALIDATION
+   → Make Rehab Amount a REQUIRED field
+   → Add data validation for numeric inputs
+   → Prevent incomplete submissions at entry point
+
+4. FOLLOW-UP WORKFLOW
+   → Set up automated email for incomplete submissions
+   → 49 submissions need data collection
+   → Target: Reduce from 23.9% to <10% incomplete
+
+🟢 OPTIMIZATION:
+----------------------------------------
+5. LOAN SIZER PROCESSING
+   → 156 submissions are READY NOW
+   → Process through Loan Sizer: $19.7M volume
+   → Average 5-10 minutes per file
+   → Estimated processing time: 13-26 hours
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. EXPORT COMPLETE SUBMISSIONS
+   → 156 ready-to-process applications
+   → CSV file generated with all data
+   
+2. PROCESS THROUGH LOAN SIZER
+   → Use batch processing feature
+   → Generate Excel outputs for each
+   → Store results for comparison
+
+3. FOLLOW UP ON INCOMPLETE
+   → Email 49 borrowers with missing data
+   → Track responses
+   → Re-process when complete
+
+4. MONTHLY QC REVIEW
+   → Monitor submission quality trends
+   → Track Loan Sizer accuracy improvements
+   → Target: 95%+ complete submissions
+
+================================================================================
+FILES GENERATED
+================================================================================
+
+1. accuracy_analysis_YYYYMMDD_HHMMSS.csv
+   → Complete data for all 205 submissions
+   → Includes all fields, issues, and status
+
+2. qc_final_report.txt (this file)
+   → Executive summary and recommendations
+
+================================================================================
+END OF REPORT
+================================================================================
