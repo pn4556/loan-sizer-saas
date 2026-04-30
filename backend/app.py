@@ -20,10 +20,11 @@ from dotenv import load_dotenv
 
 # Import new sizers
 from new_sizers_api import router as sizers_router
+from multi_lender_api import router as multi_lender_router
 
 load_dotenv()
 
-app = FastAPI(title="Loan Sizer Automation API", version="2.0.0")
+app = FastAPI(title="Loan Sizer Automation API", version="2.1.0")
 
 # CORS for frontend
 app.add_middleware(
@@ -34,8 +35,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include new sizers router
+# Include routers
 app.include_router(sizers_router)
+app.include_router(multi_lender_router)
 
 # Initialize Claude client
 claude_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))

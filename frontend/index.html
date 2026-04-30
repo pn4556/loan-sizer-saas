@@ -2903,6 +2903,163 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Multi-Lender Comparison Section -->
+                <div class="dashboard-grid" style="margin-top: var(--space-8);">
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="bar-chart-3" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Multi-Lender Comparison
+                            </div>
+                            <span class="badge badge-primary">NEW</span>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
+                                Compare pricing from 3 lenders: <strong>IFC</strong>, <strong>ICE/Guides</strong>, and <strong>Eastview</strong>. 
+                                Get the best rates for your Fix & Flip and Bridge loan scenarios.
+                            </p>
+
+                            <form id="multiLenderForm" onsubmit="handleMultiLenderSubmit(event)">
+                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
+                                    <div class="form-group">
+                                        <label class="form-label">As-Is Value</label>
+                                        <div class="input-prefix">
+                                            <span class="prefix">$</span>
+                                            <input type="number" class="form-input" id="mlAsIsValue" placeholder="400000" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">ARV</label>
+                                        <div class="input-prefix">
+                                            <span class="prefix">$</span>
+                                            <input type="number" class="form-input" id="mlARV" placeholder="650000" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Purchase Price</label>
+                                        <div class="input-prefix">
+                                            <span class="prefix">$</span>
+                                            <input type="number" class="form-input" id="mlPurchasePrice" placeholder="350000" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Rehab Budget</label>
+                                        <div class="input-prefix">
+                                            <span class="prefix">$</span>
+                                            <input type="number" class="form-input" id="mlRehabBudget" placeholder="80000" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
+                                    <div class="form-group">
+                                        <label class="form-label">FICO Score</label>
+                                        <input type="number" class="form-input" id="mlFICO" placeholder="740" min="300" max="850" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Experience (Years)</label>
+                                        <input type="number" class="form-input" id="mlExperience" placeholder="5" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Loan Purpose</label>
+                                        <select class="form-select" id="mlLoanPurpose">
+                                            <option value="purchase">Purchase</option>
+                                            <option value="refinance">Refinance</option>
+                                            <option value="cash_out">Cash Out</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Property Type</label>
+                                        <select class="form-select" id="mlPropertyType">
+                                            <option value="SFR">Single Family</option>
+                                            <option value="Multi">2-4 Units</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; gap: var(--space-4);">
+                                    <button type="button" class="btn btn-secondary" onclick="resetMultiLenderForm()">Reset</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="scale" style="width: 16px; height: 16px;"></i>
+                                        Compare Lenders
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Comparison Results -->
+                            <div id="multiLenderResults" style="display: none; margin-top: var(--space-8);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                    <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100);">
+                                        Lender Comparison Results
+                                    </h4>
+                                    <div id="bestRateBadge" style="display: flex; align-items: center; gap: var(--space-2);">
+                                        <!-- Best rate badge populated by JS -->
+                                    </div>
+                                </div>
+
+                                <!-- Summary Card -->
+                                <div id="comparisonSummary" style="background: linear-gradient(135deg, var(--primary-900), var(--primary-800)); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-6);">
+                                    <!-- Summary populated by JS -->
+                                </div>
+
+                                <!-- Lender Cards Grid -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);">
+                                    <!-- IFC Card -->
+                                    <div id="ifcCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
+                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
+                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--success-500), var(--success-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                                <span style="font-weight: var(--font-bold); color: white;">I</span>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">IFC</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Renovation Program</div>
+                                            </div>
+                                        </div>
+                                        <div id="ifcRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
+                                        <div id="ifcContent">
+                                            <!-- Content populated by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- ICE Card -->
+                                    <div id="iceCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
+                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
+                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                                <span style="font-weight: var(--font-bold); color: white;">G</span>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">ICE/Guides</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Light Rehab Program</div>
+                                            </div>
+                                        </div>
+                                        <div id="iceRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
+                                        <div id="iceContent">
+                                            <!-- Content populated by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Eastview Card -->
+                                    <div id="eastviewCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
+                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
+                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--warning-500), var(--warning-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                                <span style="font-weight: var(--font-bold); color: white;">E</span>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Eastview</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Fix & Flip Program</div>
+                                            </div>
+                                        </div>
+                                        <div id="eastviewRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
+                                        <div id="eastviewContent">
+                                            <!-- Content populated by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -3579,6 +3736,190 @@
                 showToast('Data imported from file!');
             };
             reader.readAsText(file);
+        }
+
+        // ==================== MULTI-LENDER COMPARISON FUNCTIONS ====================
+
+        async function handleMultiLenderSubmit(event) {
+            event.preventDefault();
+
+            const data = {
+                as_is_value: parseFloat(document.getElementById('mlAsIsValue').value),
+                arv: parseFloat(document.getElementById('mlARV').value),
+                purchase_price: parseFloat(document.getElementById('mlPurchasePrice').value),
+                rehab_budget: parseFloat(document.getElementById('mlRehabBudget').value),
+                fico: parseInt(document.getElementById('mlFICO').value),
+                experience: parseInt(document.getElementById('mlExperience').value),
+                loan_purpose: document.getElementById('mlLoanPurpose').value,
+                property_type: document.getElementById('mlPropertyType').value
+            };
+
+            try {
+                showToast('Comparing lenders...');
+                const response = await fetch(`${API_BASE_URL}/multi-lender/compare`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to compare lenders');
+                }
+
+                const result = await response.json();
+                displayMultiLenderResults(result);
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        function displayMultiLenderResults(result) {
+            const resultsDiv = document.getElementById('multiLenderResults');
+            const summaryDiv = document.getElementById('comparisonSummary');
+            const bestRateBadge = document.getElementById('bestRateBadge');
+            
+            resultsDiv.style.display = 'block';
+            
+            // Best rate badge
+            bestRateBadge.innerHTML = `
+                <span class="badge badge-success">Best Rate: ${result.best_rate_formatted}</span>
+                <span style="color: var(--gray-400);">from ${result.best_rate_lender}</span>
+            `;
+
+            // Summary
+            summaryDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: var(--text-xl); font-weight: var(--font-bold); color: white; margin-bottom: var(--space-2);">
+                            ${result.comparison_summary}
+                        </div>
+                        <div style="color: var(--primary-200); font-size: var(--text-sm);">
+                            Based on: ${result.input_summary.as_is_value} As-Is | 
+                            ${result.input_summary.arv} ARV | 
+                            FICO ${result.input_summary.fico} | 
+                            ${result.input_summary.experience} years experience
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update lender cards
+            result.results.forEach(lenderResult => {
+                updateLenderCard(lenderResult);
+            });
+
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateLenderCard(result) {
+            const cardMap = {
+                'IFC': { card: 'ifcCard', ranking: 'ifcRanking', content: 'ifcContent' },
+                'ICE': { card: 'iceCard', ranking: 'iceRanking', content: 'iceContent' },
+                'Eastview': { card: 'eastviewCard', ranking: 'eastviewRanking', content: 'eastviewContent' }
+            };
+
+            const mapping = cardMap[result.lender];
+            if (!mapping) return;
+
+            const rankingDiv = document.getElementById(mapping.ranking);
+            const contentDiv = document.getElementById(mapping.content);
+            const cardDiv = document.getElementById(mapping.card);
+
+            // Ranking badge
+            const rankColors = {
+                1: 'var(--success-500)',
+                2: 'var(--primary-500)',
+                3: 'var(--gray-500)'
+            };
+            rankingDiv.innerHTML = `
+                <span style="background: ${rankColors[result.ranking]}; color: white; padding: 4px 12px; border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: var(--font-semibold);">
+                    #${result.ranking}
+                </span>
+            `;
+
+            // Highlight best rate card
+            if (result.ranking === 1) {
+                cardDiv.style.border = '2px solid var(--success-500)';
+                cardDiv.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.2)';
+            } else {
+                cardDiv.style.border = '1px solid var(--surface-3)';
+                cardDiv.style.boxShadow = 'none';
+            }
+
+            // Content
+            contentDiv.innerHTML = `
+                <div style="margin-bottom: var(--space-4);">
+                    <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Interest Rate</div>
+                    <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--gray-100);">${result.rate_formatted}</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                    <div>
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Points</div>
+                        <div style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.points_formatted}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Max Loan</div>
+                        <div style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.max_loan_formatted}</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-4); padding: var(--space-3); background: var(--surface-2); border-radius: var(--radius-md);">
+                    <div style="text-align: center;">
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">LTV</div>
+                        <div style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.ltv_formatted}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">LTC</div>
+                        <div style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.ltc_formatted}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">LTARV</div>
+                        <div style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.ltarv_formatted || 'N/A'}</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid var(--surface-3); padding-top: var(--space-3);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                        <span style="font-size: var(--text-xs); color: var(--gray-500);">Monthly Payment</span>
+                        <span style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.monthly_payment_formatted}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                        <span style="font-size: var(--text-xs); color: var(--gray-500);">Annual Cost</span>
+                        <span style="font-weight: var(--font-semibold); color: var(--gray-300);">${result.total_cost_formatted}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: var(--text-xs); color: var(--gray-500);">Confidence</span>
+                        <span class="badge ${result.approval_confidence === 'High' ? 'badge-success' : 'badge-warning'}" style="font-size: var(--text-xs);">${result.approval_confidence}</span>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-4);">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="selectLender('${result.lender}')">
+                        <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                        Select ${result.lender}
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectLender(lender) {
+            showToast(`Selected ${lender} - preparing term sheet...`);
+            // Future: Generate term sheet or redirect to application
+        }
+
+        function resetMultiLenderForm() {
+            document.getElementById('multiLenderForm').reset();
+            document.getElementById('multiLenderResults').style.display = 'none';
+        }
+
+        // Load example data for multi-lender
+        function loadMultiLenderExample() {
+            document.getElementById('mlAsIsValue').value = '400000';
+            document.getElementById('mlARV').value = '650000';
+            document.getElementById('mlPurchasePrice').value = '350000';
+            document.getElementById('mlRehabBudget').value = '80000';
+            document.getElementById('mlFICO').value = '740';
+            document.getElementById('mlExperience').value = '5';
+            document.getElementById('mlLoanPurpose').value = 'purchase';
+            document.getElementById('mlPropertyType').value = 'SFR';
+            showToast('Example data loaded! Click Compare Lenders to see results.');
         }
     </script>
 </body>
