@@ -18,9 +18,12 @@ import anthropic
 from openpyxl import load_workbook
 from dotenv import load_dotenv
 
+# Import new sizers
+from new_sizers_api import router as sizers_router
+
 load_dotenv()
 
-app = FastAPI(title="Loan Sizer Automation API", version="1.0.0")
+app = FastAPI(title="Loan Sizer Automation API", version="2.0.0")
 
 # CORS for frontend
 app.add_middleware(
@@ -30,6 +33,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include new sizers router
+app.include_router(sizers_router)
 
 # Initialize Claude client
 claude_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))
@@ -646,7 +652,197 @@ Thanks""",
                 "expected_outcome": "REVIEW",
                 "rate": 8.60
             }
+        ],
+        "rtl_scenarios": [
+            {
+                "name": "RTL - Experienced Investor Light Rehab",
+                "description": "Professional investor with multiple successful flips",
+                "inputs": {
+                    "loan_purpose": "Purchase",
+                    "entity_name": "Topp Investments LLC",
+                    "guarantors": [{"name": "John Topp", "credit_score": 720}],
+                    "rehabs_completed_and_sold": 3,
+                    "rehabs_completed_refinanced": 2,
+                    "rentals_acquired": 6,
+                    "property": {
+                        "address": "3260 Bird Ave",
+                        "city": "Miami",
+                        "state": "FL",
+                        "zip_code": "33133",
+                        "property_type": "SFR"
+                    },
+                    "purchase_price": 425000,
+                    "as_is_value": 450000,
+                    "after_repair_value": 750000,
+                    "total_rehab_budget": 75000,
+                    "loan_amount": 382500,
+                    "loan_term_months": 12,
+                    "rehab_severity": "Light Rehab"
+                },
+                "expected_outcome": "PASS",
+                "max_ltv": "90%",
+                "max_ltc": "90%"
+            },
+            {
+                "name": "RTL - New Investor Heavy Rehab",
+                "description": "First-time investor with heavy structural renovation",
+                "inputs": {
+                    "loan_purpose": "Purchase",
+                    "entity_name": "First Flip LLC",
+                    "guarantors": [
+                        {"name": "Sarah Johnson", "credit_score": 680},
+                        {"name": "Mike Johnson", "credit_score": 695}
+                    ],
+                    "rehabs_completed_and_sold": 0,
+                    "rentals_acquired": 1,
+                    "property": {
+                        "address": "123 Main St",
+                        "city": "Austin",
+                        "state": "TX",
+                        "zip_code": "78701",
+                        "property_type": "2 Unit"
+                    },
+                    "purchase_price": 350000,
+                    "as_is_value": 375000,
+                    "after_repair_value": 550000,
+                    "total_rehab_budget": 125000,
+                    "loan_amount": 297500,
+                    "loan_term_months": 18,
+                    "rehab_severity": "Heavy Rehab"
+                },
+                "expected_outcome": "REVIEW",
+                "max_ltv": "80%",
+                "max_ltc": "80%"
+            }
+        ],
+        "bridge_scenarios": [
+            {
+                "name": "Bridge - Professional 1-4 Light Rehab",
+                "description": "30+ experience investor in Los Angeles",
+                "inputs": {
+                    "property": {
+                        "address": "123 Main St",
+                        "city": "Los Angeles",
+                        "state": "CA",
+                        "zip_code": "91604",
+                        "property_type": "SFR",
+                        "units": 1,
+                        "square_footage": 4000
+                    },
+                    "borrower": {
+                        "name": "Jane Smith",
+                        "fico": 770,
+                        "citizenship": "US Citizen",
+                        "bridge_experience": 30,
+                        "guc_experience": 5
+                    },
+                    "valuation": {
+                        "as_is_value": 1000000,
+                        "purchase_price": 1000000,
+                        "as_repaired_value": 1500000
+                    },
+                    "loan": {
+                        "initial_loan_amount": 900000,
+                        "rehab_amount": 150000
+                    },
+                    "loan_purpose": "Purchase",
+                    "transaction_type": "No Cash Out",
+                    "rehab_type": "Light Rehab"
+                },
+                "expected_outcome": "PASS",
+                "max_ltv": "90%",
+                "base_rate": "8.75%"
+            },
+            {
+                "name": "Bridge - Multi-Family Refinance",
+                "description": "8-unit multifamily refinance with light rehab",
+                "inputs": {
+                    "property": {
+                        "address": "456 Oak Ave",
+                        "city": "Austin",
+                        "state": "TX",
+                        "zip_code": "78704",
+                        "property_type": "5+ Unit",
+                        "units": 8,
+                        "square_footage": 6000
+                    },
+                    "borrower": {
+                        "name": "Robert Chen",
+                        "fico": 740,
+                        "citizenship": "US Citizen",
+                        "bridge_experience": 8
+                    },
+                    "valuation": {
+                        "as_is_value": 2500000,
+                        "as_repaired_value": 2800000,
+                        "initial_cost_basis": 2200000
+                    },
+                    "loan": {
+                        "initial_loan_amount": 1750000,
+                        "rehab_amount": 200000
+                    },
+                    "cash_flow": {
+                        "annual_resi_rent": 240000,
+                        "annual_property_taxes": 45000,
+                        "annual_insurance": 20000,
+                        "operating_expenses_pct": 0.25
+                    },
+                    "loan_purpose": "Refinance",
+                    "transaction_type": "No Cash Out",
+                    "rehab_type": "Light Rehab",
+                    "stabilized_property": True
+                },
+                "expected_outcome": "REVIEW",
+                "max_ltv": "70%"
+            }
         ]
+    }
+
+
+# ==================== NEW SIZER ENDPOINTS (DIRECT ACCESS) ====================
+
+@app.get("/api/loan-types")
+async def get_available_loan_types():
+    """Get all available loan sizer types"""
+    return {
+        "loan_types": [
+            {
+                "id": "rtl",
+                "name": "Fix & Flip / RTL",
+                "description": "Rehab-to-Live financing for fix and flip projects",
+                "url": "/sizers/rtl/analyze"
+            },
+            {
+                "id": "bridge",
+                "name": "Bridge Loan",
+                "description": "Short-term bridge financing for acquisitions and refis",
+                "url": "/sizers/bridge/analyze"
+            },
+            {
+                "id": "dscr",
+                "name": "DSCR Loan",
+                "description": "Debt Service Coverage Ratio loans for income properties",
+                "url": "/api/process"
+            }
+        ]
+    }
+
+
+@app.get("/")
+async def root():
+    return {
+        "status": "Loan Sizer Automation API",
+        "version": "2.0.0",
+        "features": [
+            "Email extraction and processing",
+            "DSCR loan sizing",
+            "Fix & Flip / RTL loan sizing",
+            "Bridge loan sizing"
+        ],
+        "endpoints": {
+            "sizers": "/api/loan-types",
+            "demo": "/api/demo/scenarios"
+        }
     }
 
 # ==================== MAIN ====================

@@ -2123,6 +2123,16 @@
                     <span class="nav-text">Templates</span>
                 </a>
 
+                <div class="section-label" style="margin-top: var(--space-6);">Loan Sizers</div>
+                <a href="#" class="nav-item" onclick="showSection('rtlSizer')">
+                    <i data-lucide="hammer"></i>
+                    <span class="nav-text">Fix & Flip (RTL)</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('bridgeSizer')">
+                    <i data-lucide="bridge"></i>
+                    <span class="nav-text">Bridge Loan</span>
+                </a>
+
                 <div class="section-label" style="margin-top: var(--space-6);">Analytics</div>
                 <a href="#" class="nav-item" onclick="showSection('reports')">
                     <i data-lucide="bar-chart-3"></i>
@@ -2779,6 +2789,120 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- RTL (Fix & Flip) Sizer Section -->
+                <div id="rtlSizerSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i data-lucide="hammer" style="width: 20px; height: 20px; color: var(--primary-500);"></i>
+                                Fix & Flip / RTL Loan Sizer
+                            </h3>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="loadRTLExample()">
+                                    <i data-lucide="loader" style="width: 14px; height: 14px;"></i>
+                                    Load Example
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('rtlCsvInput').click()">
+                                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                                    Upload CSV
+                                </button>
+                                <input type="file" id="rtlCsvInput" accept=".csv,.txt" style="display: none;" onchange="handleRTLUpload(event)">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="rtlForm" onsubmit="analyzeRTL(event)">
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); margin-bottom: var(--space-6);">
+                                    <div class="form-group">
+                                        <label class="form-label">Loan Purpose</label>
+                                        <select class="form-input" id="rtlLoanPurpose" required>
+                                            <option value="Purchase">Purchase</option>
+                                            <option value="Refinance">Refinance</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Rehab Type</label>
+                                        <select class="form-input" id="rtlRehabType" required>
+                                            <option value="Light Rehab">Light Rehab</option>
+                                            <option value="Heavy Rehab">Heavy Rehab</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Loan Term (months)</label>
+                                        <input type="number" class="form-input" id="rtlLoanTerm" value="12" min="1" max="36" required>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; gap: var(--space-4);">
+                                    <button type="button" class="btn btn-secondary" onclick="resetRTLForm()">Reset</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
+                                        Analyze Loan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bridge Loan Sizer Section -->
+                <div id="bridgeSizerSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i data-lucide="bridge" style="width: 20px; height: 20px; color: var(--primary-500);"></i>
+                                Bridge Loan Sizer
+                            </h3>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="loadBridgeExample()">
+                                    <i data-lucide="loader" style="width: 14px; height: 14px;"></i>
+                                    Load Example
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bridgeCsvInput').click()">
+                                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                                    Upload CSV
+                                </button>
+                                <input type="file" id="bridgeCsvInput" accept=".csv,.txt" style="display: none;" onchange="handleBridgeUpload(event)">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="bridgeForm" onsubmit="analyzeBridge(event)">
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); margin-bottom: var(--space-6);">
+                                    <div class="form-group">
+                                        <label class="form-label">Loan Purpose</label>
+                                        <select class="form-input" id="bridgeLoanPurpose" required>
+                                            <option value="Purchase">Purchase</option>
+                                            <option value="Refinance">Refinance</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Transaction Type</label>
+                                        <select class="form-input" id="bridgeTransactionType" required>
+                                            <option value="No Cash Out">No Cash Out</option>
+                                            <option value="Cash Out">Cash Out</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Rehab Type</label>
+                                        <select class="form-input" id="bridgeRehabType" required>
+                                            <option value="Bridge (No Rehab)">No Rehab</option>
+                                            <option value="Light Rehab">Light Rehab</option>
+                                            <option value="Heavy Rehab">Heavy Rehab</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; gap: var(--space-4);">
+                                    <button type="button" class="btn btn-secondary" onclick="resetBridgeForm()">Reset</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
+                                        Analyze Loan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -3128,6 +3252,333 @@
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== RTL (Fix & Flip) SIZER FUNCTIONS ====================
+        
+        const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5050' : 'https://loan-sizer-api.onrender.com';
+        
+        function loadRTLExample() {
+            document.getElementById('rtlLoanPurpose').value = 'Purchase';
+            document.getElementById('rtlRehabType').value = 'Light Rehab';
+            document.getElementById('rtlLoanTerm').value = '12';
+            document.getElementById('rtlEntityName').value = 'Topp Investments LLC';
+            document.getElementById('rtlNumOwners').value = '1';
+            document.getElementById('rtlGuarantorName').value = 'John Topp';
+            document.getElementById('rtlCreditScore').value = '720';
+            document.getElementById('rtlOwnershipPct').value = '100';
+            document.getElementById('rtlRehabsSold').value = '3';
+            document.getElementById('rtlRehabsRefi').value = '2';
+            document.getElementById('rtlRentals').value = '6';
+            document.getElementById('rtlGCRehabs').value = '0';
+            document.getElementById('rtlAddress').value = '3260 Bird Ave';
+            document.getElementById('rtlCity').value = 'Miami';
+            document.getElementById('rtlState').value = 'FL';
+            document.getElementById('rtlZip').value = '33133';
+            document.getElementById('rtlPurchasePrice').value = '425000';
+            document.getElementById('rtlAsIsValue').value = '450000';
+            document.getElementById('rtlARV').value = '750000';
+            document.getElementById('rtlRehabBudget').value = '75000';
+            document.getElementById('rtlLoanAmount').value = '382500';
+            document.getElementById('rtlPropertyType').value = 'SFR';
+            showToast('Example data loaded!');
+        }
+        
+        function resetRTLForm() {
+            document.getElementById('rtlForm').reset();
+            document.getElementById('rtlResults').classList.add('hidden');
+        }
+        
+        async function analyzeRTL(event) {
+            event.preventDefault();
+            
+            const data = {
+                loan_purpose: document.getElementById('rtlLoanPurpose').value,
+                rehab_severity: document.getElementById('rtlRehabType').value,
+                loan_term_months: parseInt(document.getElementById('rtlLoanTerm').value),
+                entity_name: document.getElementById('rtlEntityName').value,
+                num_owners: parseInt(document.getElementById('rtlNumOwners').value),
+                guarantors: [{
+                    name: document.getElementById('rtlGuarantorName').value,
+                    credit_score: parseInt(document.getElementById('rtlCreditScore').value),
+                    is_guarantor: true,
+                    ownership_pct: parseFloat(document.getElementById('rtlOwnershipPct').value)
+                }],
+                rehabs_completed_and_sold: parseInt(document.getElementById('rtlRehabsSold').value),
+                rehabs_completed_refinanced: parseInt(document.getElementById('rtlRehabsRefi').value),
+                rentals_acquired: parseInt(document.getElementById('rtlRentals').value),
+                gc_rehabs_completed: parseInt(document.getElementById('rtlGCRehabs').value),
+                property: {
+                    address: document.getElementById('rtlAddress').value,
+                    city: document.getElementById('rtlCity').value,
+                    state: document.getElementById('rtlState').value,
+                    zip_code: document.getElementById('rtlZip').value,
+                    property_type: document.getElementById('rtlPropertyType').value
+                },
+                purchase_price: parseFloat(document.getElementById('rtlPurchasePrice').value),
+                borrower_cost_basis: parseFloat(document.getElementById('rtlPurchasePrice').value),
+                as_is_value: parseFloat(document.getElementById('rtlAsIsValue').value),
+                after_repair_value: parseFloat(document.getElementById('rtlARV').value),
+                total_rehab_budget: parseFloat(document.getElementById('rtlRehabBudget').value),
+                loan_amount: parseFloat(document.getElementById('rtlLoanAmount').value),
+                expected_closing_date: new Date().toISOString().split('T')[0],
+                first_payment_date: new Date(Date.now() + 60*24*60*60*1000).toISOString().split('T')[0],
+                maturity_date: new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0]
+            };
+            
+            try {
+                showToast('Analyzing...');
+                const response = await fetch(`${API_BASE_URL}/sizers/rtl/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayRTLResults(result);
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+        
+        function displayRTLResults(result) {
+            const resultsDiv = document.getElementById('rtlResults');
+            const contentDiv = document.getElementById('rtlResultsContent');
+            const badge = document.getElementById('rtlDecisionBadge');
+            
+            resultsDiv.classList.remove('hidden');
+            badge.textContent = result.overall_pass ? 'PASS' : 'FAIL';
+            badge.className = 'badge ' + (result.overall_pass ? 'badge-success' : 'badge-danger');
+            
+            contentDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6);">
+                    <div class="stat-card">
+                        <div class="stat-label">Borrower Classification</div>
+                        <div class="stat-value">${result.borrower_classification}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Max LTV</div>
+                        <div class="stat-value">${(result.max_ltv * 100).toFixed(0)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Max LTC</div>
+                        <div class="stat-value">${(result.max_ltc * 100).toFixed(0)}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-6);">
+                    <h4 style="margin-bottom: var(--space-4);">Loan Limits</h4>
+                    <table style="width: 100%;">
+                        <tr><td>Max Loan (LTV):</td><td>$${result.max_loan_ltv?.toLocaleString() || 'N/A'}</td></tr>
+                        <tr><td>Max Loan (LTC):</td><td>$${result.max_loan_ltc?.toLocaleString() || 'N/A'}</td></tr>
+                        <tr><td>Recommended Amount:</td><td><strong>$${result.recommended_loan_amount?.toLocaleString() || 'N/A'}</strong></td></tr>
+                    </table>
+                </div>
+                ${result.failures.length > 0 ? `
+                <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--danger-50); border-radius: var(--radius-lg);">
+                    <h4 style="color: var(--danger-500); margin-bottom: var(--space-2);">Issues</h4>
+                    <ul style="margin-left: var(--space-4);">
+                        ${result.failures.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>` : ''}
+            `;
+            
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function handleRTLUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                // Parse CSV/TXT - simple format: key,value pairs
+                lines.forEach(line => {
+                    const [key, value] = line.split(',').map(s => s.trim());
+                    const elementId = 'rtl' + key.charAt(0).toUpperCase() + key.slice(1);
+                    const element = document.getElementById(elementId);
+                    if (element) element.value = value;
+                });
+                
+                showToast('Data imported from file!');
+            };
+            reader.readAsText(file);
+        }
+        
+        // ==================== BRIDGE SIZER FUNCTIONS ====================
+        
+        function loadBridgeExample() {
+            document.getElementById('bridgeLoanPurpose').value = 'Purchase';
+            document.getElementById('bridgeTransactionType').value = 'No Cash Out';
+            document.getElementById('bridgeRehabType').value = 'Light Rehab';
+            document.getElementById('bridgeBorrowerName').value = 'Jane Smith';
+            document.getElementById('bridgeFICO').value = '770';
+            document.getElementById('bridgeCitizenship').value = 'US Citizen';
+            document.getElementById('bridgeExperience').value = '30';
+            document.getElementById('bridgeGUCExperience').value = '5';
+            document.getElementById('bridgeAddress').value = '123 Main St';
+            document.getElementById('bridgeCity').value = 'Los Angeles';
+            document.getElementById('bridgeState').value = 'CA';
+            document.getElementById('bridgeZip').value = '91604';
+            document.getElementById('bridgePropertyType').value = 'SFR';
+            document.getElementById('bridgeUnits').value = '1';
+            document.getElementById('bridgeSqft').value = '4000';
+            document.getElementById('bridgeAsIsValue').value = '1000000';
+            document.getElementById('bridgePurchasePrice').value = '1000000';
+            document.getElementById('bridgeARV').value = '1500000';
+            document.getElementById('bridgeLoanAmount').value = '900000';
+            document.getElementById('bridgeRehabAmount').value = '150000';
+            document.getElementById('bridgeAssignmentFees').value = '0';
+            showToast('Example data loaded!');
+        }
+        
+        function resetBridgeForm() {
+            document.getElementById('bridgeForm').reset();
+            document.getElementById('bridgeResults').classList.add('hidden');
+        }
+        
+        async function analyzeBridge(event) {
+            event.preventDefault();
+            
+            const data = {
+                loan_purpose: document.getElementById('bridgeLoanPurpose').value,
+                transaction_type: document.getElementById('bridgeTransactionType').value,
+                rehab_type: document.getElementById('bridgeRehabType').value,
+                borrower: {
+                    name: document.getElementById('bridgeBorrowerName').value,
+                    fico: parseInt(document.getElementById('bridgeFICO').value),
+                    citizenship: document.getElementById('bridgeCitizenship').value,
+                    bridge_experience: parseInt(document.getElementById('bridgeExperience').value),
+                    guc_experience: parseInt(document.getElementById('bridgeGUCExperience').value)
+                },
+                property: {
+                    address: document.getElementById('bridgeAddress').value,
+                    city: document.getElementById('bridgeCity').value,
+                    state: document.getElementById('bridgeState').value,
+                    zip_code: document.getElementById('bridgeZip').value,
+                    property_type: document.getElementById('bridgePropertyType').value,
+                    units: parseInt(document.getElementById('bridgeUnits').value),
+                    square_footage: parseFloat(document.getElementById('bridgeSqft').value)
+                },
+                valuation: {
+                    as_is_value: parseFloat(document.getElementById('bridgeAsIsValue').value),
+                    purchase_price: parseFloat(document.getElementById('bridgePurchasePrice').value),
+                    as_repaired_value: parseFloat(document.getElementById('bridgeARV').value),
+                    initial_cost_basis: parseFloat(document.getElementById('bridgePurchasePrice').value)
+                },
+                loan: {
+                    initial_loan_amount: parseFloat(document.getElementById('bridgeLoanAmount').value),
+                    rehab_amount: parseFloat(document.getElementById('bridgeRehabAmount').value),
+                    assignment_fees: parseFloat(document.getElementById('bridgeAssignmentFees').value)
+                },
+                cash_flow: {
+                    annual_resi_rent: 0,
+                    annual_property_taxes: 15000,
+                    annual_insurance: 10000,
+                    operating_expenses_pct: 0.12
+                },
+                market: {
+                    msa: document.getElementById('bridgeCity').value + ', ' + document.getElementById('bridgeState').value,
+                    zhvi: 500000,
+                    hpa: 0.02,
+                    dom: 30
+                },
+                stabilized_property: false
+            };
+            
+            try {
+                showToast('Analyzing...');
+                const response = await fetch(`${API_BASE_URL}/sizers/bridge/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayBridgeResults(result);
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+        
+        function displayBridgeResults(result) {
+            const resultsDiv = document.getElementById('bridgeResults');
+            const contentDiv = document.getElementById('bridgeResultsContent');
+            const badge = document.getElementById('bridgeDecisionBadge');
+            
+            resultsDiv.classList.remove('hidden');
+            badge.textContent = result.overall_pass ? 'PASS' : 'REVIEW';
+            badge.className = 'badge ' + (result.overall_pass ? 'badge-success' : 'badge-warning');
+            
+            contentDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6);">
+                    <div class="stat-card">
+                        <div class="stat-label">ICE Loan Type</div>
+                        <div class="text-body-sm" style="margin-top: var(--space-2);">${result.ice_loan_type}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Final Rate</div>
+                        <div class="stat-value">${(result.final_rate * 100).toFixed(2)}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-6);">
+                    <h4 style="margin-bottom: var(--space-4);">Leverage Tests</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);">
+                        <div class="stat-card">
+                            <div class="stat-label">LTV</div>
+                            <div class="stat-value">${result.ltv_test.passed ? '✓' : '✗'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">LTC</div>
+                            <div class="stat-value">${result.ltc_test.passed ? '✓' : '✗'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">LTARV</div>
+                            <div class="stat-value">${result.ltarv_test.passed ? '✓' : '✗'}</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-6);">
+                    <h4 style="margin-bottom: var(--space-4);">Recommended Structure</h4>
+                    <table style="width: 100%;">
+                        <tr><td>Senior Loan:</td><td>$${result.senior_loan?.toLocaleString()}</td></tr>
+                        <tr><td>Construction Budget:</td><td>$${result.construction_budget?.toLocaleString()}</td></tr>
+                        <tr><td><strong>Total Loan:</strong></td><td><strong>$${result.total_loan?.toLocaleString()}</strong></td></tr>
+                    </table>
+                </div>
+                ${result.failures.length > 0 ? `
+                <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--warning-50); border-radius: var(--radius-lg);">
+                    <h4 style="color: var(--warning-600); margin-bottom: var(--space-2);">Warnings</h4>
+                    <ul style="margin-left: var(--space-4);">
+                        ${result.failures.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>` : ''}
+            `;
+            
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function handleBridgeUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                lines.forEach(line => {
+                    const [key, value] = line.split(',').map(s => s.trim());
+                    const elementId = 'bridge' + key.charAt(0).toUpperCase() + key.slice(1);
+                    const element = document.getElementById(elementId);
+                    if (element) element.value = value;
+                });
+                
+                showToast('Data imported from file!');
+            };
+            reader.readAsText(file);
         }
     </script>
 </body>
