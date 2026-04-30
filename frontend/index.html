@@ -2174,6 +2174,10 @@
                     </nav>
                 </div>
                 <div class="top-actions">
+                    <button class="btn btn-primary" onclick="startNewLoan()" style="margin-right: var(--space-2);">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                        New Loan
+                    </button>
                     <button class="icon-btn tooltip" data-tooltip="Upload (U)" onclick="triggerUpload()">
                         <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
                     </button>
@@ -3129,6 +3133,10 @@
             <div class="modal-body">
                 <div style="display: grid; gap: var(--space-4);">
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--surface-3);">
+                        <span style="color: var(--gray-300);">New loan (reset all)</span>
+                        <span class="kbd">N</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--surface-3);">
                         <span style="color: var(--gray-300);">Upload document</span>
                         <span class="kbd">U</span>
                     </div>
@@ -3146,7 +3154,7 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--surface-3);">
                         <span style="color: var(--gray-300);">Notifications</span>
-                        <span class="kbd">N</span>
+                        <span class="kbd">B</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0;">
                         <span style="color: var(--gray-300);">Show shortcuts</span>
@@ -3336,11 +3344,78 @@
             }
         }
 
+        // New Loan - Reset all forms and clear results
+        function startNewLoan() {
+            // Confirm before resetting if there's data
+            const hasData = document.querySelectorAll('input[value]:not([value=""])').length > 5;
+            if (hasData) {
+                if (!confirm('Start a new loan? This will clear all current data.')) {
+                    return;
+                }
+            }
+            
+            // Reset all forms
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => form.reset());
+            
+            // Hide all results sections
+            const resultsSections = [
+                'rtlResults',
+                'bridgeResults', 
+                'multiLenderResults'
+            ];
+            
+            resultsSections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.classList.contains('hidden')) {
+                        el.classList.add('hidden');
+                    } else {
+                        el.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Clear email upload textarea if exists
+            const emailTextarea = document.querySelector('textarea[placeholder*="email"]');
+            if (emailTextarea) emailTextarea.value = '';
+            
+            // Clear any displayed results content
+            const resultContents = [
+                'rtlResultsContent',
+                'bridgeResultsContent'
+            ];
+            
+            resultContents.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '';
+            });
+            
+            // Reset multi-lender cards to initial state
+            const lenderCards = ['ifcCard', 'iceCard', 'eastviewCard'];
+            lenderCards.forEach(id => {
+                const card = document.getElementById(id);
+                if (card) {
+                    card.style.border = '1px solid var(--surface-3)';
+                    card.style.boxShadow = 'none';
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            showToast('New loan started - forms reset');
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             
             switch(e.key.toLowerCase()) {
+                case 'n':
+                    e.preventDefault();
+                    startNewLoan();
+                    break;
                 case 'u':
                     triggerUpload();
                     break;
@@ -3354,7 +3429,7 @@
                     e.preventDefault();
                     document.querySelector('.search-bar input')?.focus();
                     break;
-                case 'n':
+                case 'b':
                     toggleNotifications();
                     break;
                 case '?':
