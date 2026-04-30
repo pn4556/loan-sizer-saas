@@ -1,0 +1,28 @@
+Subject: Fourplex Investment Loan Application
+
+Loan Officer,
+
+Please process this application for a fourplex:
+
+PROPERTY DETAILS:
+Type: Fourplex (4 units, 850 sq ft each)
+Address: 789 Jefferson Boulevard
+City: Atlanta, GA 30318
+
+FINANCIALS:
+Estimated Value: $925,000
+Purchase Price: $780,000
+Loan Amount: $702,000
+Note Type: 30 YR Fixed
+Points: 1.0%
+
+CREDIT SCORES: 768, 775, 761
+
+BORROWER:
+David Park - Park Capital Group LLC
+12 years experience, 15+ properties owned
+
+This is a cash-flowing property with stable tenants.
+
+Regards,
+David

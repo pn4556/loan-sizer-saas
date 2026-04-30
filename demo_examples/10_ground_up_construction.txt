@@ -1,0 +1,49 @@
+LOAN_SCENARIO: GROUND_UP_CONSTRUCTION
+PROPERTY_TYPE: Single Family Detached
+PROJECT_TYPE: Ground Up Construction
+
+BORROWER:
+Name: Christopher Hayes
+Entity: Hayes Construction Group LLC
+FICO: 781
+GUC Experience: 10 years
+General Contractor: Yes
+Licensed: Yes
+
+PROPERTY:
+Address: Lot 17, 8900 Vista Ridge
+City: Austin
+State: TX
+Zip: 78735
+Property Type: SFR
+Lot Size: 0.45 acres
+
+PROJECT_DETAILS:
+Projected Square Footage: 3200
+Bedrooms: 4
+Bathrooms: 3.5
+Garage: 2-car
+Pool: No
+
+VALUATION:
+Land Cost: 185000
+Construction Budget: 685000
+Soft Costs: 85000
+Total Project Cost: 955000
+Projected ARV: 1325000
+
+LOAN_REQUEST:
+Land Loan Amount: 166500
+Construction Loan Amount: 616500
+Total Loan: 783000
+Loan Term Months: 18
+Interest Only: Yes
+
+CASH_FLOW:
+Projected Monthly Rent: 5200
+Projected Annual Rent: 62400
+Operating Expenses: 18%
+
+NOTES: Custom build in growing subdivision, pre-sold comparable at $1.35M nearby
+---
+Demo file ready for upload testing

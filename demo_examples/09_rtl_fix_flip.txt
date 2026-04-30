@@ -1,0 +1,60 @@
+LOAN_SCENARIO: RTL_FIX_FLIP
+PROPERTY_TYPE: Single Family
+LOAN_PURPOSE: Purchase
+REHAB_SEVERITY: Light Rehab
+
+ENTITY:
+Entity Name: Coastal Investments LLC
+Number of Owners: 2
+
+GUARANTOR_1:
+Name: Thomas Anderson
+Credit Score: 748
+Is Guarantor: Yes
+Ownership: 60%
+
+GUARANTOR_2:
+Name: Patricia Anderson
+Credit Score: 762
+Is Guarantor: Yes
+Ownership: 40%
+
+EXPERIENCE:
+Rehabs Completed and Sold: 12
+Rehabs Completed Refinanced: 3
+Rentals Acquired: 5
+GC Rehabs Completed: 0
+
+PROPERTY:
+Address: 7823 Oceanview Terrace
+City: Miami
+State: FL
+Zip: 33133
+Property Type: SFR
+Square Footage: 1800
+
+VALUATION:
+Purchase Price: 445000
+Borrower Cost Basis: 445000
+As-Is Value: 520000
+After Repair Value: 695000
+Total Rehab Budget: 85000
+Sqft Expansion: 0
+
+FLAGS:
+Change of Use: No
+Conversion of Structure: No
+
+LOAN_REQUEST:
+Loan Amount: 395000
+Loan Term Months: 12
+Interest Accrual Type: Non-Dutch / Multiple Draws
+
+DATES:
+Expected Closing: 2025-12-15
+First Payment: 2026-02-01
+Maturity: 2026-12-01
+
+NOTES: Experienced flipper team, 6-month exit timeline expected
+---
+Demo file ready for upload testing

@@ -1,0 +1,14 @@
+units,6
+unitSize,750 sq ft each
+address,3412 Oakhaven Lane
+city,Charlotte
+state,NC
+zipCode,28205
+estimatedValue,1450000
+purchasePrice,1200000
+loanAmount,960000
+noteType,30 YR Fixed
+pointsToLender,1.75
+creditScore1,695
+creditScore2,708
+creditScore3,702

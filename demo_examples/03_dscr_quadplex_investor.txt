@@ -1,0 +1,31 @@
+LOAN_SCENARIO: DSCR_1_4_UNIT
+PROPERTY_TYPE: Fourplex
+UNITS: 4
+UNIT_SIZE: 850 sq ft each
+ADDRESS: 789 Jefferson Boulevard
+CITY: Atlanta
+STATE: GA
+ZIP: 30318
+
+VALUATION:
+Estimated Value: 925000
+Purchase Price: 780000
+Loan Amount: 702000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 1.0
+
+CREDIT:
+Credit Score 1: 768
+Credit Score 2: 775
+Credit Score 3: 761
+
+BORROWER_INFO:
+Name: David Park
+Entity: Park Capital Group LLC
+Experience: 12 years
+
+NOTES: Seasoned investor with 15+ properties, excellent credit, 90% LTV
+---
+Demo file ready for upload testing

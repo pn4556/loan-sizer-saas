@@ -1,0 +1,2 @@
+loanPurpose,Refinance
+rehabType,Heavy Rehab

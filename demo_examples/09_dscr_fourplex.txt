@@ -1,0 +1,14 @@
+units,4
+unitSize,850 sq ft each
+address,789 Jefferson Boulevard
+city,Atlanta
+state,GA
+zipCode,30318
+estimatedValue,925000
+purchasePrice,780000
+loanAmount,702000
+noteType,30 YR Fixed
+pointsToLender,1.0
+creditScore1,768
+creditScore2,775
+creditScore3,761

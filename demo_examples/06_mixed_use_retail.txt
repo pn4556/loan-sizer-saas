@@ -1,0 +1,30 @@
+LOAN_SCENARIO: MIXED_USE
+PROPERTY_TYPE: Mixed Use
+UNITS: 3 residential + 1 retail
+ADDRESS: 892 Commerce Street
+CITY: Denver
+STATE: CO
+ZIP: 80202
+
+VALUATION:
+Estimated Value: 1850000
+Purchase Price: 1520000
+Loan Amount: 1216000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 2.0
+
+CREDIT:
+Credit Score 1: 758
+Credit Score 2: 763
+Credit Score 3: 755
+
+BORROWER_INFO:
+Name: Amanda Foster
+Entity: Foster Commercial LLC
+Experience: 6 years
+
+NOTES: Ground floor retail + 2 residential units, established tenant history
+---
+Demo file ready for upload testing

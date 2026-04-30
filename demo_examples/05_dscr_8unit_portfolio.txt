@@ -1,0 +1,31 @@
+LOAN_SCENARIO: DSCR_4_9_UNIT
+PROPERTY_TYPE: Apartment Building
+UNITS: 8
+UNIT_SIZE: 650 sq ft each
+ADDRESS: 5678 Riverside Drive
+CITY: Phoenix
+STATE: AZ
+ZIP: 85016
+
+VALUATION:
+Estimated Value: 2100000
+Purchase Price: 1750000
+Loan Amount: 1400000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 2.5
+
+CREDIT:
+Credit Score 1: 742
+Credit Score 2: 736
+Credit Score 3: 749
+
+BORROWER_INFO:
+Name: Robert Thompson
+Entity: Thompson Equity Partners LLC
+Experience: 9 years
+
+NOTES: Value-add opportunity with below-market rents, renovation budget separate
+---
+Demo file ready for upload testing

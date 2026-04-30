@@ -1,0 +1,45 @@
+LOAN_SCENARIO: BRIDGE_LOAN
+PROPERTY_TYPE: Single Family
+LOAN_PURPOSE: Purchase
+REHAB_TYPE: Light Rehab
+
+ADDRESS: 2234 Palm Canyon Road
+CITY: Palm Springs
+STATE: CA
+ZIP: 92264
+
+BORROWER:
+Name: Jason Walsh
+Entity: Walsh Flip Group LLC
+FICO: 755
+Bridge Experience: 8 years
+GUC Experience: 3 years
+Citizenship: US Citizen
+
+PROPERTY:
+Units: 1
+Square Footage: 2100
+As-Is Value: 650000
+Purchase Price: 525000
+As-Repaired Value: 875000
+
+LOAN_REQUEST:
+Initial Loan Amount: 420000
+Rehab Amount: 65000
+Assignment Fees: 0
+
+CASH_FLOW:
+Annual Resi Rent: 48000
+Annual Property Taxes: 8000
+Annual Insurance: 2400
+Operating Expenses: 15%
+
+MARKET:
+MSA: Palm Springs, CA
+ZHVI: 720000
+HPA: 0.025
+Days on Market: 22
+
+NOTES: Quick flip opportunity, 90-day timeline, exit strategy: sale
+---
+Demo file ready for upload testing

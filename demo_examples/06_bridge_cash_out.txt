@@ -1,0 +1,21 @@
+loanPurpose,Refinance
+transactionType,Cash Out
+rehabType,Light Rehab
+borrowerName,David Park
+fico,768
+citizenship,US Citizen
+bridgeExperience,12
+gucExperience,5
+address,789 Jefferson Boulevard
+city,Atlanta
+state,GA
+zip,30318
+propertyType,SFR
+units,1
+sqft,2800
+asIsValue,925000
+purchasePrice,780000
+arv,1100000
+loanAmount,702000
+rehabAmount,0
+assignmentFees,0

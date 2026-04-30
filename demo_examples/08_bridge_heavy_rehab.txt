@@ -1,0 +1,45 @@
+LOAN_SCENARIO: BRIDGE_LOAN
+PROPERTY_TYPE: Single Family
+LOAN_PURPOSE: Purchase
+REHAB_TYPE: Heavy Rehab
+
+ADDRESS: 4456 Highland Avenue
+CITY: Los Angeles
+STATE: CA
+ZIP: 91604
+
+BORROWER:
+Name: Michelle Liu
+Entity: Liu Development LLC
+FICO: 772
+Bridge Experience: 15 years
+GUC Experience: 8 years
+Citizenship: US Citizen
+
+PROPERTY:
+Units: 1
+Square Footage: 3400
+As-Is Value: 1250000
+Purchase Price: 980000
+As-Repaired Value: 1850000
+
+LOAN_REQUEST:
+Initial Loan Amount: 882000
+Rehab Amount: 285000
+Assignment Fees: 25000
+
+CASH_FLOW:
+Annual Resi Rent: 84000
+Annual Property Taxes: 18500
+Annual Insurance: 4200
+Operating Expenses: 12%
+
+MARKET:
+MSA: Los Angeles, CA
+ZHVI: 1723953
+HPA: 0.017
+Days on Market: 18
+
+NOTES: Major renovation with square footage expansion, luxury finish target
+---
+Demo file ready for upload testing

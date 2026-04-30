@@ -1,0 +1,31 @@
+LOAN_SCENARIO: DSCR_4_9_UNIT
+PROPERTY_TYPE: Multifamily
+UNITS: 6
+UNIT_SIZE: 750 sq ft each
+ADDRESS: 3412 Oakhaven Lane
+CITY: Charlotte
+STATE: NC
+ZIP: 28205
+
+VALUATION:
+Estimated Value: 1450000
+Purchase Price: 1200000
+Loan Amount: 960000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 1.75
+
+CREDIT:
+Credit Score 1: 695
+Credit Score 2: 708
+Credit Score 3: 702
+
+BORROWER_INFO:
+Name: Jennifer Martinez
+Entity: Martinez Real Estate LLC
+Experience: 5 years
+
+NOTES: Mid-size multifamily acquisition, strong cash flow property
+---
+Demo file ready for upload testing

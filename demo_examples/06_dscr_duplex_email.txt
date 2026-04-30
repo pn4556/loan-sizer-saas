@@ -1,0 +1,25 @@
+Subject: Loan Request - Duplex Refinance
+
+Hello,
+
+Submitting a loan application for a duplex refinance:
+
+PROPERTY:
+- Units: 2 (1100 sq ft each)
+- Address: 1523 Magnolia Street
+- City: Nashville
+- State: TN
+- ZIP: 37208
+
+FINANCIAL:
+- Estimated Value: $675,000
+- Purchase Price: $520,000
+- Loan Amount: $506,000
+- Note Type: 30 YR Fixed
+- Points: 2.0
+
+CREDIT:
+- Scores: 712, 724, 718
+
+Thanks,
+Sarah Chen

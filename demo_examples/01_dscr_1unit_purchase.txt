@@ -1,0 +1,30 @@
+LOAN_SCENARIO: DSCR_1_4_UNIT
+PROPERTY_TYPE: Single Family Residence
+UNITS: 1
+ADDRESS: 2847 Maplewood Drive
+CITY: Austin
+STATE: TX
+ZIP: 78704
+
+VALUATION:
+Estimated Value: 485000
+Purchase Price: 425000
+Loan Amount: 339000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 1.5
+
+CREDIT:
+Credit Score 1: 745
+Credit Score 2: 738
+Credit Score 3: 751
+
+BORROWER_INFO:
+Name: Michael Rodriguez
+Entity: Rodriguez Investments LLC
+Experience: 3 years
+
+NOTES: First-time DSCR borrower, strong credit profile, 80% LTV target
+---
+Demo file ready for upload testing

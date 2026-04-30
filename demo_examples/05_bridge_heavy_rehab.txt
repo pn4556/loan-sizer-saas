@@ -1,0 +1,21 @@
+loanPurpose,Purchase
+transactionType,No Cash Out
+rehabType,Heavy Rehab
+borrowerName,Michelle Liu
+fico,772
+citizenship,US Citizen
+bridgeExperience,15
+gucExperience,8
+address,4456 Highland Avenue
+city,Los Angeles
+state,CA
+zip,91604
+propertyType,SFR
+units,1
+sqft,3400
+asIsValue,1250000
+purchasePrice,980000
+arv,1850000
+loanAmount,882000
+rehabAmount,285000
+assignmentFees,25000

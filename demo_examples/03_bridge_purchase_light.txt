@@ -1,0 +1,3 @@
+loanPurpose,Purchase
+transactionType,No Cash Out
+rehabType,Light Rehab

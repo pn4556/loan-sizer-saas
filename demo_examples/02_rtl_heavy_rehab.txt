@@ -1,0 +1,23 @@
+loanPurpose,Purchase
+entityName,Liu Development LLC
+numOwners,1
+guarantor1Name,Michelle Liu
+guarantor1FICO,772
+guarantor1IsGuarantor,Yes
+guarantor1Ownership,100
+rehabsCompletedSold,18
+rehabsCompletedRefinanced,5
+rentalsAcquired,12
+gcRehabsCompleted,3
+address,4456 Highland Avenue
+city,Los Angeles
+state,CA
+zipCode,91604
+propertyType,SFR
+squareFootage,3400
+purchasePrice,980000
+asIsValue,1250000
+afterRepairValue,1850000
+totalRehabBudget,285000
+loanAmount,882000
+loanTermMonths,12

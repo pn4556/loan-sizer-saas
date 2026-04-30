@@ -1,0 +1,23 @@
+loanPurpose,Purchase
+entityName,Walsh Flip Group LLC
+numOwners,1
+guarantor1Name,Jason Walsh
+guarantor1FICO,755
+guarantor1IsGuarantor,Yes
+guarantor1Ownership,100
+rehabsCompletedSold,12
+rehabsCompletedRefinanced,3
+rentalsAcquired,8
+gcRehabsCompleted,0
+address,2234 Palm Canyon Road
+city,Palm Springs
+state,CA
+zipCode,92264
+propertyType,SFR
+squareFootage,2100
+purchasePrice,525000
+asIsValue,650000
+afterRepairValue,875000
+totalRehabBudget,65000
+loanAmount,420000
+loanTermMonths,12

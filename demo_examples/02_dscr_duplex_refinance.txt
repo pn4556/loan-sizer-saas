@@ -1,0 +1,31 @@
+LOAN_SCENARIO: DSCR_1_4_UNIT
+PROPERTY_TYPE: Duplex
+UNITS: 2
+UNIT_SIZE: 1100 sq ft each
+ADDRESS: 1523 Magnolia Street
+CITY: Nashville
+STATE: TN
+ZIP: 37208
+
+VALUATION:
+Estimated Value: 675000
+Purchase Price: 520000
+Loan Amount: 506000
+
+LOAN_TERMS:
+Note Type: 30 YR Fixed
+Points to Lender: 2.0
+
+CREDIT:
+Credit Score 1: 712
+Credit Score 2: 724
+Credit Score 3: 718
+
+BORROWER_INFO:
+Name: Sarah Chen
+Entity: Chen Property Holdings LLC
+Experience: 7 years
+
+NOTES: Cash-out refinance for renovation funds, strong DSCR expected
+---
+Demo file ready for upload testing

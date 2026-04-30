@@ -1,0 +1,3 @@
+loanPurpose,Refinance
+transactionType,Cash Out
+rehabType,Heavy Rehab

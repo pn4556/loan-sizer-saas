@@ -1,0 +1,14 @@
+units,2
+unitSize,1100 sq ft each
+address,1523 Magnolia Street
+city,Nashville
+state,TN
+zipCode,37208
+estimatedValue,675000
+purchasePrice,520000
+loanAmount,506000
+noteType,30 YR Fixed
+pointsToLender,2.0
+creditScore1,712
+creditScore2,724
+creditScore3,718

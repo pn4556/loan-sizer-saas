@@ -1,0 +1,35 @@
+Subject: New Loan Application - SFR Purchase
+
+Hi,
+
+I would like to apply for a DSCR loan on the following property:
+
+PROPERTY DETAILS:
+- Property Type: Single Family Residence
+- Number of Units: 1
+- Address: 2847 Maplewood Drive
+- City: Austin
+- State: TX
+- ZIP: 78704
+
+FINANCIAL DETAILS:
+- Estimated Value: $485,000
+- Purchase Price: $425,000
+- Loan Amount Requested: $339,000
+- Note Type: 30 YR Fixed
+- Points: 1.5%
+
+CREDIT SCORES:
+- Score 1: 745
+- Score 2: 738
+- Score 3: 751
+
+BORROWER INFO:
+- Name: Michael Rodriguez
+- Entity: Rodriguez Investments LLC
+- Experience: 3 years
+
+Please let me know if you need any additional information.
+
+Best regards,
+Michael

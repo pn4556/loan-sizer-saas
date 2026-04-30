@@ -1,0 +1,27 @@
+loanPurpose,Refinance
+entityName,Rodriguez Investments LLC
+numOwners,2
+guarantor1Name,Michael Rodriguez
+guarantor1FICO,745
+guarantor1IsGuarantor,Yes
+guarantor1Ownership,60
+guarantor2Name,Maria Rodriguez
+guarantor2FICO,738
+guarantor2IsGuarantor,Yes
+guarantor2Ownership,40
+rehabsCompletedSold,5
+rehabsCompletedRefinanced,2
+rentalsAcquired,4
+gcRehabsCompleted,0
+address,2847 Maplewood Drive
+city,Austin
+state,TX
+zipCode,78704
+propertyType,Multi
+squareFootage,2400
+purchasePrice,425000
+asIsValue,485000
+afterRepairValue,550000
+totalRehabBudget,35000
+loanAmount,339000
+loanTermMonths,12

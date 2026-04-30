@@ -1,0 +1,13 @@
+units,1
+address,2847 Maplewood Drive
+city,Austin
+state,TX
+zipCode,78704
+estimatedValue,485000
+purchasePrice,425000
+loanAmount,339000
+noteType,30 YR Fixed
+pointsToLender,1.5
+creditScore1,745
+creditScore2,738
+creditScore3,751

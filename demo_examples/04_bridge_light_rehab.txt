@@ -1,0 +1,21 @@
+loanPurpose,Purchase
+transactionType,No Cash Out
+rehabType,Light Rehab
+borrowerName,Jason Walsh
+fico,755
+citizenship,US Citizen
+bridgeExperience,8
+gucExperience,3
+address,2234 Palm Canyon Road
+city,Palm Springs
+state,CA
+zip,92264
+propertyType,SFR
+units,1
+sqft,2100
+asIsValue,650000
+purchasePrice,525000
+arv,875000
+loanAmount,420000
+rehabAmount,65000
+assignmentFees,0
