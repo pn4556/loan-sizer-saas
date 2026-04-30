@@ -2138,9 +2138,9 @@
                     <i data-lucide="bar-chart-3"></i>
                     <span class="nav-text">Reports</span>
                 </a>
-                <a href="#" class="nav-item" onclick="showSection('audit')">
-                    <i data-lucide="shield-check"></i>
-                    <span class="nav-text">Audit Log</span>
+                <a href="#" class="nav-item" onclick="showSection('history')">
+                    <i data-lucide="history"></i>
+                    <span class="nav-text">Loan History</span>
                 </a>
 
                 <div class="section-label" style="margin-top: var(--space-6);">Settings</div>
@@ -2780,17 +2780,55 @@
                     </div>
                 </div>
 
-                <div id="auditSection" class="hidden">
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i data-lucide="shield-check" style="width: 40px; height: 40px;"></i>
+                <div id="historySection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i data-lucide="history" style="width: 20px; height: 20px; color: var(--primary-500);"></i>
+                                Previously Analyzed Loans
+                            </h3>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="clearLoanHistory()">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    Clear History
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="exportLoanHistory()">
+                                    <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                                    Export CSV
+                                </button>
+                            </div>
                         </div>
-                        <h3 class="empty-title">Audit Log</h3>
-                        <p class="empty-subtitle">Compliance tracking and decision audit trail</p>
-                        <button class="btn btn-primary" onclick="showSection('dashboard')">
-                            <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
-                            Back to Dashboard
-                        </button>
+                        <div class="card-body">
+                            <div id="loanHistoryTableContainer">
+                                <table class="data-table" id="loanHistoryTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>Loan Type</th>
+                                            <th>Borrower/Entity</th>
+                                            <th>Property</th>
+                                            <th>Loan Amount</th>
+                                            <th>Result</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="loanHistoryBody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="emptyHistoryMessage" class="empty-state" style="display: none; padding: var(--space-12);">
+                                <div class="empty-icon">
+                                    <i data-lucide="file-text" style="width: 40px; height: 40px;"></i>
+                                </div>
+                                <h3 class="empty-title">No Loans Analyzed Yet</h3>
+                                <p class="empty-subtitle">Loans you analyze will appear here for easy reference</p>
+                                <button class="btn btn-primary" onclick="showSection('dashboard')">
+                                    <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                                    Back to Dashboard
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -3204,6 +3242,226 @@
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             event.target.closest('.nav-item').classList.add('active');
+            
+            // Refresh loan history if navigating to history section
+            if (section === 'history') {
+                renderLoanHistory();
+            }
+        }
+
+        // Loan History Management
+        let loanHistory = JSON.parse(localStorage.getItem('loanHistory') || '[]');
+
+        function addToLoanHistory(loanData) {
+            const historyEntry = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                dateFormatted: new Date().toLocaleString(),
+                loanType: loanData.loanType || 'DSCR',
+                borrowerName: loanData.borrowerName || loanData.entityName || 'N/A',
+                propertyAddress: loanData.propertyAddress || loanData.address || 'N/A',
+                city: loanData.city || '',
+                state: loanData.state || '',
+                loanAmount: loanData.loanAmount || 0,
+                result: loanData.result || 'Pending',
+                resultClass: loanData.resultClass || 'badge-warning',
+                details: loanData
+            };
+            
+            loanHistory.unshift(historyEntry);
+            
+            // Keep only last 100 entries
+            if (loanHistory.length > 100) {
+                loanHistory = loanHistory.slice(0, 100);
+            }
+            
+            localStorage.setItem('loanHistory', JSON.stringify(loanHistory));
+            
+            // Refresh if currently viewing history
+            const historySection = document.getElementById('historySection');
+            if (historySection && !historySection.classList.contains('hidden')) {
+                renderLoanHistory();
+            }
+        }
+
+        function renderLoanHistory() {
+            const tbody = document.getElementById('loanHistoryBody');
+            const emptyMsg = document.getElementById('emptyHistoryMessage');
+            const tableContainer = document.getElementById('loanHistoryTableContainer');
+            
+            if (!tbody) return;
+            
+            if (loanHistory.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                tableContainer.style.display = 'none';
+                return;
+            }
+            
+            emptyMsg.style.display = 'none';
+            tableContainer.style.display = 'block';
+            
+            tbody.innerHTML = loanHistory.map(entry => `
+                <tr>
+                    <td>${entry.dateFormatted}</td>
+                    <td><span class="badge badge-primary">${entry.loanType}</span></td>
+                    <td>${entry.borrowerName}</td>
+                    <td>${entry.propertyAddress}${entry.city ? ', ' + entry.city : ''} ${entry.state}</td>
+                    <td>$${parseFloat(entry.loanAmount).toLocaleString()}</td>
+                    <td><span class="badge ${entry.resultClass}">${entry.result}</span></td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="viewLoanDetails(${entry.id})" title="View Details">
+                            <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="reloadLoan(${entry.id})" title="Reload">
+                            <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="deleteLoanEntry(${entry.id})" title="Delete">
+                            <i data-lucide="trash-2" style="width: 16px; height: 16px; color: var(--danger-500);"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Re-initialize icons for dynamically added content
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function viewLoanDetails(id) {
+            const entry = loanHistory.find(l => l.id === id);
+            if (!entry) return;
+            
+            // Create modal content
+            const detailsHtml = `
+                <div style="max-height: 60vh; overflow-y: auto;">
+                    <h4 style="margin-bottom: var(--space-4);">Loan Analysis Details</h4>
+                    <div style="display: grid; gap: var(--space-3);">
+                        <div><strong>Date:</strong> ${entry.dateFormatted}</div>
+                        <div><strong>Loan Type:</strong> ${entry.loanType}</div>
+                        <div><strong>Borrower:</strong> ${entry.borrowerName}</div>
+                        <div><strong>Property:</strong> ${entry.propertyAddress}, ${entry.city} ${entry.state}</div>
+                        <div><strong>Loan Amount:</strong> $${parseFloat(entry.loanAmount).toLocaleString()}</div>
+                        <div><strong>Result:</strong> <span class="badge ${entry.resultClass}">${entry.result}</span></div>
+                    </div>
+                    <div style="margin-top: var(--space-6);">
+                        <button class="btn btn-primary" onclick="reloadLoan(${entry.id}); closeModal();">Reload This Loan</button>
+                    </div>
+                </div>
+            `;
+            
+            showModal('Loan Details', detailsHtml);
+        }
+
+        function reloadLoan(id) {
+            const entry = loanHistory.find(l => l.id === id);
+            if (!entry || !entry.details) {
+                showToast('Loan details not available');
+                return;
+            }
+            
+            // Populate form based on loan type
+            if (entry.loanType === 'RTL' || entry.loanType === 'Fix & Flip') {
+                showSection('rtl');
+                // Populate RTL form fields
+                Object.keys(entry.details).forEach(key => {
+                    const field = document.getElementById('rtl' + key.charAt(0).toUpperCase() + key.slice(1));
+                    if (field) field.value = entry.details[key];
+                });
+            } else if (entry.loanType === 'Bridge') {
+                showSection('bridge');
+                Object.keys(entry.details).forEach(key => {
+                    const field = document.getElementById('bridge' + key.charAt(0).toUpperCase() + key.slice(1));
+                    if (field) field.value = entry.details[key];
+                });
+            }
+            
+            showToast('Loan loaded - review and click Analyze');
+        }
+
+        function deleteLoanEntry(id) {
+            if (!confirm('Delete this loan from history?')) return;
+            
+            loanHistory = loanHistory.filter(l => l.id !== id);
+            localStorage.setItem('loanHistory', JSON.stringify(loanHistory));
+            renderLoanHistory();
+            showToast('Loan entry deleted');
+        }
+
+        function clearLoanHistory() {
+            if (!confirm('Clear all loan history? This cannot be undone.')) return;
+            
+            loanHistory = [];
+            localStorage.removeItem('loanHistory');
+            renderLoanHistory();
+            showToast('Loan history cleared');
+        }
+
+        function exportLoanHistory() {
+            if (loanHistory.length === 0) {
+                showToast('No loan history to export');
+                return;
+            }
+            
+            const csv = [
+                ['Date', 'Loan Type', 'Borrower', 'Property', 'City', 'State', 'Loan Amount', 'Result'].join(','),
+                ...loanHistory.map(entry => [
+                    entry.dateFormatted,
+                    entry.loanType,
+                    `"${entry.borrowerName}"`,
+                    `"${entry.propertyAddress}"`,
+                    entry.city,
+                    entry.state,
+                    entry.loanAmount,
+                    entry.result
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `loan-history-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Loan history exported');
+        }
+
+        function showModal(title, content) {
+            // Create modal if not exists
+            let modal = document.getElementById('dynamicModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'dynamicModal';
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="dynamicModalTitle"></h3>
+                            <button class="modal-close" onclick="closeModal()">
+                                <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="dynamicModalBody"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            
+            document.getElementById('dynamicModalTitle').textContent = title;
+            document.getElementById('dynamicModalBody').innerHTML = content;
+            modal.classList.add('open');
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('dynamicModal');
+            if (modal) modal.classList.remove('open');
         }
 
         // File upload
@@ -3582,6 +3840,27 @@
             badge.textContent = result.overall_pass ? 'PASS' : 'FAIL';
             badge.className = 'badge ' + (result.overall_pass ? 'badge-success' : 'badge-danger');
             
+            // Save to loan history
+            const loanAmount = document.getElementById('rtlLoanAmount')?.value || 0;
+            const entityName = document.getElementById('rtlEntityName')?.value || 'N/A';
+            const address = document.getElementById('rtlAddress')?.value || '';
+            const city = document.getElementById('rtlCity')?.value || '';
+            const state = document.getElementById('rtlState')?.value || '';
+            
+            addToLoanHistory({
+                loanType: 'RTL',
+                entityName: entityName,
+                propertyAddress: address,
+                city: city,
+                state: state,
+                loanAmount: parseFloat(loanAmount),
+                result: result.overall_pass ? 'PASS' : 'REVIEW',
+                resultClass: result.overall_pass ? 'badge-success' : 'badge-warning',
+                maxLTV: result.max_ltv,
+                maxLTC: result.max_ltc,
+                borrowerClassification: result.borrower_classification
+            });
+            
             contentDiv.innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6);">
                     <div class="stat-card">
@@ -3743,6 +4022,27 @@
             resultsDiv.classList.remove('hidden');
             badge.textContent = result.overall_pass ? 'PASS' : 'REVIEW';
             badge.className = 'badge ' + (result.overall_pass ? 'badge-success' : 'badge-warning');
+            
+            // Save to loan history
+            const loanAmount = document.getElementById('bridgeLoanAmount')?.value || 0;
+            const borrowerName = document.getElementById('bridgeBorrowerName')?.value || 'N/A';
+            const address = document.getElementById('bridgeAddress')?.value || '';
+            const city = document.getElementById('bridgeCity')?.value || '';
+            const state = document.getElementById('bridgeState')?.value || '';
+            
+            addToLoanHistory({
+                loanType: 'Bridge',
+                borrowerName: borrowerName,
+                propertyAddress: address,
+                city: city,
+                state: state,
+                loanAmount: parseFloat(loanAmount),
+                result: result.overall_pass ? 'PASS' : 'REVIEW',
+                resultClass: result.overall_pass ? 'badge-success' : 'badge-warning',
+                finalRate: result.final_rate,
+                totalLoan: result.total_loan,
+                iceLoanType: result.ice_loan_type
+            });
             
             contentDiv.innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6);">
