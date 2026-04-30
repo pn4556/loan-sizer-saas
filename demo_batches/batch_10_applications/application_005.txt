@@ -1,0 +1,11 @@
+applicant_name: Lisa Gonzalez
+entity_name: Lisa Gonzalez LLC
+loan_type: DSCR Mixed Use
+loan_amount: 1255874
+property_address: 5803 Beverly Dr
+city: San Francisco
+state: CO
+fico_score: 753
+dscr_ratio: 1.49
+ltv_ratio: 0.52
+notes: Application #005 - 2026-04-30

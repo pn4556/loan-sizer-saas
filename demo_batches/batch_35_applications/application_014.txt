@@ -1,0 +1,11 @@
+applicant_name: Karen Jackson
+entity_name: Karen Jackson LLC
+loan_type: RTL
+loan_amount: 1011737
+property_address: 8618 Market St
+city: Glendale
+state: NV
+fico_score: 766
+dscr_ratio: 1.52
+ltv_ratio: 0.62
+notes: Application #014 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Jennifer Wilson
+entity_name: Jennifer Wilson LLC
+loan_type: DSCR Mixed Use
+loan_amount: 2474131
+property_address: 3536 Washington Ave
+city: Fontana
+state: OR
+fico_score: 633
+dscr_ratio: 1.23
+ltv_ratio: 0.79
+notes: Application #015 - 2026-04-30

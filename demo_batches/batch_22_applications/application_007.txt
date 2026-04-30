@@ -1,0 +1,11 @@
+applicant_name: Robert Robinson
+entity_name: Robert Robinson LLC
+loan_type: Ground Up Construction
+loan_amount: 2193670
+property_address: 6107 Second St
+city: Fontana
+state: NY
+fico_score: 763
+dscr_ratio: 1.72
+ltv_ratio: 0.72
+notes: Application #007 - 2026-04-30

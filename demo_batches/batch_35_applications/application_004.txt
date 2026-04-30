@@ -1,0 +1,11 @@
+applicant_name: Mary Lewis
+entity_name: Mary Lewis LLC
+loan_type: Ground Up Construction
+loan_amount: 2004470
+property_address: 4441 Park Blvd
+city: San Diego
+state: NV
+fico_score: 693
+dscr_ratio: 1.69
+ltv_ratio: 0.64
+notes: Application #004 - 2026-04-30

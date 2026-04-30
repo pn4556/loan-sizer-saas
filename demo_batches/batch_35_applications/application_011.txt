@@ -1,0 +1,11 @@
+applicant_name: Lisa Sanchez
+entity_name: Lisa Sanchez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 822716
+property_address: 6967 Third Ave
+city: Fontana
+state: NY
+fico_score: 765
+dscr_ratio: 2.4
+ltv_ratio: 0.66
+notes: Application #011 - 2026-04-30

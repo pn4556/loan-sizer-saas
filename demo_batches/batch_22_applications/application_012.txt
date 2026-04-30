@@ -1,0 +1,11 @@
+applicant_name: Lisa Miller
+entity_name: Lisa Miller LLC
+loan_type: RTL
+loan_amount: 616187
+property_address: 8350 Cedar Ln
+city: Fresno
+state: CO
+fico_score: 703
+dscr_ratio: 1.6
+ltv_ratio: 0.56
+notes: Application #012 - 2026-04-30

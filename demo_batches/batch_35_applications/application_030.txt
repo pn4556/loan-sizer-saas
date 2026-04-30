@@ -1,0 +1,11 @@
+applicant_name: Sarah Thompson
+entity_name: Sarah Thompson LLC
+loan_type: Bridge
+loan_amount: 4287075
+property_address: 6096 Oak Dr
+city: Sacramento
+state: FL
+fico_score: 553
+dscr_ratio: 0.93
+ltv_ratio: 0.89
+notes: Application #030 - 2026-04-30

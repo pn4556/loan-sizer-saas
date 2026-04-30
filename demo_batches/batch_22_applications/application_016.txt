@@ -1,0 +1,11 @@
+applicant_name: Jane White
+entity_name: Jane White LLC
+loan_type: RTL
+loan_amount: 438570
+property_address: 1821 Rodeo Dr
+city: Stockton
+state: CA
+fico_score: 652
+dscr_ratio: 1.22
+ltv_ratio: 0.79
+notes: Application #016 - 2026-04-30

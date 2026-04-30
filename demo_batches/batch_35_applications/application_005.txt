@@ -1,0 +1,11 @@
+applicant_name: Susan White
+entity_name: Susan White LLC
+loan_type: RTL
+loan_amount: 2026850
+property_address: 3662 Pine St
+city: Oakland
+state: NY
+fico_score: 683
+dscr_ratio: 1.47
+ltv_ratio: 0.73
+notes: Application #005 - 2026-04-30

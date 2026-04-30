@@ -1,0 +1,11 @@
+applicant_name: Jessica Smith
+entity_name: Jessica Smith LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 2107147
+property_address: 3223 Market St
+city: San Francisco
+state: WA
+fico_score: 623
+dscr_ratio: 1.06
+ltv_ratio: 0.78
+notes: Application #026 - 2026-04-30

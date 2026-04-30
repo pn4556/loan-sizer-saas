@@ -1,0 +1,11 @@
+applicant_name: Karen Perez
+entity_name: Karen Perez LLC
+loan_type: RTL
+loan_amount: 1137069
+property_address: 3608 Oak Dr
+city: Bakersfield
+state: AZ
+fico_score: 791
+dscr_ratio: 1.3
+ltv_ratio: 0.62
+notes: Application #006 - 2026-04-30

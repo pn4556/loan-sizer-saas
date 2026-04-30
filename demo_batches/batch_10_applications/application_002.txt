@@ -1,0 +1,11 @@
+applicant_name: Daniel Wilson
+entity_name: Daniel Wilson LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 2059593
+property_address: 2535 Washington Ave
+city: San Diego
+state: CA
+fico_score: 744
+dscr_ratio: 2.0
+ltv_ratio: 0.64
+notes: Application #002 - 2026-04-30

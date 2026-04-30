@@ -1,0 +1,11 @@
+applicant_name: Barbara Rodriguez
+entity_name: Barbara Rodriguez LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 3598810
+property_address: 7543 First St
+city: Moreno Valley
+state: WA
+fico_score: 567
+dscr_ratio: 0.78
+ltv_ratio: 0.83
+notes: Application #010 - 2026-04-30

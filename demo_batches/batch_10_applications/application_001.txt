@@ -1,0 +1,11 @@
+applicant_name: Christopher Brown
+entity_name: Christopher Brown LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 664647
+property_address: 5012 Park Blvd
+city: Los Angeles
+state: AZ
+fico_score: 774
+dscr_ratio: 1.38
+ltv_ratio: 0.69
+notes: Application #001 - 2026-04-30

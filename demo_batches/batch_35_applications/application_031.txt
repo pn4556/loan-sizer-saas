@@ -1,0 +1,11 @@
+applicant_name: Richard Thompson
+entity_name: Richard Thompson LLC
+loan_type: Ground Up Construction
+loan_amount: 3753870
+property_address: 4978 Oak Dr
+city: Fresno
+state: TX
+fico_score: 588
+dscr_ratio: 0.9
+ltv_ratio: 0.9
+notes: Application #031 - 2026-04-30

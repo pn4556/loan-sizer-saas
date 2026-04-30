@@ -1,0 +1,11 @@
+applicant_name: Lisa Anderson
+entity_name: Lisa Anderson LLC
+loan_type: Ground Up Construction
+loan_amount: 1711779
+property_address: 1106 Pine St
+city: Moreno Valley
+state: AZ
+fico_score: 734
+dscr_ratio: 1.68
+ltv_ratio: 0.54
+notes: Application #003 - 2026-04-30

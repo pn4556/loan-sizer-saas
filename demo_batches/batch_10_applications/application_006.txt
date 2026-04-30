@@ -1,0 +1,11 @@
+applicant_name: Anthony Martinez
+entity_name: Anthony Martinez LLC
+loan_type: DSCR Mixed Use
+loan_amount: 1752651
+property_address: 2654 Second St
+city: San Francisco
+state: NY
+fico_score: 649
+dscr_ratio: 1.15
+ltv_ratio: 0.78
+notes: Application #006 - 2026-04-30

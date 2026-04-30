@@ -1,0 +1,11 @@
+applicant_name: Sarah Robinson
+entity_name: Sarah Robinson LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 2338391
+property_address: 4923 Elm St
+city: Irvine
+state: AZ
+fico_score: 792
+dscr_ratio: 1.96
+ltv_ratio: 0.52
+notes: Application #005 - 2026-04-30

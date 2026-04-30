@@ -1,0 +1,23 @@
+applicant_name,entity_name,loan_type,loan_amount,property_address,city,state,fico_score,dscr_ratio,ltv_ratio,notes
+Nancy Brown,Nancy Brown LLC,DSCR 1-4 Unit,1354507,7916 Beverly Dr,Oakland,FL,729,1.73,0.75,Application #001 - 2026-04-30
+Barbara Ramirez,Barbara Ramirez LLC,Ground Up Construction,2203055,9797 Lake St,Los Angeles,TX,723,1.39,0.61,Application #002 - 2026-04-30
+John White,John White LLC,DSCR 1-4 Unit,2429292,3927 Sunset Blvd,Long Beach,CO,791,2.03,0.71,Application #003 - 2026-04-30
+Susan Miller,Susan Miller LLC,Bridge,381691,3646 Hollywood Blvd,Oakland,NV,797,1.25,0.58,Application #004 - 2026-04-30
+Sarah Robinson,Sarah Robinson LLC,DSCR 4-9 Unit,2338391,4923 Elm St,Irvine,AZ,792,1.96,0.52,Application #005 - 2026-04-30
+Mark Williams,Mark Williams LLC,Bridge,2074769,3103 Mission St,Fontana,FL,701,1.58,0.72,Application #006 - 2026-04-30
+Robert Robinson,Robert Robinson LLC,Ground Up Construction,2193670,6107 Second St,Fontana,NY,763,1.72,0.72,Application #007 - 2026-04-30
+Sarah Davis,Sarah Davis LLC,Bridge,597766,6539 Main St,Bakersfield,TX,750,1.54,0.56,Application #008 - 2026-04-30
+Matthew Lee,Matthew Lee LLC,DSCR Mixed Use,2335975,2104 Elm St,San Diego,NY,689,1.89,0.57,Application #009 - 2026-04-30
+Robert Moore,Robert Moore LLC,RTL,2107959,8744 Park Blvd,Oakland,UT,783,1.76,0.52,Application #010 - 2026-04-30
+Mary Wilson,Mary Wilson LLC,DSCR 1-4 Unit,758307,1887 Oak Dr,Anaheim,OR,731,2.16,0.7,Application #011 - 2026-04-30
+Lisa Miller,Lisa Miller LLC,RTL,616187,8350 Cedar Ln,Fresno,CO,703,1.6,0.56,Application #012 - 2026-04-30
+Thomas Sanchez,Thomas Sanchez LLC,DSCR 1-4 Unit,897559,1828 Hollywood Blvd,Fontana,TX,625,1.22,0.8,Application #013 - 2026-04-30
+Patricia Thomas,Patricia Thomas LLC,DSCR 4-9 Unit,2108443,7570 Elm St,Modesto,NY,644,1.0,0.78,Application #014 - 2026-04-30
+Jennifer Wilson,Jennifer Wilson LLC,DSCR Mixed Use,2474131,3536 Washington Ave,Fontana,OR,633,1.23,0.79,Application #015 - 2026-04-30
+Jane White,Jane White LLC,RTL,438570,1821 Rodeo Dr,Stockton,CA,652,1.22,0.79,Application #016 - 2026-04-30
+Charles Williams,Charles Williams LLC,RTL,2628162,2113 Park Blvd,San Jose,TX,627,1.23,0.79,Application #017 - 2026-04-30
+Susan Johnson,Susan Johnson LLC,Bridge,1517782,7868 Rodeo Dr,Glendale,TX,653,1.08,0.77,Application #018 - 2026-04-30
+Lisa Rodriguez,Lisa Rodriguez LLC,DSCR Mixed Use,4680683,5915 Market St,Santa Ana,FL,559,0.6,0.9,Application #019 - 2026-04-30
+Sarah Williams,Sarah Williams LLC,DSCR 4-9 Unit,4274954,9288 Lake St,Fontana,NY,594,0.91,0.93,Application #020 - 2026-04-30
+Jennifer Garcia,Jennifer Garcia LLC,Ground Up Construction,4127842,5956 Beverly Dr,Santa Rosa,CO,617,0.6,0.93,Application #021 - 2026-04-30
+Lisa Perez,Lisa Perez LLC,DSCR 1-4 Unit,4219072,5333 Oak Dr,Sacramento,FL,569,0.7,0.9,Application #022 - 2026-04-30

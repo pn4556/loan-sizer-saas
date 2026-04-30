@@ -1,0 +1,11 @@
+applicant_name: Thomas Johnson
+entity_name: Thomas Johnson LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 1630844
+property_address: 2988 Market St
+city: Fontana
+state: NY
+fico_score: 782
+dscr_ratio: 1.83
+ltv_ratio: 0.63
+notes: Application #018 - 2026-04-30

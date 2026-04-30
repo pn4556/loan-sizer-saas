@@ -1,0 +1,11 @@
+applicant_name: Jessica Perez
+entity_name: Jessica Perez LLC
+loan_type: Bridge
+loan_amount: 2567231
+property_address: 8657 Cedar Ln
+city: Santa Ana
+state: FL
+fico_score: 654
+dscr_ratio: 1.01
+ltv_ratio: 0.78
+notes: Application #025 - 2026-04-30

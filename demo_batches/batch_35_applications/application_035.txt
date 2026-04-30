@@ -1,0 +1,11 @@
+applicant_name: William Lewis
+entity_name: William Lewis LLC
+loan_type: Bridge
+loan_amount: 4181604
+property_address: 8613 Rodeo Dr
+city: Santa Rosa
+state: NY
+fico_score: 598
+dscr_ratio: 0.72
+ltv_ratio: 0.88
+notes: Application #035 - 2026-04-30

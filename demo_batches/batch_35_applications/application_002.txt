@@ -1,0 +1,11 @@
+applicant_name: John Hernandez
+entity_name: John Hernandez LLC
+loan_type: Bridge
+loan_amount: 615595
+property_address: 3647 Market St
+city: Oakland
+state: AZ
+fico_score: 770
+dscr_ratio: 1.78
+ltv_ratio: 0.5
+notes: Application #002 - 2026-04-30

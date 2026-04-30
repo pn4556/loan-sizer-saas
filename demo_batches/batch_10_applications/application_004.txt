@@ -1,0 +1,11 @@
+applicant_name: Sarah Williams
+entity_name: Sarah Williams LLC
+loan_type: Bridge
+loan_amount: 823558
+property_address: 6881 First St
+city: Santa Ana
+state: TX
+fico_score: 713
+dscr_ratio: 2.26
+ltv_ratio: 0.68
+notes: Application #004 - 2026-04-30

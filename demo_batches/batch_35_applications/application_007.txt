@@ -1,0 +1,11 @@
+applicant_name: Mark Robinson
+entity_name: Mark Robinson LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 1468545
+property_address: 6000 Park Blvd
+city: Santa Rosa
+state: NV
+fico_score: 683
+dscr_ratio: 2.08
+ltv_ratio: 0.6
+notes: Application #007 - 2026-04-30

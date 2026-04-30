@@ -1,0 +1,11 @@
+applicant_name: Patricia Martin
+entity_name: Patricia Martin LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 2480703
+property_address: 7311 Rodeo Dr
+city: Oxnard
+state: TX
+fico_score: 712
+dscr_ratio: 1.31
+ltv_ratio: 0.61
+notes: Application #010 - 2026-04-30

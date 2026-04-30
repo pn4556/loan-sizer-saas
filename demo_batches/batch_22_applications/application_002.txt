@@ -1,0 +1,11 @@
+applicant_name: Barbara Ramirez
+entity_name: Barbara Ramirez LLC
+loan_type: Ground Up Construction
+loan_amount: 2203055
+property_address: 9797 Lake St
+city: Los Angeles
+state: TX
+fico_score: 723
+dscr_ratio: 1.39
+ltv_ratio: 0.61
+notes: Application #002 - 2026-04-30

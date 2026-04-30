@@ -1,0 +1,11 @@
+applicant_name: Donald Thompson
+entity_name: Donald Thompson LLC
+loan_type: Bridge
+loan_amount: 1592929
+property_address: 1590 First St
+city: Oakland
+state: CO
+fico_score: 750
+dscr_ratio: 1.44
+ltv_ratio: 0.53
+notes: Application #003 - 2026-04-30

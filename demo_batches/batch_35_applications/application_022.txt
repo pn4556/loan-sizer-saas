@@ -1,0 +1,11 @@
+applicant_name: Michael Wilson
+entity_name: Michael Wilson LLC
+loan_type: RTL
+loan_amount: 2649806
+property_address: 9890 Market St
+city: Anaheim
+state: NV
+fico_score: 623
+dscr_ratio: 1.05
+ltv_ratio: 0.78
+notes: Application #022 - 2026-04-30

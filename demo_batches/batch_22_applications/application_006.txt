@@ -1,0 +1,11 @@
+applicant_name: Mark Williams
+entity_name: Mark Williams LLC
+loan_type: Bridge
+loan_amount: 2074769
+property_address: 3103 Mission St
+city: Fontana
+state: FL
+fico_score: 701
+dscr_ratio: 1.58
+ltv_ratio: 0.72
+notes: Application #006 - 2026-04-30

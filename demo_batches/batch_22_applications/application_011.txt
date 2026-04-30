@@ -1,0 +1,11 @@
+applicant_name: Mary Wilson
+entity_name: Mary Wilson LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 758307
+property_address: 1887 Oak Dr
+city: Anaheim
+state: OR
+fico_score: 731
+dscr_ratio: 2.16
+ltv_ratio: 0.7
+notes: Application #011 - 2026-04-30

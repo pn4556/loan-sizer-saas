@@ -1,0 +1,11 @@
+applicant_name: Anthony Lewis
+entity_name: Anthony Lewis LLC
+loan_type: Bridge
+loan_amount: 2190928
+property_address: 9270 Third Ave
+city: Santa Rosa
+state: UT
+fico_score: 648
+dscr_ratio: 1.22
+ltv_ratio: 0.8
+notes: Application #019 - 2026-04-30

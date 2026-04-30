@@ -1,0 +1,11 @@
+applicant_name: Lisa Perez
+entity_name: Lisa Perez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 4219072
+property_address: 5333 Oak Dr
+city: Sacramento
+state: FL
+fico_score: 569
+dscr_ratio: 0.7
+ltv_ratio: 0.9
+notes: Application #022 - 2026-04-30

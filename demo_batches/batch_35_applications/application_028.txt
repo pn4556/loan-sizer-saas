@@ -1,0 +1,11 @@
+applicant_name: Lisa Lee
+entity_name: Lisa Lee LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 729409
+property_address: 1508 Park Blvd
+city: San Francisco
+state: CA
+fico_score: 673
+dscr_ratio: 1.0
+ltv_ratio: 0.77
+notes: Application #028 - 2026-04-30

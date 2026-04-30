@@ -1,0 +1,11 @@
+applicant_name: Charles Williams
+entity_name: Charles Williams LLC
+loan_type: RTL
+loan_amount: 2628162
+property_address: 2113 Park Blvd
+city: San Jose
+state: TX
+fico_score: 627
+dscr_ratio: 1.23
+ltv_ratio: 0.79
+notes: Application #017 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: James Hernandez
+entity_name: James Hernandez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 1667840
+property_address: 7906 Lake St
+city: Santa Ana
+state: AZ
+fico_score: 650
+dscr_ratio: 1.0
+ltv_ratio: 0.79
+notes: Application #027 - 2026-04-30

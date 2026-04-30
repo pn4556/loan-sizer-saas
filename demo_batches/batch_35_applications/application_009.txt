@@ -1,0 +1,11 @@
+applicant_name: Donald Rodriguez
+entity_name: Donald Rodriguez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 1615658
+property_address: 5349 Elm St
+city: San Jose
+state: UT
+fico_score: 756
+dscr_ratio: 1.79
+ltv_ratio: 0.68
+notes: Application #009 - 2026-04-30

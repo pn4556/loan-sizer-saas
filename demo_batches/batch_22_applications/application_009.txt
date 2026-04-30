@@ -1,0 +1,11 @@
+applicant_name: Matthew Lee
+entity_name: Matthew Lee LLC
+loan_type: DSCR Mixed Use
+loan_amount: 2335975
+property_address: 2104 Elm St
+city: San Diego
+state: NY
+fico_score: 689
+dscr_ratio: 1.89
+ltv_ratio: 0.57
+notes: Application #009 - 2026-04-30

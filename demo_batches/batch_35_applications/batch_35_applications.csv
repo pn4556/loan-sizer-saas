@@ -1,0 +1,36 @@
+applicant_name,entity_name,loan_type,loan_amount,property_address,city,state,fico_score,dscr_ratio,ltv_ratio,notes
+Robert Perez,Robert Perez LLC,DSCR 1-4 Unit,484913,9004 Lake St,Long Beach,CO,691,2.04,0.71,Application #001 - 2026-04-30
+John Hernandez,John Hernandez LLC,Bridge,615595,3647 Market St,Oakland,AZ,770,1.78,0.5,Application #002 - 2026-04-30
+Donald Thompson,Donald Thompson LLC,Bridge,1592929,1590 First St,Oakland,CO,750,1.44,0.53,Application #003 - 2026-04-30
+Mary Lewis,Mary Lewis LLC,Ground Up Construction,2004470,4441 Park Blvd,San Diego,NV,693,1.69,0.64,Application #004 - 2026-04-30
+Susan White,Susan White LLC,RTL,2026850,3662 Pine St,Oakland,NY,683,1.47,0.73,Application #005 - 2026-04-30
+Karen Perez,Karen Perez LLC,RTL,1137069,3608 Oak Dr,Bakersfield,AZ,791,1.3,0.62,Application #006 - 2026-04-30
+Mark Robinson,Mark Robinson LLC,DSCR 4-9 Unit,1468545,6000 Park Blvd,Santa Rosa,NV,683,2.08,0.6,Application #007 - 2026-04-30
+Nancy Williams,Nancy Williams LLC,Ground Up Construction,783778,9346 Second St,Long Beach,NV,787,1.92,0.73,Application #008 - 2026-04-30
+Donald Rodriguez,Donald Rodriguez LLC,DSCR 1-4 Unit,1615658,5349 Elm St,San Jose,UT,756,1.79,0.68,Application #009 - 2026-04-30
+Patricia Martin,Patricia Martin LLC,DSCR 4-9 Unit,2480703,7311 Rodeo Dr,Oxnard,TX,712,1.31,0.61,Application #010 - 2026-04-30
+Lisa Sanchez,Lisa Sanchez LLC,DSCR 1-4 Unit,822716,6967 Third Ave,Fontana,NY,765,2.4,0.66,Application #011 - 2026-04-30
+Sarah Lewis,Sarah Lewis LLC,DSCR Mixed Use,1104635,6067 Third Ave,Riverside,CO,731,2.12,0.64,Application #012 - 2026-04-30
+Patricia Perez,Patricia Perez LLC,Bridge,2103081,5930 Second St,Santa Ana,FL,786,1.25,0.57,Application #013 - 2026-04-30
+Karen Jackson,Karen Jackson LLC,RTL,1011737,8618 Market St,Glendale,NV,766,1.52,0.62,Application #014 - 2026-04-30
+Jessica Williams,Jessica Williams LLC,DSCR 4-9 Unit,918047,6491 Maple Ave,Riverside,CO,766,1.64,0.7,Application #015 - 2026-04-30
+John Johnson,John Johnson LLC,RTL,1910522,2193 Market St,Bakersfield,OR,793,2.04,0.55,Application #016 - 2026-04-30
+Linda Gonzalez,Linda Gonzalez LLC,RTL,2472472,1090 Oak Dr,Bakersfield,FL,708,1.47,0.74,Application #017 - 2026-04-30
+Thomas Johnson,Thomas Johnson LLC,DSCR 4-9 Unit,1630844,2988 Market St,Fontana,NY,782,1.83,0.63,Application #018 - 2026-04-30
+Anthony Lewis,Anthony Lewis LLC,Bridge,2190928,9270 Third Ave,Santa Rosa,UT,648,1.22,0.8,Application #019 - 2026-04-30
+Thomas Rodriguez,Thomas Rodriguez LLC,Ground Up Construction,1398430,9540 Mission St,Bakersfield,AZ,635,1.07,0.76,Application #020 - 2026-04-30
+Lisa Rodriguez,Lisa Rodriguez LLC,DSCR 4-9 Unit,1097383,9849 Maple Ave,Stockton,NV,629,1.06,0.79,Application #021 - 2026-04-30
+Michael Wilson,Michael Wilson LLC,RTL,2649806,9890 Market St,Anaheim,NV,623,1.05,0.78,Application #022 - 2026-04-30
+Matthew Smith,Matthew Smith LLC,DSCR Mixed Use,1957502,8814 Main St,Moreno Valley,WA,639,1.18,0.8,Application #023 - 2026-04-30
+Barbara White,Barbara White LLC,DSCR 4-9 Unit,1609829,4613 Mission St,Fontana,UT,637,1.1,0.76,Application #024 - 2026-04-30
+Jessica Perez,Jessica Perez LLC,Bridge,2567231,8657 Cedar Ln,Santa Ana,FL,654,1.01,0.78,Application #025 - 2026-04-30
+Jessica Smith,Jessica Smith LLC,DSCR 4-9 Unit,2107147,3223 Market St,San Francisco,WA,623,1.06,0.78,Application #026 - 2026-04-30
+James Hernandez,James Hernandez LLC,DSCR 1-4 Unit,1667840,7906 Lake St,Santa Ana,AZ,650,1.0,0.79,Application #027 - 2026-04-30
+Lisa Lee,Lisa Lee LLC,DSCR 4-9 Unit,729409,1508 Park Blvd,San Francisco,CA,673,1.0,0.77,Application #028 - 2026-04-30
+Linda Perez,Linda Perez LLC,Ground Up Construction,4773490,4571 Market St,Sacramento,UT,582,0.87,0.84,Application #029 - 2026-04-30
+Sarah Thompson,Sarah Thompson LLC,Bridge,4287075,6096 Oak Dr,Sacramento,FL,553,0.93,0.89,Application #030 - 2026-04-30
+Richard Thompson,Richard Thompson LLC,Ground Up Construction,3753870,4978 Oak Dr,Fresno,TX,588,0.9,0.9,Application #031 - 2026-04-30
+Karen Jackson,Karen Jackson LLC,Ground Up Construction,3526533,9728 Third Ave,San Diego,NV,597,0.62,0.9,Application #032 - 2026-04-30
+Nancy Wilson,Nancy Wilson LLC,Ground Up Construction,4594182,8102 First St,Modesto,TX,608,0.85,0.88,Application #033 - 2026-04-30
+Christopher Rodriguez,Christopher Rodriguez LLC,RTL,3681745,8921 Market St,Glendale,CO,584,0.71,0.85,Application #034 - 2026-04-30
+William Lewis,William Lewis LLC,Bridge,4181604,8613 Rodeo Dr,Santa Rosa,NY,598,0.72,0.88,Application #035 - 2026-04-30

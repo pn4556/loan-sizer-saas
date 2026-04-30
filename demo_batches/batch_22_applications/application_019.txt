@@ -1,0 +1,11 @@
+applicant_name: Lisa Rodriguez
+entity_name: Lisa Rodriguez LLC
+loan_type: DSCR Mixed Use
+loan_amount: 4680683
+property_address: 5915 Market St
+city: Santa Ana
+state: FL
+fico_score: 559
+dscr_ratio: 0.6
+ltv_ratio: 0.9
+notes: Application #019 - 2026-04-30

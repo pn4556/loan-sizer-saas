@@ -1,0 +1,11 @@
+applicant_name: Thomas Sanchez
+entity_name: Thomas Sanchez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 897559
+property_address: 1828 Hollywood Blvd
+city: Fontana
+state: TX
+fico_score: 625
+dscr_ratio: 1.22
+ltv_ratio: 0.8
+notes: Application #013 - 2026-04-30

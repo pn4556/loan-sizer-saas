@@ -1,0 +1,11 @@
+applicant_name: Barbara White
+entity_name: Barbara White LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 1609829
+property_address: 4613 Mission St
+city: Fontana
+state: UT
+fico_score: 637
+dscr_ratio: 1.1
+ltv_ratio: 0.76
+notes: Application #024 - 2026-04-30

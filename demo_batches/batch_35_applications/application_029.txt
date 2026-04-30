@@ -1,0 +1,11 @@
+applicant_name: Linda Perez
+entity_name: Linda Perez LLC
+loan_type: Ground Up Construction
+loan_amount: 4773490
+property_address: 4571 Market St
+city: Sacramento
+state: UT
+fico_score: 582
+dscr_ratio: 0.87
+ltv_ratio: 0.84
+notes: Application #029 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Robert Moore
+entity_name: Robert Moore LLC
+loan_type: RTL
+loan_amount: 2107959
+property_address: 8744 Park Blvd
+city: Oakland
+state: UT
+fico_score: 783
+dscr_ratio: 1.76
+ltv_ratio: 0.52
+notes: Application #010 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Christopher Rodriguez
+entity_name: Christopher Rodriguez LLC
+loan_type: RTL
+loan_amount: 3681745
+property_address: 8921 Market St
+city: Glendale
+state: CO
+fico_score: 584
+dscr_ratio: 0.71
+ltv_ratio: 0.85
+notes: Application #034 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: John Johnson
+entity_name: John Johnson LLC
+loan_type: RTL
+loan_amount: 1910522
+property_address: 2193 Market St
+city: Bakersfield
+state: OR
+fico_score: 793
+dscr_ratio: 2.04
+ltv_ratio: 0.55
+notes: Application #016 - 2026-04-30

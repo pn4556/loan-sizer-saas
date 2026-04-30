@@ -1,0 +1,11 @@
+applicant_name: John White
+entity_name: John White LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 2429292
+property_address: 3927 Sunset Blvd
+city: Long Beach
+state: CO
+fico_score: 791
+dscr_ratio: 2.03
+ltv_ratio: 0.71
+notes: Application #003 - 2026-04-30

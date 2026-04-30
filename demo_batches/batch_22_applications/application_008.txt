@@ -1,0 +1,11 @@
+applicant_name: Sarah Davis
+entity_name: Sarah Davis LLC
+loan_type: Bridge
+loan_amount: 597766
+property_address: 6539 Main St
+city: Bakersfield
+state: TX
+fico_score: 750
+dscr_ratio: 1.54
+ltv_ratio: 0.56
+notes: Application #008 - 2026-04-30

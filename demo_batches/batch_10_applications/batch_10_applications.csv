@@ -1,0 +1,11 @@
+applicant_name,entity_name,loan_type,loan_amount,property_address,city,state,fico_score,dscr_ratio,ltv_ratio,notes
+Christopher Brown,Christopher Brown LLC,DSCR 4-9 Unit,664647,5012 Park Blvd,Los Angeles,AZ,774,1.38,0.69,Application #001 - 2026-04-30
+Daniel Wilson,Daniel Wilson LLC,DSCR 4-9 Unit,2059593,2535 Washington Ave,San Diego,CA,744,2.0,0.64,Application #002 - 2026-04-30
+Lisa Anderson,Lisa Anderson LLC,Ground Up Construction,1711779,1106 Pine St,Moreno Valley,AZ,734,1.68,0.54,Application #003 - 2026-04-30
+Sarah Williams,Sarah Williams LLC,Bridge,823558,6881 First St,Santa Ana,TX,713,2.26,0.68,Application #004 - 2026-04-30
+Lisa Gonzalez,Lisa Gonzalez LLC,DSCR Mixed Use,1255874,5803 Beverly Dr,San Francisco,CO,753,1.49,0.52,Application #005 - 2026-04-30
+Anthony Martinez,Anthony Martinez LLC,DSCR Mixed Use,1752651,2654 Second St,San Francisco,NY,649,1.15,0.78,Application #006 - 2026-04-30
+Mary Miller,Mary Miller LLC,Ground Up Construction,2536016,3803 Hollywood Blvd,Long Beach,TX,635,1.04,0.78,Application #007 - 2026-04-30
+Lisa Perez,Lisa Perez LLC,DSCR Mixed Use,2578925,4752 Elm St,Stockton,CA,645,1.06,0.77,Application #008 - 2026-04-30
+Donald Thompson,Donald Thompson LLC,Ground Up Construction,4677274,9179 Second St,Stockton,NY,608,0.65,0.84,Application #009 - 2026-04-30
+Barbara Rodriguez,Barbara Rodriguez LLC,DSCR 4-9 Unit,3598810,7543 First St,Moreno Valley,WA,567,0.78,0.83,Application #010 - 2026-04-30

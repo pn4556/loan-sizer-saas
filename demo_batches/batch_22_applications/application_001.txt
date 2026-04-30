@@ -1,0 +1,11 @@
+applicant_name: Nancy Brown
+entity_name: Nancy Brown LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 1354507
+property_address: 7916 Beverly Dr
+city: Oakland
+state: FL
+fico_score: 729
+dscr_ratio: 1.73
+ltv_ratio: 0.75
+notes: Application #001 - 2026-04-30

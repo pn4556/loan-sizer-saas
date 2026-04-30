@@ -1,0 +1,11 @@
+applicant_name: Donald Thompson
+entity_name: Donald Thompson LLC
+loan_type: Ground Up Construction
+loan_amount: 4677274
+property_address: 9179 Second St
+city: Stockton
+state: NY
+fico_score: 608
+dscr_ratio: 0.65
+ltv_ratio: 0.84
+notes: Application #009 - 2026-04-30

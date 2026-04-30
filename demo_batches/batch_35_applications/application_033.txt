@@ -1,0 +1,11 @@
+applicant_name: Nancy Wilson
+entity_name: Nancy Wilson LLC
+loan_type: Ground Up Construction
+loan_amount: 4594182
+property_address: 8102 First St
+city: Modesto
+state: TX
+fico_score: 608
+dscr_ratio: 0.85
+ltv_ratio: 0.88
+notes: Application #033 - 2026-04-30

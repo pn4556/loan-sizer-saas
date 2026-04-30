@@ -1,0 +1,11 @@
+applicant_name: Mary Miller
+entity_name: Mary Miller LLC
+loan_type: Ground Up Construction
+loan_amount: 2536016
+property_address: 3803 Hollywood Blvd
+city: Long Beach
+state: TX
+fico_score: 635
+dscr_ratio: 1.04
+ltv_ratio: 0.78
+notes: Application #007 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Sarah Williams
+entity_name: Sarah Williams LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 4274954
+property_address: 9288 Lake St
+city: Fontana
+state: NY
+fico_score: 594
+dscr_ratio: 0.91
+ltv_ratio: 0.93
+notes: Application #020 - 2026-04-30

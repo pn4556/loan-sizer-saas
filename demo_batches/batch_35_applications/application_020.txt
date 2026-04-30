@@ -1,0 +1,11 @@
+applicant_name: Thomas Rodriguez
+entity_name: Thomas Rodriguez LLC
+loan_type: Ground Up Construction
+loan_amount: 1398430
+property_address: 9540 Mission St
+city: Bakersfield
+state: AZ
+fico_score: 635
+dscr_ratio: 1.07
+ltv_ratio: 0.76
+notes: Application #020 - 2026-04-30

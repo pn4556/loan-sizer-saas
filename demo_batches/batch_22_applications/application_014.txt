@@ -1,0 +1,11 @@
+applicant_name: Patricia Thomas
+entity_name: Patricia Thomas LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 2108443
+property_address: 7570 Elm St
+city: Modesto
+state: NY
+fico_score: 644
+dscr_ratio: 1.0
+ltv_ratio: 0.78
+notes: Application #014 - 2026-04-30

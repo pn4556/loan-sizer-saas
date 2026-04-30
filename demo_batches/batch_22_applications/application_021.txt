@@ -1,0 +1,11 @@
+applicant_name: Jennifer Garcia
+entity_name: Jennifer Garcia LLC
+loan_type: Ground Up Construction
+loan_amount: 4127842
+property_address: 5956 Beverly Dr
+city: Santa Rosa
+state: CO
+fico_score: 617
+dscr_ratio: 0.6
+ltv_ratio: 0.93
+notes: Application #021 - 2026-04-30

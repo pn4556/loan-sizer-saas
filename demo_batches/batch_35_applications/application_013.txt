@@ -1,0 +1,11 @@
+applicant_name: Patricia Perez
+entity_name: Patricia Perez LLC
+loan_type: Bridge
+loan_amount: 2103081
+property_address: 5930 Second St
+city: Santa Ana
+state: FL
+fico_score: 786
+dscr_ratio: 1.25
+ltv_ratio: 0.57
+notes: Application #013 - 2026-04-30

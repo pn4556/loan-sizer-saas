@@ -1,0 +1,11 @@
+applicant_name: Jessica Williams
+entity_name: Jessica Williams LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 918047
+property_address: 6491 Maple Ave
+city: Riverside
+state: CO
+fico_score: 766
+dscr_ratio: 1.64
+ltv_ratio: 0.7
+notes: Application #015 - 2026-04-30

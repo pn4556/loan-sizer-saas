@@ -1,0 +1,11 @@
+applicant_name: Matthew Smith
+entity_name: Matthew Smith LLC
+loan_type: DSCR Mixed Use
+loan_amount: 1957502
+property_address: 8814 Main St
+city: Moreno Valley
+state: WA
+fico_score: 639
+dscr_ratio: 1.18
+ltv_ratio: 0.8
+notes: Application #023 - 2026-04-30

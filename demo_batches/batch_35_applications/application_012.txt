@@ -1,0 +1,11 @@
+applicant_name: Sarah Lewis
+entity_name: Sarah Lewis LLC
+loan_type: DSCR Mixed Use
+loan_amount: 1104635
+property_address: 6067 Third Ave
+city: Riverside
+state: CO
+fico_score: 731
+dscr_ratio: 2.12
+ltv_ratio: 0.64
+notes: Application #012 - 2026-04-30

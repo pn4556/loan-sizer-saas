@@ -1,0 +1,11 @@
+applicant_name: Karen Jackson
+entity_name: Karen Jackson LLC
+loan_type: Ground Up Construction
+loan_amount: 3526533
+property_address: 9728 Third Ave
+city: San Diego
+state: NV
+fico_score: 597
+dscr_ratio: 0.62
+ltv_ratio: 0.9
+notes: Application #032 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Nancy Williams
+entity_name: Nancy Williams LLC
+loan_type: Ground Up Construction
+loan_amount: 783778
+property_address: 9346 Second St
+city: Long Beach
+state: NV
+fico_score: 787
+dscr_ratio: 1.92
+ltv_ratio: 0.73
+notes: Application #008 - 2026-04-30

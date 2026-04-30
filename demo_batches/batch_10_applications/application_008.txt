@@ -1,0 +1,11 @@
+applicant_name: Lisa Perez
+entity_name: Lisa Perez LLC
+loan_type: DSCR Mixed Use
+loan_amount: 2578925
+property_address: 4752 Elm St
+city: Stockton
+state: CA
+fico_score: 645
+dscr_ratio: 1.06
+ltv_ratio: 0.77
+notes: Application #008 - 2026-04-30

@@ -1,0 +1,11 @@
+applicant_name: Lisa Rodriguez
+entity_name: Lisa Rodriguez LLC
+loan_type: DSCR 4-9 Unit
+loan_amount: 1097383
+property_address: 9849 Maple Ave
+city: Stockton
+state: NV
+fico_score: 629
+dscr_ratio: 1.06
+ltv_ratio: 0.79
+notes: Application #021 - 2026-04-30

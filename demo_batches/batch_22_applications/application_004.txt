@@ -1,0 +1,11 @@
+applicant_name: Susan Miller
+entity_name: Susan Miller LLC
+loan_type: Bridge
+loan_amount: 381691
+property_address: 3646 Hollywood Blvd
+city: Oakland
+state: NV
+fico_score: 797
+dscr_ratio: 1.25
+ltv_ratio: 0.58
+notes: Application #004 - 2026-04-30

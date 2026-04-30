@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 # Import new sizers
 from new_sizers_api import router as sizers_router
 from multi_lender_api import router as multi_lender_router
+from batch_api import router as batch_router
 
 load_dotenv()
 
@@ -38,6 +39,7 @@ app.add_middleware(
 # Include routers
 app.include_router(sizers_router)
 app.include_router(multi_lender_router)
+app.include_router(batch_router)
 
 # Initialize Claude client
 claude_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))

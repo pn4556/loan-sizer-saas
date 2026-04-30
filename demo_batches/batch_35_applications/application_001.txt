@@ -1,0 +1,11 @@
+applicant_name: Robert Perez
+entity_name: Robert Perez LLC
+loan_type: DSCR 1-4 Unit
+loan_amount: 484913
+property_address: 9004 Lake St
+city: Long Beach
+state: CO
+fico_score: 691
+dscr_ratio: 2.04
+ltv_ratio: 0.71
+notes: Application #001 - 2026-04-30

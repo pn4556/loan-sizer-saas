@@ -1,0 +1,11 @@
+applicant_name: Linda Gonzalez
+entity_name: Linda Gonzalez LLC
+loan_type: RTL
+loan_amount: 2472472
+property_address: 1090 Oak Dr
+city: Bakersfield
+state: FL
+fico_score: 708
+dscr_ratio: 1.47
+ltv_ratio: 0.74
+notes: Application #017 - 2026-04-30

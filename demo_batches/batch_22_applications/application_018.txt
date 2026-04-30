@@ -1,0 +1,11 @@
+applicant_name: Susan Johnson
+entity_name: Susan Johnson LLC
+loan_type: Bridge
+loan_amount: 1517782
+property_address: 7868 Rodeo Dr
+city: Glendale
+state: TX
+fico_score: 653
+dscr_ratio: 1.08
+ltv_ratio: 0.77
+notes: Application #018 - 2026-04-30
