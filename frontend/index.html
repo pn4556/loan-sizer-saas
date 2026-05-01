@@ -5013,6 +5013,32 @@
             showToast('Welcome to LoanSizer Pro Demo!', 'success');
         }
 
+        // Update UI elements when user logs in
+        function updateUIForLoggedInUser() {
+            const userJson = localStorage.getItem('currentUser');
+            if (!userJson) return;
+            
+            const user = JSON.parse(userJson);
+            
+            // Update sidebar user name
+            const userDisplayName = document.getElementById('userDisplayName');
+            if (userDisplayName) {
+                userDisplayName.textContent = user.name || 'Demo User';
+            }
+            
+            // Update sidebar user role
+            const userDisplayRole = document.getElementById('userDisplayRole');
+            if (userDisplayRole) {
+                userDisplayRole.textContent = user.role === 'admin' ? 'Administrator' : 'Loan Officer';
+            }
+            
+            // Update user avatar initial
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar && user.name) {
+                userAvatar.textContent = user.name.charAt(0).toUpperCase();
+            }
+        }
+
         // Sidebar toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
