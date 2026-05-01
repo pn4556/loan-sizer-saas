@@ -1,0 +1,4 @@
+applicant_name,loan_type,loan_amount,property_value,fico_score
+Jane Doe,DSCR 1-4 Unit,350000,500000,720
+Bob Johnson,RTL,250000,350000,680
+Sarah Lee,Bridge,500000,750000,760

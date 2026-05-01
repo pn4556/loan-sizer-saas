@@ -1,0 +1,9 @@
+applicant_name: John Smith
+loan_type: DSCR 1-4 Unit
+loan_amount: 450000
+property_value: 600000
+property_address: 123 Main St
+city: Los Angeles
+state: CA
+fico_score: 740
+dscr_ratio: 1.35
