@@ -1,0 +1,16 @@
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/01_landing.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/02_analyzer_empty.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/03_after_demo.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/04_file_uploaded.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/05_form_populated.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/06_analyzing.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/07_results.png'
+duration 5.7248125
+file '/Users/abs/workspace/loan-sizer-saas/video/interactions_clean/08_opportunities.png'
+duration 5.7248125

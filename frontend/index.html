@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="batch-processor.js"></script>
     <style>
         :root {
             /* Primary Colors */
@@ -3373,6 +3374,199 @@
                                                 View Details
                                             </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batch Processing Section -->
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i data-lucide="layers" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Batch Processing
+                                <span class="badge badge-light" style="margin-left: var(--space-2);">1-100 Apps</span>
+                            </h3>
+                            <div style="display: flex; gap: var(--space-2);">
+                                <button class="btn btn-ghost btn-sm" onclick="exportBatchResults()" id="batchExportBtn" disabled>
+                                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                    Export
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="clearBatchResults()" id="batchClearBtn" disabled>
+                                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Batch Upload Area -->
+                            <div id="batchUploadSection">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+                                    <!-- Left: Demo Generator -->
+                                    <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5);">
+                                        <h4 style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4);">
+                                            <i data-lucide="wand-2" style="width: 18px; height: 18px; color: var(--primary-400); vertical-align: middle; margin-right: var(--space-2);"></i>
+                                            Generate Demo Applications
+                                        </h4>
+                                        <p style="font-size: var(--text-sm); color: var(--gray-500); margin-bottom: var(--space-4);">
+                                            Create realistic sample applications for testing (1-100)
+                                        </p>
+                                        
+                                        <div style="margin-bottom: var(--space-4);">
+                                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">
+                                                Number of Applications: <span id="batchSizeValue" style="color: var(--primary-400); font-weight: 600;">10</span>
+                                            </label>
+                                            <input type="range" id="batchSizeSlider" min="1" max="100" value="10" 
+                                                style="width: 100%; accent-color: var(--primary-500);"
+                                                oninput="document.getElementById('batchSizeValue').textContent = this.value">
+                                            <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--gray-600); margin-top: var(--space-1);">
+                                                <span>1</span>
+                                                <span>25</span>
+                                                <span>50</span>
+                                                <span>75</span>
+                                                <span>100</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: var(--space-4);">
+                                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">Loan Type Mix</label>
+                                            <select id="batchTypeSelect" style="width: 100%; padding: var(--space-2); background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-md); color: var(--gray-100);">
+                                                <option value="mixed">Mixed (All Types)</option>
+                                                <option value="dscr">DSCR Only</option>
+                                                <option value="rtl">RTL / Fix & Flip Only</option>
+                                                <option value="bridge">Bridge Only</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <button class="btn btn-primary" style="width: 100%;" onclick="generateAndProcessBatch()">
+                                            <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+                                            Generate & Analyze
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Right: File Upload -->
+                                    <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5);">
+                                        <h4 style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4);">
+                                            <i data-lucide="upload" style="width: 18px; height: 18px; color: var(--success-400); vertical-align: middle; margin-right: var(--space-2);"></i>
+                                            Upload Applications
+                                        </h4>
+                                        <p style="font-size: var(--text-sm); color: var(--gray-500); margin-bottom: var(--space-4);">
+                                            Upload multiple loan application files (.txt, .csv)
+                                        </p>
+                                        
+                                        <div id="batchFileDropZone" 
+                                            style="border: 2px dashed var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-8); text-align: center; transition: all 0.2s; cursor: pointer;"
+                                            ondragover="event.preventDefault(); this.style.borderColor = 'var(--primary-400)'; this.style.background = 'rgba(37, 99, 235, 0.05)';"
+                                            ondragleave="this.style.borderColor = 'var(--surface-3)'; this.style.background = 'transparent';"
+                                            ondrop="handleBatchFileDrop(event)"
+                                            onclick="document.getElementById('batchFileInput').click()">
+                                            <input type="file" id="batchFileInput" multiple accept=".txt,.csv" style="display: none;" onchange="handleBatchFileSelect(event)">
+                                            <i data-lucide="folder-open" style="width: 48px; height: 48px; color: var(--gray-500); margin-bottom: var(--space-3);"></i>
+                                            <div style="font-size: var(--text-base); font-weight: 500; color: var(--gray-300); margin-bottom: var(--space-1);">
+                                                Drop files here or click to browse
+                                            </div>
+                                            <div style="font-size: var(--text-sm); color: var(--gray-500);">
+                                                Supports .txt and .csv files
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="batchFileList" style="margin-top: var(--space-4); max-height: 150px; overflow-y: auto;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Batch Processing Progress -->
+                            <div id="batchProgressSection" class="hidden" style="text-align: center; padding: var(--space-8);">
+                                <div style="position: relative; width: 120px; height: 120px; margin: 0 auto var(--space-6);">
+                                    <svg viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+                                        <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-3)" stroke-width="8"/>
+                                        <circle id="batchProgressCircle" cx="60" cy="60" r="54" fill="none" stroke="var(--primary-500)" stroke-width="8" 
+                                            stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round"
+                                            style="transition: stroke-dashoffset 0.3s ease;"/>
+                                    </svg>
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                        <div id="batchProgressPercent" style="font-size: var(--text-2xl); font-weight: 700; color: var(--gray-100);">0%</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Complete</div>
+                                    </div>
+                                </div>
+                                
+                                <h4 id="batchProgressTitle" style="font-size: var(--text-lg); font-weight: 600; color: var(--gray-100); margin-bottom: var(--space-2);">
+                                    Processing Applications...
+                                </h4>
+                                <p id="batchProgressSubtitle" style="font-size: var(--text-sm); color: var(--gray-500); margin-bottom: var(--space-6);">
+                                    Analyzing 0 of 0 applications
+                                </p>
+                                
+                                <div style="display: flex; justify-content: center; gap: var(--space-8);">
+                                    <div style="text-align: center;">
+                                        <div id="batchPassCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--success-400);">0</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Approved</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div id="batchConditionalCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--warning-400);">0</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Conditional</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div id="batchFailCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--danger-400);">0</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Declined</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Batch Results Table -->
+                            <div id="batchResultsSection" class="hidden">
+                                <!-- Summary Cards -->
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-6);">
+                                    <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-lg); padding: var(--space-4);">
+                                        <div style="font-size: var(--text-xs); color: var(--success-400); text-transform: uppercase; font-weight: 600; margin-bottom: var(--space-1);">Approved</div>
+                                        <div id="summaryApprovedCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--gray-100);">0</div>
+                                        <div id="summaryApprovedAmount" style="font-size: var(--text-sm); color: var(--gray-500);">$0</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-lg); padding: var(--space-4);">
+                                        <div style="font-size: var(--text-xs); color: var(--warning-400); text-transform: uppercase; font-weight: 600; margin-bottom: var(--space-1);">Conditional</div>
+                                        <div id="summaryConditionalCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--gray-100);">0</div>
+                                        <div id="summaryConditionalAmount" style="font-size: var(--text-sm); color: var(--gray-500);">$0</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); padding: var(--space-4);">
+                                        <div style="font-size: var(--text-xs); color: var(--danger-400); text-transform: uppercase; font-weight: 600; margin-bottom: var(--space-1);">Declined</div>
+                                        <div id="summaryDeclinedCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--gray-100);">0</div>
+                                        <div id="summaryDeclinedAmount" style="font-size: var(--text-sm); color: var(--gray-500);">$0</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: var(--radius-lg); padding: var(--space-4);">
+                                        <div style="font-size: var(--text-xs); color: var(--primary-400); text-transform: uppercase; font-weight: 600; margin-bottom: var(--space-1);">Total Volume</div>
+                                        <div id="summaryTotalCount" style="font-size: var(--text-2xl); font-weight: 700; color: var(--gray-100);">0</div>
+                                        <div id="summaryTotalAmount" style="font-size: var(--text-sm); color: var(--gray-500);">$0</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Results Table -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); overflow: hidden;">
+                                    <div style="padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--surface-3); display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: var(--text-sm); font-weight: 600; color: var(--gray-300);">Detailed Results</span>
+                                        <div style="display: flex; gap: var(--space-2);">
+                                            <button class="btn btn-ghost btn-sm" onclick="filterBatchResults('all')">All</button>
+                                            <button class="btn btn-ghost btn-sm" onclick="filterBatchResults('PASS')">Pass</button>
+                                            <button class="btn btn-ghost btn-sm" onclick="filterBatchResults('CONDITIONAL')">Conditional</button>
+                                            <button class="btn btn-ghost btn-sm" onclick="filterBatchResults('FAIL')">Fail</button>
+                                        </div>
+                                    </div>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <thead style="position: sticky; top: 0; background: var(--surface-2);">
+                                                <tr>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: left; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Applicant</th>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: left; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Type</th>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: right; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Amount</th>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: center; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">FICO</th>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: center; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Result</th>
+                                                    <th style="padding: var(--space-3) var(--space-4); text-align: left; font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Recommended Lenders</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="batchResultsTableBody">
+                                                <!-- Populated by JS -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -9351,6 +9545,372 @@ Contact your loan officer to discuss next steps.
         window.stopDemoMode = stopDemoMode;
         window.enterDemoMode = enterDemoMode;
         window.landingPageDemoLogin = landingPageDemoLogin;
+
+        // ==================== BATCH PROCESSING FUNCTIONS ====================
+        
+        let currentBatchResults = [];
+        let batchProcessorInstance = null;
+
+        // Initialize batch processor
+        function getBatchProcessor() {
+            if (!batchProcessorInstance && window.clientBatchProcessor) {
+                batchProcessorInstance = window.clientBatchProcessor;
+                
+                // Set up callbacks
+                batchProcessorInstance.onProgress = updateBatchProgressUI;
+                batchProcessorInstance.onComplete = onBatchComplete;
+                batchProcessorInstance.onError = (err) => showToast('Batch error: ' + err, 'error');
+            }
+            return batchProcessorInstance;
+        }
+
+        // Generate and process batch of demo applications
+        async function generateAndProcessBatch() {
+            const count = parseInt(document.getElementById('batchSizeSlider').value);
+            const type = document.getElementById('batchTypeSelect').value;
+            
+            if (count < 1 || count > 100) {
+                showToast('Please select 1-100 applications', 'error');
+                return;
+            }
+            
+            const processor = getBatchProcessor();
+            if (!processor) {
+                showToast('Batch processor not available', 'error');
+                return;
+            }
+            
+            // Show progress section
+            document.getElementById('batchUploadSection').classList.add('hidden');
+            document.getElementById('batchProgressSection').classList.remove('hidden');
+            document.getElementById('batchResultsSection').classList.add('hidden');
+            
+            // Generate applications
+            const applications = processor.generateDemoApplications(count, type);
+            
+            // Update subtitle
+            document.getElementById('batchProgressSubtitle').textContent = `Analyzing 0 of ${count} applications`;
+            
+            // Process them
+            try {
+                currentBatchResults = await processor.processAll(applications);
+            } catch (err) {
+                showToast('Processing error: ' + err.message, 'error');
+                resetBatchUI();
+            }
+        }
+
+        // Update batch progress UI
+        function updateBatchProgressUI(progress) {
+            const percent = progress.percentage;
+            const circle = document.getElementById('batchProgressCircle');
+            const circumference = 339.292;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('batchProgressPercent').textContent = percent + '%';
+            document.getElementById('batchProgressSubtitle').textContent = 
+                `Analyzing ${progress.completed} of ${progress.total} applications`;
+            
+            document.getElementById('batchPassCount').textContent = progress.pass;
+            document.getElementById('batchConditionalCount').textContent = progress.conditional;
+            document.getElementById('batchFailCount').textContent = progress.fail;
+        }
+
+        // Handle batch completion
+        function onBatchComplete(results) {
+            currentBatchResults = results;
+            
+            // Hide progress, show results
+            document.getElementById('batchProgressSection').classList.add('hidden');
+            document.getElementById('batchResultsSection').classList.remove('hidden');
+            
+            // Update summary
+            updateBatchSummary(results);
+            
+            // Render table
+            renderBatchResultsTable(results);
+            
+            // Enable export/clear buttons
+            document.getElementById('batchExportBtn').disabled = false;
+            document.getElementById('batchClearBtn').disabled = false;
+            
+            // Update dashboard metrics
+            updateDashboardMetrics(results);
+            
+            showToast(`Processed ${results.length} applications!`, 'success');
+        }
+
+        // Update batch summary cards
+        function updateBatchSummary(results) {
+            const pass = results.filter(r => r.result === 'PASS');
+            const conditional = results.filter(r => r.result === 'CONDITIONAL');
+            const fail = results.filter(r => r.result === 'FAIL');
+            
+            document.getElementById('summaryApprovedCount').textContent = pass.length;
+            document.getElementById('summaryApprovedAmount').textContent = 
+                formatCurrency(pass.reduce((sum, r) => sum + r.maxLoanAmount, 0));
+            
+            document.getElementById('summaryConditionalCount').textContent = conditional.length;
+            document.getElementById('summaryConditionalAmount').textContent = 
+                formatCurrency(conditional.reduce((sum, r) => sum + r.maxLoanAmount, 0));
+            
+            document.getElementById('summaryDeclinedCount').textContent = fail.length;
+            document.getElementById('summaryDeclinedAmount').textContent = 
+                formatCurrency(fail.reduce((sum, r) => sum + r.loanAmount, 0));
+            
+            document.getElementById('summaryTotalCount').textContent = results.length;
+            document.getElementById('summaryTotalAmount').textContent = 
+                formatCurrency(results.reduce((sum, r) => sum + r.loanAmount, 0));
+        }
+
+        // Render batch results table
+        function renderBatchResultsTable(results) {
+            const tbody = document.getElementById('batchResultsTableBody');
+            
+            tbody.innerHTML = results.map(app => {
+                const resultBadge = app.result === 'PASS' ? 
+                    '<span class="badge badge-success">Approved</span>' :
+                    app.result === 'CONDITIONAL' ?
+                    '<span class="badge badge-warning">Conditional</span>' :
+                    '<span class="badge badge-danger">Declined</span>';
+                
+                const lenders = (app.recommendedLenders || []).slice(0, 2).join(', ');
+                
+                return `
+                    <tr style="border-bottom: 1px solid var(--surface-3);">
+                        <td style="padding: var(--space-3) var(--space-4);">
+                            <div style="font-weight: 500; color: var(--gray-100);">${app.applicantName}</div>
+                            <div style="font-size: var(--text-xs); color: var(--gray-500);">${app.propertyAddress}, ${app.city}</div>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4);">
+                            <span class="badge badge-light">${app.loanType}</span>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); text-align: right;">
+                            <div style="font-weight: 500; color: var(--gray-100);">${formatCurrency(app.loanAmount)}</div>
+                            ${app.maxLoanAmount !== app.loanAmount ? 
+                                `<div style="font-size: var(--text-xs); color: var(--success-400);">Max: ${formatCurrency(app.maxLoanAmount)}</div>` : ''}
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); text-align: center;">
+                            <span style="color: ${app.fico >= 700 ? 'var(--success-400)' : app.fico >= 650 ? 'var(--warning-400)' : 'var(--danger-400)'};">${app.fico}</span>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); text-align: center;">${resultBadge}</td>
+                        <td style="padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--gray-400);">${lenders}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter batch results
+        function filterBatchResults(filter) {
+            if (!currentBatchResults.length) return;
+            
+            let filtered = currentBatchResults;
+            if (filter !== 'all') {
+                filtered = currentBatchResults.filter(r => r.result === filter);
+            }
+            renderBatchResultsTable(filtered);
+        }
+
+        // Handle file drop for batch
+        function handleBatchFileDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const files = Array.from(event.dataTransfer.files).filter(f => 
+                f.name.endsWith('.txt') || f.name.endsWith('.csv')
+            );
+            
+            if (files.length === 0) {
+                showToast('Please drop .txt or .csv files only', 'error');
+                return;
+            }
+            
+            processBatchFiles(files);
+        }
+
+        // Handle file select for batch
+        function handleBatchFileSelect(event) {
+            const files = Array.from(event.target.files);
+            processBatchFiles(files);
+        }
+
+        // Process batch files
+        async function processBatchFiles(files) {
+            const processor = getBatchProcessor();
+            if (!processor) {
+                showToast('Batch processor not available', 'error');
+                return;
+            }
+            
+            // Show file list
+            const fileList = document.getElementById('batchFileList');
+            fileList.innerHTML = files.map(f => `
+                <div style="padding: var(--space-2); background: var(--surface-1); border-radius: var(--radius-md); margin-bottom: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+                    <i data-lucide="file-text" style="width: 16px; height: 16px; color: var(--primary-400);"></i>
+                    <span style="font-size: var(--text-sm); color: var(--gray-300);">${f.name}</span>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            
+            // Parse files and process
+            const applications = [];
+            for (const file of files) {
+                const content = await file.text();
+                const parsed = parseLoanApplicationFile(content, file.name);
+                if (parsed) {
+                    applications.push({
+                        id: `file_${Date.now()}_${applications.length}`,
+                        applicantName: parsed.applicant_name || parsed.borrowerName || 'Unknown',
+                        entityName: parsed.entity_name || parsed.entityName || '',
+                        loanType: parsed.loan_type || parsed.loanType || 'DSCR 1-4 Unit',
+                        loanAmount: parseFloat(parsed.loan_amount || parsed.loanAmount) || 300000,
+                        propertyValue: parseFloat(parsed.property_value || parsed.propertyValue) || 400000,
+                        propertyAddress: parsed.property_address || parsed.propertyAddress || 'Unknown Address',
+                        city: parsed.city || 'Unknown',
+                        state: parsed.state || 'CA',
+                        fico: parseInt(parsed.fico_score || parsed.fico) || 680,
+                        monthlyIncome: parseFloat(parsed.monthly_income) || 10000,
+                        monthlyDebts: parseFloat(parsed.monthly_debts) || 2000,
+                        dscr: parsed.dscr_ratio || parsed.dscr,
+                        experience: parseInt(parsed.experience) || 5,
+                        status: 'pending',
+                        result: null,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+            
+            if (applications.length === 0) {
+                showToast('No valid applications found in files', 'error');
+                return;
+            }
+            
+            // Show progress and process
+            document.getElementById('batchUploadSection').classList.add('hidden');
+            document.getElementById('batchProgressSection').classList.remove('hidden');
+            document.getElementById('batchProgressSubtitle').textContent = `Analyzing 0 of ${applications.length} applications`;
+            
+            try {
+                currentBatchResults = await processor.processAll(applications);
+            } catch (err) {
+                showToast('Processing error: ' + err.message, 'error');
+                resetBatchUI();
+            }
+        }
+
+        // Export batch results
+        function exportBatchResults() {
+            if (!currentBatchResults.length) {
+                showToast('No results to export', 'error');
+                return;
+            }
+            
+            const processor = getBatchProcessor();
+            const csv = processor.exportToCSV(currentBatchResults);
+            
+            if (!csv) {
+                showToast('Export failed', 'error');
+                return;
+            }
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `batch_results_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Results exported to CSV', 'success');
+        }
+
+        // Clear batch results
+        function clearBatchResults() {
+            currentBatchResults = [];
+            resetBatchUI();
+            showToast('Results cleared', 'success');
+        }
+
+        // Reset batch UI to initial state
+        function resetBatchUI() {
+            document.getElementById('batchUploadSection').classList.remove('hidden');
+            document.getElementById('batchProgressSection').classList.add('hidden');
+            document.getElementById('batchResultsSection').classList.add('hidden');
+            document.getElementById('batchFileList').innerHTML = '';
+            document.getElementById('batchExportBtn').disabled = true;
+            document.getElementById('batchClearBtn').disabled = true;
+            
+            // Reset progress circle
+            document.getElementById('batchProgressCircle').style.strokeDashoffset = 339.292;
+            document.getElementById('batchProgressPercent').textContent = '0%';
+            document.getElementById('batchProgressSubtitle').textContent = 'Analyzing 0 of 0 applications';
+            document.getElementById('batchPassCount').textContent = '0';
+            document.getElementById('batchConditionalCount').textContent = '0';
+            document.getElementById('batchFailCount').textContent = '0';
+        }
+
+        // Update dashboard metrics with batch results
+        function updateDashboardMetrics(results) {
+            const total = results.length;
+            const pass = results.filter(r => r.result === 'PASS').length;
+            const avgFico = Math.round(results.reduce((sum, r) => sum + r.fico, 0) / total);
+            const totalVolume = results.reduce((sum, r) => sum + r.loanAmount, 0);
+            
+            // Update stat cards
+            const totalAppsEl = document.getElementById('metricTotalApplications');
+            if (totalAppsEl) {
+                totalAppsEl.textContent = (parseInt(totalAppsEl.textContent) || 0) + total;
+            }
+            
+            const approvalRateEl = document.getElementById('metricApprovalRate');
+            if (approvalRateEl) {
+                const rate = Math.round((pass / total) * 100);
+                approvalRateEl.textContent = rate + '%';
+            }
+            
+            const avgFicoEl = document.getElementById('metricAvgFico');
+            if (avgFicoEl) {
+                avgFicoEl.textContent = avgFico;
+            }
+            
+            const totalVolumeEl = document.getElementById('metricTotalVolume');
+            if (totalVolumeEl) {
+                const current = parseFloat(totalVolumeEl.textContent.replace(/[^0-9.]/g, '')) || 0;
+                const newTotal = current + (totalVolume / 1000000);
+                totalVolumeEl.textContent = '$' + newTotal.toFixed(1) + 'M';
+            }
+            
+            const approvedCountEl = document.getElementById('metricApprovedCount');
+            if (approvedCountEl) {
+                const current = parseInt(approvedCountEl.textContent) || 0;
+                approvedCountEl.textContent = (current + pass) + ' Approved';
+            }
+            
+            const declinedCountEl = document.getElementById('metricDeclinedCount');
+            if (declinedCountEl) {
+                const current = parseInt(declinedCountEl.textContent) || 0;
+                const fail = results.filter(r => r.result === 'FAIL').length;
+                declinedCountEl.textContent = (current + fail) + ' Declined';
+            }
+        }
+
+        // Format currency helper
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return '$0';
+            return '$' + Math.round(amount).toLocaleString();
+        }
+
+        // Expose batch functions globally
+        window.generateAndProcessBatch = generateAndProcessBatch;
+        window.handleBatchFileDrop = handleBatchFileDrop;
+        window.handleBatchFileSelect = handleBatchFileSelect;
+        window.exportBatchResults = exportBatchResults;
+        window.clearBatchResults = clearBatchResults;
+        window.filterBatchResults = filterBatchResults;
     </script>
 
     <!-- Productivity UI Elements -->

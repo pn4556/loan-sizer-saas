@@ -1,0 +1,8 @@
+file 'clips/01_empty.mp4'
+file 'clips/02_uploaded.mp4'
+file 'clips/03_populated.mp4'
+file 'clips/04_analyzing.mp4'
+file 'clips/05_results.mp4'
+file 'clips/06_detail.mp4'
+file 'clips/07_opportunities.mp4'
+file 'clips/08_cta.mp4'
