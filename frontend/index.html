@@ -9203,8 +9203,9 @@ Contact your loan officer to discuss next steps.
         // LIVE DEMO MODE
         // ==========================================
         
-        let demoMode = false;
-        let demoInterval = null;
+        // Use var for hoisting to avoid temporal dead zone issues
+        var demoMode = false;
+        var demoInterval = null;
 
         function toggleDemoMode() {
             demoMode = !demoMode;
