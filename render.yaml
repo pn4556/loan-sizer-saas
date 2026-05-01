@@ -32,7 +32,7 @@ services:
     staticPublishPath: ./frontend
     routes:
       - type: rewrite
-        source: /
+        source: /*
         destination: /index.html
     envVars:
       - key: API_URL
