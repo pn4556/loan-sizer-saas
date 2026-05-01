@@ -2129,6 +2129,10 @@
                     <i data-lucide="bridge"></i>
                     <span class="nav-text">Bridge Loan</span>
                 </a>
+                <a href="#" class="nav-item" onclick="showSection('multiLender')">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span class="nav-text">Multi-Lender Compare</span>
+                </a>
 
                 <div class="section-label" style="margin-top: var(--space-6);">Analytics</div>
                 <a href="#" class="nav-item" onclick="showSection('reports')">
@@ -3085,8 +3089,8 @@
                 </div>
 
                 <!-- Multi-Lender Comparison Section -->
-                <div class="dashboard-grid" style="margin-top: var(--space-8);">
-                    <div class="card" style="grid-column: 1 / -1;">
+                <div id="multiLenderSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
                         <div class="card-header">
                             <div class="card-title">
                                 <i data-lucide="bar-chart-3" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
