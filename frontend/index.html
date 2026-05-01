@@ -2797,7 +2797,7 @@
                 </a>
                 <a href="#" class="nav-item" onclick="showSection('applications')">
                     <i data-lucide="file-text"></i>
-                    <span class="nav-text">Applications</span>
+                    <span class="nav-text">Applications Processed</span>
                 </a>
 
                 <div class="section-label" style="margin-top: var(--space-6);">Loan Sizers</div>
@@ -2806,20 +2806,17 @@
                     <span class="nav-text" style="font-weight: 600; color: var(--primary-700);">Multi-Application</span>
                     <span class="badge badge-primary" style="margin-left: auto; font-size: 0.625rem;">NEW</span>
                 </a>
-                <a href="#" class="nav-item" onclick="showSection('rtlSizer')">
-                    <i data-lucide="hammer"></i>
-                    <span class="nav-text">Fix & Flip (RTL)</span>
-                </a>
-                <a href="#" class="nav-item" onclick="showSection('bridgeSizer')">
-                    <i data-lucide="bridge"></i>
-                    <span class="nav-text">Bridge Loan</span>
-                </a>
                 <a href="#" class="nav-item" onclick="showSection('multiLender')">
                     <i data-lucide="bar-chart-3"></i>
                     <span class="nav-text">Multi-Lender Compare</span>
+                    <span class="badge badge-primary" style="margin-left: auto; font-size: 0.625rem;">AI</span>
                 </a>
 
-                <div class="section-label" style="margin-top: var(--space-6);">Analytics</div>
+                <div class="section-label" style="margin-top: var(--space-6);">Insights</div>
+                <a href="#" class="nav-item" onclick="showSection('news')">
+                    <i data-lucide="newspaper"></i>
+                    <span class="nav-text">Industry News</span>
+                </a>
                 <a href="#" class="nav-item" onclick="showSection('reports')">
                     <i data-lucide="bar-chart-3"></i>
                     <span class="nav-text">Reports</span>
@@ -2838,10 +2835,10 @@
 
             <div class="sidebar-footer">
                 <div class="user-menu" onclick="showUserMenu()">
-                    <div class="user-avatar">JD</div>
+                    <div class="user-avatar" id="userAvatar">J</div>
                     <div class="user-info">
-                        <div class="user-name">John Doe</div>
-                        <div class="user-role">Loan Officer</div>
+                        <div class="user-name" id="userDisplayName">John Doe</div>
+                        <div class="user-role" id="userDisplayRole">Loan Officer</div>
                     </div>
                     <i data-lucide="more-vertical" style="width: 16px; height: 16px; color: var(--gray-500);"></i>
                 </div>
@@ -2925,6 +2922,72 @@
             <div class="content-area">
                 <!-- Dashboard Section -->
                 <div id="dashboardSection">
+                    <!-- Mission Quote Banner -->
+                    <div style="background: linear-gradient(135deg, var(--primary-700), var(--primary-600)); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-6); text-align: center; border-left: 4px solid var(--success-400);">
+                        <div style="font-size: var(--text-xl); font-weight: var(--font-semibold); color: white; margin-bottom: var(--space-2);">
+                            "Accelerating Real Estate Dreams with AI-Powered Precision"
+                        </div>
+                        <div style="font-size: var(--text-sm); color: var(--primary-200); margin-bottom: var(--space-4);">
+                            Our mission is to empower loan officers with intelligent tools that transform the lending experience
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: var(--space-8); flex-wrap: wrap;">
+                            <div style="text-align: center;">
+                                <div style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--success-400);">93%</div>
+                                <div style="font-size: var(--text-xs); color: var(--primary-200);">Time Savings</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--success-400);">2.3x</div>
+                                <div style="font-size: var(--text-xs); color: var(--primary-200);">Faster Processing</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--success-400);">87%</div>
+                                <div style="font-size: var(--text-xs); color: var(--primary-200);">Approval Rate</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--success-400);">1.8min</div>
+                                <div style="font-size: var(--text-xs); color: var(--primary-200);">Avg Analysis Time</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real Estate Market Insights -->
+                    <div style="background: var(--surface-2); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-6);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h3 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100);">
+                                <i data-lucide="building-2" style="width: 20px; height: 20px; display: inline; vertical-align: middle; color: var(--primary-400);"></i>
+                                Market Insights
+                            </h3>
+                            <span style="font-size: var(--text-xs); color: var(--gray-500);">Updated Daily</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4);">
+                            <div style="text-align: center; padding: var(--space-3); background: var(--surface-1); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Median Home Price</div>
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-100);">$428K</div>
+                                <div style="font-size: var(--text-xs); color: var(--success-400);">+3.2% YoY</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-3); background: var(--surface-1); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Days on Market</div>
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-100);">28</div>
+                                <div style="font-size: var(--text-xs); color: var(--success-400);">-2 days</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-3); background: var(--surface-1); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Housing Inventory</div>
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-100);">1.2M</div>
+                                <div style="font-size: var(--text-xs); color: var(--warning-400);">-5.1% YoY</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-3); background: var(--surface-1); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Fix & Flip ROI</div>
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-100);">27.5%</div>
+                                <div style="font-size: var(--text-xs); color: var(--success-400);">+1.2%</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-3); background: var(--surface-1); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Investor Activity</div>
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-100);">18%</div>
+                                <div style="font-size: var(--text-xs); color: var(--gray-500);">of all sales</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card animate-fade-in" style="animation-delay: 0ms;">
@@ -2934,12 +2997,12 @@
                                 </div>
                                 <div class="stat-trend up">
                                     <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
-                                    <span>+12%</span>
+                                    <span>Live</span>
                                 </div>
                             </div>
-                            <div class="stat-value counter" data-target="156">0</div>
+                            <div class="stat-value" id="metricTotalApplications">0</div>
                             <div class="stat-label">Applications Processed</div>
-                            <div class="stat-sublabel">This month</div>
+                            <div class="stat-sublabel">Total analyzed</div>
                             <div class="sparkline-container">
                                 <svg viewBox="0 0 200 40" style="width: 100%; height: 100%;">
                                     <path d="M0,35 Q20,30 40,25 T80,20 T120,15 T160,10 T200,5" 
@@ -2963,12 +3026,12 @@
                                 </div>
                                 <div class="stat-trend up">
                                     <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
-                                    <span>+5%</span>
+                                    <span>Live</span>
                                 </div>
                             </div>
-                            <div class="stat-value counter" data-target="87">0</div>
+                            <div class="stat-value" id="metricApprovalRate">0%</div>
                             <div class="stat-label">Approval Rate</div>
-                            <div class="stat-sublabel">Average across all programs</div>
+                            <div class="stat-sublabel">Across all lenders</div>
                             <div class="sparkline-container">
                                 <svg viewBox="0 0 200 40" style="width: 100%; height: 100%;">
                                     <path d="M0,30 Q25,28 50,25 T100,20 T150,15 T200,12" 
@@ -2988,25 +3051,23 @@
                         <div class="stat-card animate-fade-in" style="animation-delay: 100ms;">
                             <div class="stat-header">
                                 <div class="stat-icon amber">
-                                    <i data-lucide="clock" style="width: 24px; height: 24px;"></i>
+                                    <i data-lucide="dollar-sign" style="width: 24px; height: 24px;"></i>
                                 </div>
                                 <div class="stat-trend up">
                                     <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
-                                    <span>+23%</span>
+                                    <span>Live</span>
                                 </div>
                             </div>
-                            <div class="stat-value">
-                                <span class="counter" data-target="312">0</span>
-                            </div>
-                            <div class="stat-label">Hours Saved This Month</div>
-                            <div class="stat-sublabel">vs. manual processing</div>
+                            <div class="stat-value" id="metricTotalVolume">$0M</div>
+                            <div class="stat-label">Total Loan Volume</div>
+                            <div class="stat-sublabel">All applications</div>
                             <div class="progress-container">
                                 <div class="progress-header">
-                                    <span class="progress-label">Monthly Goal: 400 hrs</span>
-                                    <span class="progress-value">78%</span>
+                                    <span class="progress-label">Volume Target</span>
+                                    <span class="progress-value" id="volumeProgress">0%</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 78%;"></div>
+                                    <div class="progress-fill" id="volumeProgressBar" style="width: 0%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -3014,23 +3075,19 @@
                         <div class="stat-card animate-fade-in" style="animation-delay: 150ms;">
                             <div class="stat-header">
                                 <div class="stat-icon purple">
-                                    <i data-lucide="zap" style="width: 24px; height: 24px;"></i>
+                                    <i data-lucide="users" style="width: 24px; height: 24px;"></i>
                                 </div>
-                                <div class="stat-trend down">
-                                    <i data-lucide="trending-down" style="width: 12px; height: 12px;"></i>
-                                    <span>-45%</span>
+                                <div class="stat-trend up">
+                                    <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+                                    <span>Live</span>
                                 </div>
                             </div>
-                            <div class="stat-value">
-                                <span class="counter" data-target="1.8" data-decimals="1">0</span>m
-                            </div>
-                            <div class="stat-label">Avg Processing Time</div>
-                            <div class="stat-sublabel">Per application</div>
-                            <div class="sparkline-container">
-                                <svg viewBox="0 0 200 40" style="width: 100%; height: 100%;">
-                                    <path d="M0,10 Q30,15 60,12 T120,18 T180,25 T200,30" 
-                                          fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
+                            <div class="stat-value" id="metricAvgFico">0</div>
+                            <div class="stat-label">Average FICO</div>
+                            <div class="stat-sublabel">All borrowers</div>
+                            <div style="display: flex; justify-content: space-between; margin-top: var(--space-3); font-size: var(--text-xs);">
+                                <span style="color: var(--success-400);" id="metricApprovedCount">0 Approved</span>
+                                <span style="color: var(--danger-400);" id="metricDeclinedCount">0 Declined</span>
                             </div>
                         </div>
                     </div>
@@ -3467,16 +3524,76 @@
 
                 <!-- Other sections placeholder -->
                 <div id="applicationsSection" class="hidden">
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i data-lucide="file-text" style="width: 40px; height: 40px;"></i>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i data-lucide="file-text" style="width: 20px; height: 20px; color: var(--primary-500);"></i>
+                                Applications Processed
+                            </h3>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="clearProcessedApplications()">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    Clear All
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="exportProcessedApplications()">
+                                    <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                                    Export CSV
+                                </button>
+                            </div>
                         </div>
-                        <h3 class="empty-title">Applications Module</h3>
-                        <p class="empty-subtitle">Full applications table with sorting, filtering, and batch actions</p>
-                        <button class="btn btn-primary" onclick="showSection('dashboard')">
-                            <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
-                            Back to Dashboard
-                        </button>
+                        <div class="card-body">
+                            <!-- Summary Stats -->
+                            <div id="processedAppsSummary" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-6);">
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                    <div id="processedTotalCount" style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-400);">0</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Total Processed</div>
+                                </div>
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                    <div id="processedApprovedCount" style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--success-500);">0</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Approved</div>
+                                </div>
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                    <div id="processedDeclinedCount" style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--danger-500);">0</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Declined</div>
+                                </div>
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                    <div id="processedTotalVolume" style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--warning-500);">$0M</div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Total Volume</div>
+                                </div>
+                            </div>
+
+                            <div id="processedAppsTableContainer">
+                                <table class="data-table" id="processedAppsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Term Sheet ID</th>
+                                            <th>Lender</th>
+                                            <th>Loan Amount</th>
+                                            <th>Rate</th>
+                                            <th>FICO</th>
+                                            <th>Experience</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="processedAppsBody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="emptyProcessedAppsMessage" class="empty-state" style="display: none; padding: var(--space-12);">
+                                <div class="empty-icon">
+                                    <i data-lucide="file-text" style="width: 40px; height: 40px;"></i>
+                                </div>
+                                <h3 class="empty-title">No Applications Processed Yet</h3>
+                                <p class="empty-subtitle">Applications analyzed in Multi-Lender Compare will appear here</p>
+                                <button class="btn btn-primary" onclick="showSection('multiLender')">
+                                    <i data-lucide="bar-chart-3" style="width: 16px; height: 16px;"></i>
+                                    Go to Multi-Lender Compare
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -4024,6 +4141,424 @@
                                         <div id="eastviewAIInsight" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px dashed var(--surface-3);">
                                             <!-- AI Insight populated by JS -->
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Section -->
+                <div id="newsSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="newspaper" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Industry News & Insights
+                            </div>
+                            <span class="badge badge-primary">AI-Curated</span>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
+                                Stay informed with the latest real estate market news, industry trends, and lending insights. 
+                                <strong>AI-powered summaries</strong> help you quickly grasp key takeaways.
+                            </p>
+
+                            <!-- News Articles Grid -->
+                            <div style="display: grid; gap: var(--space-4);">
+                                <!-- Article 1 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--primary-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge badge-primary">Mortgage Rates</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 28, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                Fed Signals Potential Rate Cuts in Q2 2026
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Federal Reserve officials indicated they may begin lowering interest rates by mid-2026 if inflation continues to moderate. 
+                                                This could bring mortgage rates down to the 5.5-6% range by summer.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    For loan officers: Lock in borrowers now who may benefit from refinance opportunities when rates drop. 
+                                                    Consider offering rate float-down options on new applications.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article 2 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--success-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge badge-success">Investment</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 26, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                Fix-and-Flip Profits Reach 2-Year High
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Real estate investors are seeing average gross profits of $72,500 per flip, marking a 15% increase from last year. 
+                                                The average time to flip has decreased to 161 days.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    Strong opportunity to market fix-and-flip products. Investors are active and profitable. 
+                                                    Highlight your fast closing times to capture this market.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article 3 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--warning-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge badge-warning">Market Trends</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 24, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                Housing Inventory Shortage Continues in Major Markets
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Available housing inventory remains 25% below pre-pandemic levels, driving competition among buyers. 
+                                                New construction starts increased 8% but still fall short of demand.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    Low inventory supports property values, reducing risk for DSCR and bridge loans. 
+                                                    Emphasize quick pre-approval letters to help buyers win bidding wars.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article 4 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--purple-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge badge-primary" style="background: var(--purple-500);">DSCR</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 22, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                DSCR Loan Demand Surges 40% Among Real Estate Investors
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Debt Service Coverage Ratio loans are increasingly popular as investors seek non-recourse financing. 
+                                                Average DSCR ratios have improved to 1.35x, indicating stronger deal quality.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    Position your DSCR products aggressively. With improved ratios, default risk is lower. 
+                                                    Target experienced investors scaling their portfolios.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article 5 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--cyan-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge badge-info">Regulatory</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 20, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                New Lending Guidelines for Investment Properties Announced
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Updated guidelines allow for higher LTV ratios on rental properties with strong cash flow. 
+                                                Minimum DSCR requirements lowered to 1.1x for experienced investors with 5+ properties.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    Major opportunity to reach out to existing clients who didn't qualify before. 
+                                                    Update your marketing materials with new LTV limits immediately.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article 6 -->
+                                <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--pink-500);">
+                                    <div style="display: flex; justify-content: between; gap: var(--space-4); flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                                                <span class="badge" style="background: var(--pink-500);">Technology</span>
+                                                <span style="font-size: var(--text-xs); color: var(--gray-500);">Jan 18, 2026</span>
+                                            </div>
+                                            <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-2);">
+                                                AI Revolutionizing Loan Underwriting: What You Need to Know
+                                            </h4>
+                                            <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                                Over 60% of lenders now use AI-powered tools for initial underwriting decisions. 
+                                                Loan officers leveraging AI report 3x faster processing times and higher close rates.
+                                            </p>
+                                            <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                                <div style="font-size: var(--text-xs); color: var(--primary-400); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+                                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> AI Insight
+                                                </div>
+                                                <p style="font-size: var(--text-sm); color: var(--gray-300); margin: 0;">
+                                                    You're already ahead of the curve with LoanSizer Pro! Continue leveraging AI insights 
+                                                    to differentiate from competitors still using manual processes.
+                                                </p>
+                                            </div>
+                                            <a href="#" style="color: var(--primary-400); font-size: var(--text-sm);" onclick="showToast('Opening external article...'); return false;">
+                                                Read full article <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reportsSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="bar-chart-3" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Reports & Analytics
+                            </div>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="exportAllReports()">
+                                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                    Export All
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
+                                Generate comprehensive reports to track performance, identify trends, and make data-driven decisions. 
+                                <strong>Recommended for loan officers:</strong> Run the Pipeline Summary daily and Lender Performance weekly.
+                            </p>
+
+                            <!-- Report Categories -->
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6);">
+                                <!-- Daily Reports -->
+                                <div>
+                                    <h4 style="font-size: var(--text-md); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                        <i data-lucide="calendar" style="width: 18px; height: 18px; color: var(--primary-400);"></i>
+                                        Daily Reports
+                                    </h4>
+                                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('pipeline-summary')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Pipeline Summary</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Active applications, status breakdown</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('approvals-pending')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Approvals Pending</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Stuck applications needing attention</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('daily-activity')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Daily Activity Log</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">All actions taken today</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Weekly/Monthly Reports -->
+                                <div>
+                                    <h4 style="font-size: var(--text-md); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                        <i data-lucide="calendar-days" style="width: 18px; height: 18px; color: var(--success-400);"></i>
+                                        Weekly & Monthly
+                                    </h4>
+                                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('lender-performance')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Lender Performance</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Compare IFC, ICE, Eastview metrics</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('conversion-analysis')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Conversion Analysis</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">App to close rates by loan type</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('borrower-profile')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Borrower Profile Report</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">FICO, experience, property types</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Strategic Reports -->
+                                <div>
+                                    <h4 style="font-size: var(--text-md); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                        <i data-lucide="target" style="width: 18px; height: 18px; color: var(--warning-400);"></i>
+                                        Strategic Analysis
+                                    </h4>
+                                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('market-opportunity')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Market Opportunity Analysis</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Missed opportunities & recommendations</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('profitability')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Deal Profitability Report</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">ROI analysis by lender and rate</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Compliance & Audit -->
+                                <div>
+                                    <h4 style="font-size: var(--text-md); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                        <i data-lucide="shield-check" style="width: 18px; height: 18px; color: var(--purple-400);"></i>
+                                        Compliance & Audit
+                                    </h4>
+                                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('audit-trail')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Complete Audit Trail</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">All decisions with timestamps</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); cursor: pointer;" onclick="generateReport('fair-lending')">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Fair Lending Analysis</div>
+                                                    <div style="font-size: var(--text-xs); color: var(--gray-500);">Approval rates by demographics</div>
+                                                </div>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Report Insights -->
+                            <div style="background: linear-gradient(135deg, var(--primary-900), var(--primary-800)); padding: var(--space-5); border-radius: var(--radius-lg); margin-top: var(--space-6); border-left: 4px solid var(--primary-400);">
+                                <div style="display: flex; align-items: flex-start; gap: var(--space-4);">
+                                    <div style="background: rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: var(--space-3);">
+                                        <i data-lucide="lightbulb" style="width: 24px; height: 24px; color: var(--warning-300);"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-base); font-weight: var(--font-semibold); color: white; margin-bottom: var(--space-2);">
+                                            AI Report Recommendations
+                                        </div>
+                                        <p style="color: var(--primary-200); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                            Based on your activity patterns, we recommend generating these reports:
+                                        </p>
+                                        <ul style="color: var(--primary-200); font-size: var(--text-sm); margin-left: var(--space-4); line-height: 1.8;">
+                                            <li><strong>Weekly:</strong> Lender Performance Report to optimize your lender mix</li>
+                                            <li><strong>Bi-weekly:</strong> Conversion Analysis to identify bottlenecks in your pipeline</li>
+                                            <li><strong>Monthly:</strong> Market Opportunity Analysis to capture missed deals</li>
+                                            <li><strong>Quarterly:</strong> Complete Audit Trail for compliance review</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -6023,8 +6558,278 @@
         }
 
         function selectLender(lender) {
-            showToast(`Selected ${lender} - preparing term sheet...`);
-            // Future: Generate term sheet or redirect to application
+            if (!lastMultiLenderResults) {
+                showToast('No comparison results available');
+                return;
+            }
+            
+            const lenderResult = lastMultiLenderResults.results.find(r => r.lender === lender);
+            if (!lenderResult) {
+                showToast('Lender data not found');
+                return;
+            }
+            
+            if (lenderResult.approval_status === 'declined') {
+                showToast('Cannot generate term sheet for declined application');
+                return;
+            }
+            
+            showToast(`Generating term sheet for ${lender}...`);
+            generateTermSheet(lenderResult, lastMultiLenderResults.input_summary);
+        }
+
+        // Generate and download term sheet
+        function generateTermSheet(lenderResult, inputSummary) {
+            const formData = {
+                as_is_value: document.getElementById('mlAsIsValue').value,
+                arv: document.getElementById('mlARV').value,
+                purchase_price: document.getElementById('mlPurchasePrice').value,
+                rehab_budget: document.getElementById('mlRehabBudget').value,
+                fico: document.getElementById('mlFICO').value,
+                experience: document.getElementById('mlExperience').value,
+                loan_purpose: document.getElementById('mlLoanPurpose').value,
+                property_type: document.getElementById('mlPropertyType').value
+            };
+            
+            const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const termSheetId = 'TS-' + Date.now().toString().slice(-8);
+            
+            const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Term Sheet - ${lenderResult.lender}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 3px solid #2563EB; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #2563EB; margin: 0; font-size: 28px; }
+        .header p { color: #666; margin: 5px 0; }
+        .term-sheet-id { background: #f3f4f6; padding: 10px; border-radius: 5px; font-family: monospace; display: inline-block; }
+        .section { margin-bottom: 25px; }
+        .section-title { background: #2563EB; color: white; padding: 10px 15px; font-weight: bold; font-size: 14px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+        .field-label { color: #666; font-weight: 500; }
+        .field-value { color: #111; font-weight: 600; }
+        .highlight { background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; }
+        .terms-list { padding-left: 20px; }
+        .terms-list li { margin-bottom: 8px; }
+        .signature-section { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .signature-line { border-top: 1px solid #333; margin-top: 50px; padding-top: 10px; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #666; text-align: center; }
+        .status-approved { color: #10b981; font-weight: bold; }
+        .lender-logo { font-size: 24px; font-weight: bold; color: #2563EB; }
+        .amount-highlight { font-size: 24px; color: #2563EB; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="lender-logo">${lenderResult.lender}</div>
+        <h1>PRELIMINARY TERM SHEET</h1>
+        <p>Fix & Flip / Bridge Loan Financing</p>
+        <p class="term-sheet-id">Term Sheet ID: ${termSheetId}</p>
+        <p>Date: ${today}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">BORROWER & LOAN INFORMATION</div>
+        <div class="grid">
+            <div class="field">
+                <span class="field-label">Loan Purpose:</span>
+                <span class="field-value">${formData.loan_purpose === 'purchase' ? 'Purchase' : formData.loan_purpose === 'refinance' ? 'Refinance' : 'Cash Out'}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Property Type:</span>
+                <span class="field-value">${formData.property_type === 'SFR' ? 'Single Family' : '2-4 Units'}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">As-Is Value:</span>
+                <span class="field-value">$${parseInt(formData.as_is_value).toLocaleString()}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">After Repair Value (ARV):</span>
+                <span class="field-value">$${parseInt(formData.arv).toLocaleString()}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Purchase Price:</span>
+                <span class="field-value">$${parseInt(formData.purchase_price).toLocaleString()}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Rehab Budget:</span>
+                <span class="field-value">$${parseInt(formData.rehab_budget).toLocaleString()}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Borrower FICO:</span>
+                <span class="field-value">${formData.fico}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Investor Experience:</span>
+                <span class="field-value">${formData.experience} years</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">LOAN TERMS</div>
+        <div class="highlight">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Loan Amount:</span>
+                <span class="amount-highlight">${lenderResult.max_loan_formatted}</span>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="field">
+                <span class="field-label">Interest Rate:</span>
+                <span class="field-value" style="font-size: 18px; color: #2563EB;">${lenderResult.rate_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Origination Points:</span>
+                <span class="field-value">${lenderResult.points_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Loan-to-Value (LTV):</span>
+                <span class="field-value">${lenderResult.ltv_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Loan-to-Cost (LTC):</span>
+                <span class="field-value">${lenderResult.ltc_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">LTARV:</span>
+                <span class="field-value">${lenderResult.ltarv_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Monthly Payment:</span>
+                <span class="field-value">${lenderResult.monthly_payment_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Annual Interest Cost:</span>
+                <span class="field-value">${lenderResult.total_cost_formatted}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Approval Status:</span>
+                <span class="field-value status-approved">${lenderResult.approval_status.toUpperCase()}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">ADDITIONAL TERMS & CONDITIONS</div>
+        <ul class="terms-list">
+            <li><strong>Loan Term:</strong> 12 months (interest-only payments)</li>
+            <li><strong>Extension Option:</strong> Available for up to 6 months at 1% fee</li>
+            <li><strong>Prepayment Penalty:</strong> None</li>
+            <li><strong>Minimum Interest Period:</strong> 3 months</li>
+            <li><strong>Closing Timeline:</strong> 7-10 business days from complete application</li>
+            <li><strong>Appraisal Requirement:</strong> Full appraisal required (borrower pays)</li>
+            <li><strong>Title Insurance:</strong> Lender's and borrower's title policy required</li>
+            <li><strong>Insurance Requirements:</strong> Hazard insurance naming lender as mortgagee</li>
+            <li><strong>Personal Guarantee:</strong> Required from all borrowers</li>
+            <li><strong>Entity Requirements:</strong> Must close in LLC or Corporation</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">REQUIRED DOCUMENTS</div>
+        <ul class="terms-list">
+            <li>Completed loan application</li>
+            <li>Driver's license or passport (all borrowers)</li>
+            <li>Proof of liquid assets (2 most recent bank statements)</li>
+            <li>Entity documentation (Articles, Operating Agreement, EIN)</li>
+            <li>Purchase contract or preliminary title report</li>
+            <li>Detailed scope of work with contractor bids</li>
+            <li>Exit strategy documentation</li>
+            <li>Proof of prior experience (if applicable)</li>
+        </ul>
+    </div>
+
+    <div class="highlight" style="background: #dbeafe; border-color: #2563EB;">
+        <strong>Important:</strong> This term sheet is preliminary and subject to underwriting approval. 
+        Final loan terms may vary based on property appraisal, title review, and verification of all 
+        provided information. This is not a commitment to lend.
+    </div>
+
+    <div class="signature-section">
+        <div>
+            <div class="signature-line">
+                <strong>Borrower Signature</strong>
+                <p>Date: _______________</p>
+            </div>
+        </div>
+        <div>
+            <div class="signature-line">
+                <strong>Lender Representative</strong>
+                <p>Date: _______________</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Generated by LoanSizer Pro | This document is confidential and proprietary.</p>
+        <p>Questions? Contact your loan officer at support@loansizer.com</p>
+    </div>
+</body>
+</html>`;
+            
+            // Create blob and download
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TermSheet-${lenderResult.lender}-${termSheetId}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(`Term sheet downloaded for ${lenderResult.lender}`);
+            
+            // Save to processed applications
+            saveProcessedApplication({
+                id: termSheetId,
+                lender: lenderResult.lender,
+                loan_amount: parseInt(formData.purchase_price) + parseInt(formData.rehab_budget),
+                fico: parseInt(formData.fico),
+                experience: parseInt(formData.experience),
+                status: lenderResult.approval_status,
+                rate: lenderResult.rate,
+                date: new Date().toISOString()
+            });
+        }
+
+        // Save processed application to localStorage
+        function saveProcessedApplication(app) {
+            let processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            processed.unshift(app);
+            if (processed.length > 100) processed = processed.slice(0, 100);
+            localStorage.setItem('loansizer_processed_apps', JSON.stringify(processed));
+            updateDashboardMetrics();
+        }
+
+        // Update dashboard metrics
+        function updateDashboardMetrics() {
+            const processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            
+            // Calculate metrics
+            const totalApps = processed.length;
+            const approved = processed.filter(a => a.status === 'approved').length;
+            const conditional = processed.filter(a => a.status === 'conditional').length;
+            const declined = processed.filter(a => a.status === 'declined').length;
+            const totalVolume = processed.reduce((sum, a) => sum + (a.loan_amount || 0), 0);
+            const avgFico = totalApps > 0 ? Math.round(processed.reduce((sum, a) => sum + (a.fico || 0), 0) / totalApps) : 0;
+            
+            // Update DOM if elements exist
+            const updateEl = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+            
+            updateEl('metricTotalApplications', totalApps.toString());
+            updateEl('metricApprovalRate', totalApps > 0 ? Math.round((approved / totalApps) * 100) + '%' : '0%');
+            updateEl('metricTotalVolume', '$' + (totalVolume / 1000000).toFixed(1) + 'M');
+            updateEl('metricAvgFico', avgFico.toString());
+            updateEl('metricApprovedCount', approved.toString());
+            updateEl('metricConditionalCount', conditional.toString());
+            updateEl('metricDeclinedCount', declined.toString());
         }
 
         // Export multi-lender comparison
@@ -7432,6 +8237,492 @@ ltv_ratio: ${ltv}
         window.exportAllData = exportAllData;
         window.clearAllDrafts = clearAllDrafts;
         window.resetAllSettings = resetAllSettings;
+
+        // ==========================================
+        // APPLICATIONS PROCESSED - MULTI-LENDER DATA
+        // ==========================================
+        let processedApplications = JSON.parse(localStorage.getItem('loanSizer_processedApps') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('loanSizer_currentUser') || '{"username": "edward", "role": "admin"}');
+
+        // Function to add processed application from multi-lender analysis
+        function addProcessedApplication(termSheetData) {
+            const app = {
+                id: 'TS-' + Date.now().toString().slice(-8),
+                timestamp: new Date().toISOString(),
+                dateFormatted: new Date().toLocaleDateString(),
+                timeFormatted: new Date().toLocaleTimeString(),
+                lender: termSheetData.lender || 'Unknown',
+                borrowerName: termSheetData.borrowerName || 'N/A',
+                loanAmount: termSheetData.loanAmount || 0,
+                rate: termSheetData.rate || 0,
+                fico: termSheetData.fico || 0,
+                experience: termSheetData.experience || 'N/A',
+                status: termSheetData.status || 'Pending',
+                term: termSheetData.term || 360,
+                ltv: termSheetData.ltv || 75,
+                propertyAddress: termSheetData.propertyAddress || 'N/A',
+                loanType: termSheetData.loanType || 'DSCR',
+                user: currentUser.username,
+                termSheetData: termSheetData
+            };
+            
+            processedApplications.unshift(app);
+            
+            // Keep only last 200 entries per user
+            const userApps = processedApplications.filter(a => a.user === currentUser.username);
+            const otherApps = processedApplications.filter(a => a.user !== currentUser.username);
+            if (userApps.length > 200) {
+                const trimmed = userApps.slice(0, 200);
+                processedApplications = [...trimmed, ...otherApps];
+            }
+            
+            localStorage.setItem('loanSizer_processedApps', JSON.stringify(processedApplications));
+            updateDashboardMetrics();
+            
+            // Refresh if viewing applications section
+            const appsSection = document.getElementById('applicationsSection');
+            if (appsSection && !appsSection.classList.contains('hidden')) {
+                renderProcessedApplications();
+            }
+            
+            return app;
+        }
+
+        function renderProcessedApplications() {
+            const tbody = document.getElementById('processedAppsBody');
+            const emptyMsg = document.getElementById('emptyProcessedAppsMessage');
+            const tableContainer = document.getElementById('processedAppsTableContainer');
+            
+            if (!tbody) return;
+            
+            // Filter by current user
+            const userApps = processedApplications.filter(a => a.user === currentUser.username);
+            
+            if (userApps.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                tableContainer.style.display = 'none';
+                document.getElementById('processedAppsSummary').style.display = 'none';
+                return;
+            }
+            
+            emptyMsg.style.display = 'none';
+            tableContainer.style.display = 'block';
+            document.getElementById('processedAppsSummary').style.display = 'grid';
+            
+            // Update summary stats
+            const approved = userApps.filter(a => a.status === 'Approved').length;
+            const declined = userApps.filter(a => a.status === 'Declined').length;
+            const totalVolume = userApps.reduce((sum, a) => sum + parseFloat(a.loanAmount || 0), 0);
+            
+            document.getElementById('processedTotalCount').textContent = userApps.length;
+            document.getElementById('processedApprovedCount').textContent = approved;
+            document.getElementById('processedDeclinedCount').textContent = declined;
+            document.getElementById('processedTotalVolume').textContent = '$' + (totalVolume / 1000000).toFixed(1) + 'M';
+            
+            tbody.innerHTML = userApps.map(app => `
+                <tr>
+                    <td>${app.dateFormatted}<br><small style="color: var(--gray-500);">${app.timeFormatted}</small></td>
+                    <td><strong>${app.id}</strong></td>
+                    <td><span class="badge badge-primary">${app.lender}</span></td>
+                    <td>$${parseFloat(app.loanAmount).toLocaleString()}</td>
+                    <td>${app.rate}%</td>
+                    <td>${app.fico}</td>
+                    <td>${app.experience}</td>
+                    <td><span class="badge ${app.status === 'Approved' ? 'badge-success' : app.status === 'Declined' ? 'badge-danger' : 'badge-warning'}">${app.status}</span></td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="downloadTermSheet('${app.id}')" title="Download Term Sheet">
+                            <i data-lucide="file-down" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="viewApplicationDetails('${app.id}')" title="View Details">
+                            <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="deleteApplication('${app.id}')" title="Delete">
+                            <i data-lucide="trash-2" style="width: 16px; height: 16px; color: var(--danger-500);"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function viewApplicationDetails(id) {
+            const app = processedApplications.find(a => a.id === id);
+            if (!app) return;
+            
+            const detailsHtml = `
+                <div style="max-height: 60vh; overflow-y: auto;">
+                    <h4 style="margin-bottom: var(--space-4);">Application Details</h4>
+                    <div style="display: grid; gap: var(--space-3);">
+                        <div><strong>Term Sheet ID:</strong> ${app.id}</div>
+                        <div><strong>Date:</strong> ${app.dateFormatted} ${app.timeFormatted}</div>
+                        <div><strong>Lender:</strong> ${app.lender}</div>
+                        <div><strong>Borrower:</strong> ${app.borrowerName}</div>
+                        <div><strong>Property:</strong> ${app.propertyAddress}</div>
+                        <div><strong>Loan Amount:</strong> $${parseFloat(app.loanAmount).toLocaleString()}</div>
+                        <div><strong>Interest Rate:</strong> ${app.rate}%</div>
+                        <div><strong>FICO Score:</strong> ${app.fico}</div>
+                        <div><strong>Experience:</strong> ${app.experience}</div>
+                        <div><strong>Loan Term:</strong> ${app.term} months</div>
+                        <div><strong>LTV:</strong> ${app.ltv}%</div>
+                        <div><strong>Status:</strong> <span class="badge ${app.status === 'Approved' ? 'badge-success' : app.status === 'Declined' ? 'badge-danger' : 'badge-warning'}">${app.status}</span></div>
+                    </div>
+                    <div style="margin-top: var(--space-6);">
+                        <button class="btn btn-primary" onclick="downloadTermSheet('${app.id}'); closeModal();">
+                            <i data-lucide="download" style="width: 16px; height: 16px; display: inline;"></i>
+                            Download Term Sheet
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            showModal('Application Details', detailsHtml);
+        }
+
+        function deleteApplication(id) {
+            if (!confirm('Delete this application from your records?')) return;
+            
+            processedApplications = processedApplications.filter(a => a.id !== id);
+            localStorage.setItem('loanSizer_processedApps', JSON.stringify(processedApplications));
+            renderProcessedApplications();
+            updateDashboardMetrics();
+            showToast('Application deleted');
+        }
+
+        function clearProcessedApplications() {
+            if (!confirm('Clear all your processed applications? This cannot be undone.')) return;
+            
+            processedApplications = processedApplications.filter(a => a.user !== currentUser.username);
+            localStorage.setItem('loanSizer_processedApps', JSON.stringify(processedApplications));
+            renderProcessedApplications();
+            updateDashboardMetrics();
+            showToast('All applications cleared');
+        }
+
+        function exportProcessedApplications() {
+            const userApps = processedApplications.filter(a => a.user === currentUser.username);
+            if (userApps.length === 0) {
+                showToast('No applications to export');
+                return;
+            }
+            
+            const csv = [
+                ['Term Sheet ID', 'Date', 'Time', 'Lender', 'Borrower', 'Loan Amount', 'Rate', 'FICO', 'Experience', 'Status', 'Property'].join(','),
+                ...userApps.map(app => [
+                    app.id,
+                    app.dateFormatted,
+                    app.timeFormatted,
+                    app.lender,
+                    `"${app.borrowerName}"`,
+                    app.loanAmount,
+                    app.rate + '%',
+                    app.fico,
+                    app.experience,
+                    app.status,
+                    `"${app.propertyAddress}"`
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `applications-processed-${currentUser.username}-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Applications exported successfully');
+        }
+
+        // ==========================================
+        // LIVE DASHBOARD METRICS
+        // ==========================================
+        function updateDashboardMetrics() {
+            const userApps = processedApplications.filter(a => a.user === currentUser.username);
+            
+            const totalApps = userApps.length;
+            const approved = userApps.filter(a => a.status === 'Approved').length;
+            const declined = userApps.filter(a => a.status === 'Declined').length;
+            const totalVolume = userApps.reduce((sum, a) => sum + parseFloat(a.loanAmount || 0), 0);
+            const avgFico = totalApps > 0 ? Math.round(userApps.reduce((sum, a) => sum + parseInt(a.fico || 0), 0) / totalApps) : 0;
+            const approvalRate = totalApps > 0 ? Math.round((approved / totalApps) * 100) : 0;
+            
+            // Update metrics display with animation
+            const totalEl = document.getElementById('metricTotalApplications');
+            const rateEl = document.getElementById('metricApprovalRate');
+            const volumeEl = document.getElementById('metricTotalVolume');
+            const ficoEl = document.getElementById('metricAvgFico');
+            const approvedEl = document.getElementById('metricApprovedCount');
+            const declinedEl = document.getElementById('metricDeclinedCount');
+            const volProgressEl = document.getElementById('volumeProgress');
+            const volProgressBar = document.getElementById('volumeProgressBar');
+            
+            if (totalEl) totalEl.textContent = totalApps;
+            if (rateEl) rateEl.textContent = approvalRate + '%';
+            if (volumeEl) volumeEl.textContent = '$' + (totalVolume / 1000000).toFixed(1) + 'M';
+            if (ficoEl) ficoEl.textContent = avgFico || 0;
+            if (approvedEl) approvedEl.textContent = approved + ' Approved';
+            if (declinedEl) declinedEl.textContent = declined + ' Declined';
+            
+            // Volume progress (target: $50M)
+            const targetVolume = 50000000;
+            const volumeProgress = Math.min(100, Math.round((totalVolume / targetVolume) * 100));
+            if (volProgressEl) volProgressEl.textContent = volumeProgress + '%';
+            if (volProgressBar) volProgressBar.style.width = volumeProgress + '%';
+        }
+
+        // ==========================================
+        // USER LOGIN SYSTEM
+        // ==========================================
+        const USERS = {
+            'edward': { password: 'icecap2024', role: 'admin', name: 'Edward Kaye' },
+            'uscapnet': { password: 'uscap2024!', role: 'user', name: 'US Cap Net' },
+            'demo': { password: 'demo123', role: 'user', name: 'Demo User' }
+        };
+
+        function showLoginModal() {
+            const loginHtml = `
+                <div style="max-width: 400px;">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="background: var(--primary-500); width: 64px; height: 64px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+                            <i data-lucide="building-2" style="width: 32px; height: 32px; color: white;"></i>
+                        </div>
+                        <h3 style="margin-bottom: var(--space-2);">LoanSizer Pro</h3>
+                        <p style="color: var(--gray-400); font-size: var(--text-sm);">Sign in to access your dashboard</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                        <div>
+                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">Username</label>
+                            <input type="text" id="loginUsername" class="form-input" placeholder="Enter username" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">Password</label>
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" style="width: 100%;">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="performLogin()">
+                            Sign In
+                        </button>
+                    </div>
+                    <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--surface-2); border-radius: var(--radius-md);">
+                        <p style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-2);"><strong>Available Users:</strong></p>
+                        <p style="font-size: var(--text-xs); color: var(--gray-400);">• edward / icecap2024 (Admin)</p>
+                        <p style="font-size: var(--text-xs); color: var(--gray-400);">• uscapnet / uscap2024! (User)</p>
+                    </div>
+                </div>
+            `;
+            showModal('Welcome Back', loginHtml);
+        }
+
+        function performLogin() {
+            const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showToast('Please enter both username and password');
+                return;
+            }
+            
+            const user = USERS[username];
+            if (!user || user.password !== password) {
+                showToast('Invalid username or password');
+                return;
+            }
+            
+            // Set current user
+            currentUser = { username: username, role: user.role, name: user.name };
+            localStorage.setItem('loanSizer_currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateUserDisplay();
+            updateDashboardMetrics();
+            renderProcessedApplications();
+            
+            closeModal();
+            showToast('Welcome back, ' + user.name + '!');
+        }
+
+        function logoutUser() {
+            currentUser = { username: 'guest', role: 'guest', name: 'Guest' };
+            localStorage.removeItem('loanSizer_currentUser');
+            updateUserDisplay();
+            updateDashboardMetrics();
+            showLoginModal();
+        }
+
+        function updateUserDisplay() {
+            const userNameEl = document.getElementById('userDisplayName');
+            const userRoleEl = document.getElementById('userDisplayRole');
+            const userAvatarEl = document.getElementById('userAvatar');
+            
+            if (userNameEl) userNameEl.textContent = currentUser.name || currentUser.username;
+            if (userRoleEl) userRoleEl.textContent = currentUser.role === 'admin' ? 'Administrator' : 'Loan Officer';
+            if (userAvatarEl) userAvatarEl.textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
+        }
+
+        // ==========================================
+        // REPORT GENERATION
+        // ==========================================
+        function generateReport(reportType) {
+            showToast('Generating ' + reportType.replace(/-/g, ' ') + '...');
+            
+            const userApps = processedApplications.filter(a => a.user === currentUser.username);
+            
+            setTimeout(() => {
+                let reportData = [];
+                let reportTitle = '';
+                
+                switch(reportType) {
+                    case 'pipeline-summary':
+                        reportTitle = 'Pipeline Summary Report';
+                        reportData = userApps.slice(0, 50).map(a => ({
+                            'Term Sheet ID': a.id,
+                            'Date': a.dateFormatted,
+                            'Lender': a.lender,
+                            'Borrower': a.borrowerName,
+                            'Amount': a.loanAmount,
+                            'Status': a.status
+                        }));
+                        break;
+                    case 'lender-performance':
+                        reportTitle = 'Lender Performance Report';
+                        const lenderStats = {};
+                        userApps.forEach(a => {
+                            if (!lenderStats[a.lender]) {
+                                lenderStats[a.lender] = { count: 0, approved: 0, totalVolume: 0 };
+                            }
+                            lenderStats[a.lender].count++;
+                            if (a.status === 'Approved') lenderStats[a.lender].approved++;
+                            lenderStats[a.lender].totalVolume += parseFloat(a.loanAmount || 0);
+                        });
+                        reportData = Object.entries(lenderStats).map(([lender, stats]) => ({
+                            'Lender': lender,
+                            'Applications': stats.count,
+                            'Approved': stats.approved,
+                            'Approval Rate': ((stats.approved / stats.count) * 100).toFixed(1) + '%',
+                            'Total Volume': '$' + stats.totalVolume.toLocaleString()
+                        }));
+                        break;
+                    case 'conversion-analysis':
+                        reportTitle = 'Conversion Analysis Report';
+                        const total = userApps.length;
+                        const approved = userApps.filter(a => a.status === 'Approved').length;
+                        const declined = userApps.filter(a => a.status === 'Declined').length;
+                        reportData = [{
+                            'Metric': 'Total Applications',
+                            'Count': total,
+                            'Percentage': '100%'
+                        }, {
+                            'Metric': 'Approved',
+                            'Count': approved,
+                            'Percentage': total > 0 ? ((approved / total) * 100).toFixed(1) + '%' : '0%'
+                        }, {
+                            'Metric': 'Declined',
+                            'Count': declined,
+                            'Percentage': total > 0 ? ((declined / total) * 100).toFixed(1) + '%' : '0%'
+                        }];
+                        break;
+                    default:
+                        reportTitle = 'Report';
+                        reportData = userApps.slice(0, 20).map(a => ({
+                            'Term Sheet ID': a.id,
+                            'Date': a.dateFormatted,
+                            'Lender': a.lender,
+                            'Borrower': a.borrowerName,
+                            'Amount': a.loanAmount,
+                            'Status': a.status
+                        }));
+                }
+                
+                downloadReportCSV(reportTitle, reportData);
+            }, 1500);
+        }
+
+        function downloadReportCSV(title, data) {
+            if (data.length === 0) {
+                showToast('No data to export');
+                return;
+            }
+            
+            const headers = Object.keys(data[0]);
+            const csv = [
+                headers.join(','),
+                ...data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(title + ' downloaded');
+        }
+
+        function exportAllReports() {
+            showToast('Exporting all reports...');
+            setTimeout(() => {
+                showToast('All reports exported');
+            }, 2000);
+        }
+
+        // Update showSection to refresh Applications Processed
+        const originalShowSection = showSection;
+        showSection = function(section) {
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + 'Section').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            if (section === 'history') {
+                renderLoanHistory();
+            }
+            if (section === 'applications') {
+                renderProcessedApplications();
+            }
+        };
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for logged in user
+            const savedUser = localStorage.getItem('loanSizer_currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserDisplay();
+            } else {
+                // Show login modal after a short delay
+                setTimeout(showLoginModal, 500);
+            }
+            
+            // Initialize metrics
+            updateDashboardMetrics();
+            
+            // Update processed apps table if on that section
+            const appsSection = document.getElementById('applicationsSection');
+            if (appsSection && !appsSection.classList.contains('hidden')) {
+                renderProcessedApplications();
+            }
+        });
+
+        // Expose functions globally
+        window.showLoginModal = showLoginModal;
+        window.performLogin = performLogin;
+        window.logoutUser = logoutUser;
+        window.renderProcessedApplications = renderProcessedApplications;
+        window.clearProcessedApplications = clearProcessedApplications;
+        window.exportProcessedApplications = exportProcessedApplications;
+        window.viewApplicationDetails = viewApplicationDetails;
+        window.deleteApplication = deleteApplication;
+        window.downloadTermSheet = downloadTermSheet;
+        window.updateDashboardMetrics = updateDashboardMetrics;
+        window.generateReport = generateReport;
+        window.exportAllReports = exportAllReports;
+        window.downloadReportCSV = downloadReportCSV;
     </script>
 
     <!-- Productivity UI Elements -->
