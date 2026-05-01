@@ -1,4 +1,3 @@
-
 // ==================== UNIFIED BATCH PROCESSOR ====================
 // Works client-side with optional backend fallback
 // Supports 1-100 applications

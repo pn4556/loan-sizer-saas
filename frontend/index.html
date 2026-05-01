@@ -3099,7 +3099,7 @@
                         <div class="card-body">
                             <!-- Upload State -->
                             <div id="uploadState" class="upload-zone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
-                                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.eml,.msg,.png,.jpg,.jpeg" onchange="handleFileSelect(event)">
+                                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.eml,.msg,.png,.jpg,.jpeg,.txt,.csv" onchange="handleFileSelect(event)">
                                 <div class="upload-icon">
                                     <i data-lucide="upload-cloud" style="width: 32px; height: 32px;"></i>
                                 </div>
@@ -5484,7 +5484,12 @@
         function handleDrop(e) {
             e.preventDefault();
             e.currentTarget.classList.remove('dragover');
-            startProcessing();
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFiles(files);
+            } else {
+                showToast('No files detected. Please try again.', 'error');
+            }
         }
 
         // Processing simulation with REAL file parsing
