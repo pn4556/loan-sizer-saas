@@ -2732,44 +2732,31 @@
                 </div>
                 <span class="logo-text">LoanSizer Pro</span>
             </div>
-            <h2 class="login-title">Welcome back</h2>
-            <p class="login-subtitle">Sign in to access your dashboard</p>
+            <h2 class="login-title">Welcome to LoanSizer Pro</h2>
+            <p class="login-subtitle">AI-powered loan analysis platform</p>
             
-            <form id="loginForm">
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" placeholder="you@company.com" value="demo@icecaplending.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" placeholder="Enter your password" value="demo123">
-                </div>
-                <div class="form-row">
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" checked>
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" class="forgot-link">Forgot password?</a>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
-                    Sign In
+            <div style="text-align: center; margin: var(--space-8) 0;">
+                <button class="btn btn-primary" onclick="landingPageDemoLogin()" style="width: 100%; padding: var(--space-5); font-size: var(--text-lg);">
+                    <i data-lucide="play-circle" style="width: 24px; height: 24px; margin-right: var(--space-2);"></i>
+                    Launch Demo
                 </button>
-            </form>
-
-            <div class="demo-box">
-                <div class="demo-title">
-                    <i data-lucide="flask-conical" style="width: 16px; height: 16px;"></i>
-                    Try Demo Account
-                </div>
-                <p class="demo-credentials">
-                    Email: <code>demo@icecaplending.com</code><br>
-                    Password: <code>demo123</code>
+                <p style="margin-top: var(--space-4); font-size: var(--text-sm); color: var(--gray-500);">
+                    No signup required • Instant access • Full features
                 </p>
-                <button class="btn btn-outline" onclick="autoFillDemo()" style="width: 100%;">
-                    <i data-lucide="user" style="width: 16px; height: 16px;"></i>
-                    Auto-fill Demo Credentials
-                </button>
+            </div>
+
+            <div class="demo-box" style="margin-top: var(--space-6);">
+                <div class="demo-title">
+                    <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+                    What You'll See
+                </div>
+                <ul style="font-size: var(--text-xs); color: var(--gray-400); margin: var(--space-3) 0; padding-left: var(--space-4);">
+                    <li>Real-time loan analysis tools</li>
+                    <li>Multi-lender comparison</li>
+                    <li>Smart opportunity alerts</li>
+                    <li>File upload & data extraction</li>
+                    <li>Live demo mode (Ctrl+Shift+D)</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -4999,7 +4986,31 @@
         }
 
         function autoFillDemo() {
-            login();
+            landingPageDemoLogin();
+        }
+
+        function landingPageDemoLogin() {
+            // Set demo user in localStorage
+            const currentUser = {
+                username: 'demo',
+                name: 'Demo User',
+                email: 'demo@icecaplending.com',
+                role: 'user',
+                company: 'Icecap Lending',
+                lastLogin: new Date().toISOString()
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            // Show main app
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Update UI and animate
+            updateUIForLoggedInUser();
+            animateCounters();
+            
+            showToast('Welcome to LoanSizer Pro Demo!', 'success');
         }
 
         // Sidebar toggle
@@ -8853,45 +8864,50 @@ ltv_ratio: ${ltv}
         }
 
         // ==========================================
-        // USER LOGIN SYSTEM
+        // USER LOGIN SYSTEM - DEMO ONLY
         // ==========================================
         const USERS = {
-            'edward': { password: 'icecap2024', role: 'admin', name: 'Edward Kaye' },
-            'uscapnet': { password: 'uscap2024!', role: 'user', name: 'US Cap Net' },
-            'demo': { password: 'demo123', role: 'user', name: 'Demo User' }
+            'demo': { password: 'demo123', role: 'user', name: 'Demo User', email: 'demo@icecaplending.com' }
         };
 
         function showLoginModal() {
             const loginHtml = `
-                <div style="max-width: 400px;">
-                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                <div style="max-width: 400px; text-align: center;">
+                    <div style="margin-bottom: var(--space-6);">
                         <div style="background: var(--primary-500); width: 64px; height: 64px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
-                            <i data-lucide="building-2" style="width: 32px; height: 32px; color: white;"></i>
+                            <i data-lucide="flask-conical" style="width: 32px; height: 32px; color: white;"></i>
                         </div>
-                        <h3 style="margin-bottom: var(--space-2);">LoanSizer Pro</h3>
-                        <p style="color: var(--gray-400); font-size: var(--text-sm);">Sign in to access your dashboard</p>
+                        <h3 style="margin-bottom: var(--space-2);">LoanSizer Pro Demo</h3>
+                        <p style="color: var(--gray-400); font-size: var(--text-sm);">Experience the full platform with sample data</p>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
-                        <div>
-                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">Username</label>
-                            <input type="text" id="loginUsername" class="form-input" placeholder="Enter username" style="width: 100%;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-2);">Password</label>
-                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" style="width: 100%;">
-                        </div>
-                        <button class="btn btn-primary" style="width: 100%;" onclick="performLogin()">
-                            Sign In
-                        </button>
-                    </div>
-                    <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--surface-2); border-radius: var(--radius-md);">
-                        <p style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-2);"><strong>Available Users:</strong></p>
-                        <p style="font-size: var(--text-xs); color: var(--gray-400);">• edward / icecap2024 (Admin)</p>
-                        <p style="font-size: var(--text-xs); color: var(--gray-400);">• uscapnet / uscap2024! (User)</p>
-                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: var(--space-4); font-size: var(--text-lg);" onclick="enterDemoMode()">
+                        <i data-lucide="play" style="width: 20px; height: 20px; margin-right: var(--space-2);"></i>
+                        Enter Demo
+                    </button>
+                    <p style="margin-top: var(--space-4); font-size: var(--text-xs); color: var(--gray-500);">
+                        No signup required • Instant access • Full features
+                    </p>
                 </div>
             `;
-            showModal('Welcome Back', loginHtml);
+            showModal('Welcome', loginHtml);
+        }
+
+        function enterDemoMode() {
+            closeModal();
+            // Auto-login as demo user
+            const user = USERS['demo'];
+            const currentUser = {
+                username: 'demo',
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                company: 'Icecap Lending',
+                lastLogin: new Date().toISOString()
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('isLoggedIn', 'true');
+            showToast('Welcome to LoanSizer Pro Demo!', 'success');
+            updateUIForLoggedInUser();
         }
 
         function performLogin() {
@@ -9307,6 +9323,8 @@ Contact your loan officer to discuss next steps.
         window.toggleDemoMode = toggleDemoMode;
         window.startDemoMode = startDemoMode;
         window.stopDemoMode = stopDemoMode;
+        window.enterDemoMode = enterDemoMode;
+        window.landingPageDemoLogin = landingPageDemoLogin;
     </script>
 
     <!-- Productivity UI Elements -->
