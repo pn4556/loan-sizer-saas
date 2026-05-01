@@ -2004,6 +2004,493 @@
             white-space: nowrap;
             border: 0;
         }
+
+        /* ============================================
+           PRODUCTIVITY FEATURES - Command Palette, Work Queue, Quick Calc
+        ============================================ */
+
+        /* Command Palette */
+        .command-palette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 15vh;
+        }
+
+        .command-palette-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .command-palette-container {
+            position: relative;
+            width: 90%;
+            max-width: 640px;
+            background: var(--surface-1);
+            border: 1px solid var(--surface-3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .command-palette-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--surface-3);
+        }
+
+        .command-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--gray-100);
+            font-size: var(--text-lg);
+            outline: none;
+        }
+
+        .command-input::placeholder {
+            color: var(--gray-500);
+        }
+
+        .command-esc {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            background: var(--surface-2);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .command-results {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: var(--space-2);
+        }
+
+        .command-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .command-item:hover,
+        .command-item.selected {
+            background: var(--primary-600);
+        }
+
+        .command-item.selected .command-shortcut {
+            color: var(--primary-200);
+        }
+
+        .command-icon {
+            font-size: var(--text-lg);
+            width: 24px;
+            text-align: center;
+        }
+
+        .command-title {
+            flex: 1;
+            font-size: var(--text-sm);
+            color: var(--gray-200);
+        }
+
+        .command-title mark {
+            background: var(--primary-400);
+            color: white;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .command-shortcut {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            font-family: monospace;
+        }
+
+        .command-palette-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-3) var(--space-4);
+            border-top: 1px solid var(--surface-3);
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+        }
+
+        .command-palette-footer kbd {
+            background: var(--surface-2);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-family: monospace;
+        }
+
+        /* Quick Calculator Panel */
+        .quick-calc-panel,
+        .work-queue-panel {
+            position: fixed;
+            right: var(--space-4);
+            top: 100px;
+            width: 320px;
+            background: var(--surface-1);
+            border: 1px solid var(--surface-3);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            z-index: 500;
+            animation: slideInRight 0.2s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--surface-3);
+        }
+
+        .panel-header h4 {
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .panel-close {
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            font-size: var(--text-xl);
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+        }
+
+        .panel-close:hover {
+            background: var(--surface-2);
+            color: var(--gray-200);
+        }
+
+        .panel-content {
+            padding: var(--space-4);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .calc-section {
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-5);
+            border-bottom: 1px solid var(--surface-3);
+        }
+
+        .calc-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .calc-section h5 {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--gray-300);
+            margin-bottom: var(--space-3);
+        }
+
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .calc-section:nth-child(2) .calc-inputs,
+        .calc-section:nth-child(3) .calc-inputs {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .calc-field label {
+            display: block;
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+            margin-bottom: var(--space-1);
+        }
+
+        .calc-field input {
+            width: 100%;
+            padding: var(--space-2);
+            background: var(--surface-0);
+            border: 1px solid var(--surface-3);
+            border-radius: var(--radius-md);
+            color: var(--gray-100);
+            font-size: var(--text-sm);
+        }
+
+        .calc-field input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+        }
+
+        .calc-result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            background: var(--surface-2);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+        }
+
+        .calc-result {
+            font-weight: var(--font-semibold);
+            font-size: var(--text-lg);
+            color: var(--primary-400);
+        }
+
+        .calc-result.success { color: var(--success-500); }
+        .calc-result.warning { color: var(--warning-500); }
+        .calc-result.danger { color: var(--danger-500); }
+
+        /* Work Queue */
+        .work-queue-items {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .work-queue-empty {
+            padding: var(--space-6);
+            text-align: center;
+            color: var(--gray-500);
+            font-size: var(--text-sm);
+        }
+
+        .work-queue-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--surface-3);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .work-queue-item:hover {
+            background: var(--surface-2);
+        }
+
+        .work-queue-icon {
+            font-size: var(--text-xl);
+        }
+
+        .work-queue-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .work-queue-title {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--gray-200);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .work-queue-meta {
+            font-size: var(--text-xs);
+            color: var(--gray-500);
+        }
+
+        .work-queue-remove {
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            font-size: var(--text-lg);
+            cursor: pointer;
+            padding: 0 var(--space-2);
+            opacity: 0;
+            transition: all 0.15s ease;
+        }
+
+        .work-queue-item:hover .work-queue-remove {
+            opacity: 1;
+        }
+
+        .work-queue-remove:hover {
+            color: var(--danger-500);
+        }
+
+        /* Risk Indicators */
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-1);
+        }
+
+        .risk-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: var(--surface-2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .risk-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .risk-label {
+            font-size: var(--text-xs);
+            font-weight: var(--font-medium);
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .risk-label.success { color: var(--success-500); }
+        .risk-label.warning { color: var(--warning-500); }
+        .risk-label.danger { color: var(--danger-500); }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            bottom: var(--space-6);
+            right: var(--space-6);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            background: var(--surface-1);
+            border: 1px solid var(--surface-3);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            animation: slideInUp 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.success {
+            border-left: 3px solid var(--success-500);
+        }
+
+        .toast.error {
+            border-left: 3px solid var(--danger-500);
+        }
+
+        .toast-icon {
+            font-size: var(--text-xl);
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: var(--text-sm);
+            color: var(--gray-200);
+        }
+
+        /* Keyboard Shortcuts Modal */
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+        }
+
+        .shortcut-category h5 {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--gray-300);
+            margin-bottom: var(--space-3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-2) 0;
+            font-size: var(--text-sm);
+            border-bottom: 1px solid var(--surface-3);
+        }
+
+        .shortcut-row:last-child {
+            border-bottom: none;
+        }
+
+        .shortcut-keys {
+            display: flex;
+            gap: var(--space-1);
+        }
+
+        .shortcut-keys kbd {
+            background: var(--surface-2);
+            border: 1px solid var(--surface-3);
+            border-radius: var(--radius-sm);
+            padding: var(--space-1) var(--space-2);
+            font-family: monospace;
+            font-size: var(--text-xs);
+            color: var(--gray-300);
+        }
     </style>
 </head>
 <body>
@@ -3735,13 +4222,101 @@
 
         // Shortcuts
         function showShortcuts() {
-            document.getElementById('shortcutsModal').classList.add('open');
-        }
-
-        function closeShortcuts(e) {
-            if (!e || e.target === document.getElementById('shortcutsModal')) {
-                document.getElementById('shortcutsModal').classList.remove('open');
-            }
+            const html = `
+                <div style="padding: var(--space-4); max-width: 600px;">
+                    <h3 style="margin-bottom: var(--space-6);">⌨️ Keyboard Shortcuts</h3>
+                    <div class="shortcuts-grid">
+                        <div class="shortcut-category">
+                            <h5>Navigation</h5>
+                            <div class="shortcut-row">
+                                <span>Command Palette</span>
+                                <span class="shortcut-keys"><kbd>Cmd</kbd><kbd>K</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Go to Dashboard</span>
+                                <span class="shortcut-keys"><kbd>G</kbd><kbd>D</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>View Applications</span>
+                                <span class="shortcut-keys"><kbd>G</kbd><kbd>A</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Reports</span>
+                                <span class="shortcut-keys"><kbd>G</kbd><kbd>R</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Settings</span>
+                                <span class="shortcut-keys"><kbd>,</kbd></span>
+                            </div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h5>Quick Actions</h5>
+                            <div class="shortcut-row">
+                                <span>New Fix & Flip</span>
+                                <span class="shortcut-keys"><kbd>N</kbd><kbd>R</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>New Bridge Loan</span>
+                                <span class="shortcut-keys"><kbd>N</kbd><kbd>B</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Multi-Lender Compare</span>
+                                <span class="shortcut-keys"><kbd>N</kbd><kbd>M</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Upload Document</span>
+                                <span class="shortcut-keys"><kbd>U</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Search</span>
+                                <span class="shortcut-keys"><kbd>/</kbd></span>
+                            </div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h5>Loan Actions</h5>
+                            <div class="shortcut-row">
+                                <span>Save Draft</span>
+                                <span class="shortcut-keys"><kbd>S</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Copy Results</span>
+                                <span class="shortcut-keys"><kbd>C</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Pin to Queue</span>
+                                <span class="shortcut-keys"><kbd>P</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Show Work Queue</span>
+                                <span class="shortcut-keys"><kbd>Q</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Quick Calculator</span>
+                                <span class="shortcut-keys"><kbd>K</kbd></span>
+                            </div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h5>General</h5>
+                            <div class="shortcut-row">
+                                <span>Show Shortcuts</span>
+                                <span class="shortcut-keys"><kbd>?</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Close/Cancel</span>
+                                <span class="shortcut-keys"><kbd>Esc</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span>Submit Form</span>
+                                <span class="shortcut-keys"><kbd>⏎</kbd></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: var(--space-6); text-align: center;">
+                        <button class="btn btn-primary" onclick="closeModal()">Got it!</button>
+                    </div>
+                </div>
+            `;
+            showModal('Keyboard Shortcuts', html);
         }
 
         // New Loan - Reset all forms and clear results
@@ -3878,12 +4453,21 @@
             showToast('Shareable link generated and copied');
         }
 
-        function showToast(message) {
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.style.cssText = 'position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--success-500); color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; animation: fadeIn 0.3s ease;';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✓' : '⚠'}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // ==================== RTL (Fix & Flip) SIZER FUNCTIONS ====================
@@ -5014,7 +5598,6 @@ ltv_ratio: ${ltv}
         }
 
         // Reset multi-lender form
-
         function resetMultiLenderForm() {
             document.getElementById('multiLenderForm').reset();
             document.getElementById('multiLenderResults').style.display = 'none';
@@ -5032,6 +5615,610 @@ ltv_ratio: ${ltv}
             document.getElementById('mlPropertyType').value = 'SFR';
             showToast('Example data loaded! Click Compare Lenders to see results.');
         }
+
+        // ============================================
+        // PRODUCTIVITY FEATURES - Command Palette, Shortcuts, Auto-save
+        // ============================================
+
+        // Work Queue Management
+        let workQueue = JSON.parse(localStorage.getItem('loanSizer_workQueue') || '[]');
+
+        function addToWorkQueue(item) {
+            const existing = workQueue.find(q => q.id === item.id);
+            if (!existing) {
+                workQueue.unshift(item);
+                if (workQueue.length > 10) workQueue.pop();
+                localStorage.setItem('loanSizer_workQueue', JSON.stringify(workQueue));
+                renderWorkQueue();
+                showToast(`Added "${item.title}" to work queue`);
+            }
+        }
+
+        function removeFromWorkQueue(id) {
+            workQueue = workQueue.filter(q => q.id !== id);
+            localStorage.setItem('loanSizer_workQueue', JSON.stringify(workQueue));
+            renderWorkQueue();
+        }
+
+        function renderWorkQueue() {
+            const container = document.getElementById('workQueueItems');
+            if (!container) return;
+
+            if (workQueue.length === 0) {
+                container.innerHTML = '<div class="work-queue-empty">No pinned items. Press P to pin current loan.</div>';
+                return;
+            }
+
+            container.innerHTML = workQueue.map(item => `
+                <div class="work-queue-item" onclick="${item.action}">
+                    <div class="work-queue-icon">${item.icon}</div>
+                    <div class="work-queue-info">
+                        <div class="work-queue-title">${item.title}</div>
+                        <div class="work-queue-meta">${item.subtitle}</div>
+                    </div>
+                    <button class="work-queue-remove" onclick="event.stopPropagation(); removeFromWorkQueue('${item.id}')">×</button>
+                </div>
+            `).join('');
+
+            document.getElementById('workQueueCount').textContent = workQueue.length;
+        }
+
+        function pinCurrentLoan() {
+            const currentSection = document.querySelector('.section:not(.hidden), [id$="Section"]:not(.hidden)');
+            if (!currentSection) return;
+
+            const sectionId = currentSection.id;
+            let title = 'Loan Analysis';
+            let subtitle = new Date().toLocaleTimeString();
+
+            // Extract context based on section
+            if (sectionId.includes('rtl')) {
+                title = document.getElementById('rtlBorrowerName')?.value || 'Fix & Flip Loan';
+                subtitle = 'Fix & Flip • ' + (document.getElementById('rtlLoanAmount')?.value || 'Unknown amount');
+            } else if (sectionId.includes('bridge')) {
+                title = document.getElementById('bridgeBorrowerName')?.value || 'Bridge Loan';
+                subtitle = 'Bridge • ' + (document.getElementById('bridgeLoanAmount')?.value || 'Unknown amount');
+            } else if (sectionId.includes('multiLender')) {
+                title = 'Multi-Lender Compare';
+                subtitle = document.getElementById('mlPropertyType')?.value || 'Property comparison';
+            }
+
+            addToWorkQueue({
+                id: Date.now().toString(),
+                title: title,
+                subtitle: subtitle,
+                icon: '📋',
+                action: `restoreLoanContext('${sectionId}')`,
+                section: sectionId,
+                timestamp: Date.now()
+            });
+        }
+
+        function restoreLoanContext(sectionId) {
+            showSection(sectionId.replace('Section', ''));
+            showToast('Restored loan context');
+        }
+
+        // Command Palette
+        function toggleCommandPalette() {
+            const palette = document.getElementById('commandPalette');
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                document.getElementById('commandInput').focus();
+                updateCommandResults('');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        const commands = [
+            { id: 'new-rtl', title: 'New Fix & Flip Loan', shortcut: 'N then R', icon: '🔨', action: () => { showSection('rtlSizer'); } },
+            { id: 'new-bridge', title: 'New Bridge Loan', shortcut: 'N then B', icon: '🌉', action: () => { showSection('bridgeSizer'); } },
+            { id: 'new-multi', title: 'Multi-Lender Compare', shortcut: 'N then M', icon: '📊', action: () => { showSection('multiLender'); } },
+            { id: 'upload', title: 'Upload Document', shortcut: 'U', icon: '📤', action: () => { triggerUpload(); } },
+            { id: 'save', title: 'Save Draft', shortcut: 'S', icon: '💾', action: () => { saveCurrentDraft(); } },
+            { id: 'copy', title: 'Copy Results', shortcut: 'C', icon: '📋', action: () => { copyInsights(); } },
+            { id: 'pin', title: 'Pin to Work Queue', shortcut: 'P', icon: '📌', action: () => { pinCurrentLoan(); } },
+            { id: 'queue', title: 'Show Work Queue', shortcut: 'Q', icon: '📑', action: () => { toggleWorkQueue(); } },
+            { id: 'calc', title: 'Quick Calculator', shortcut: 'K', icon: '🧮', action: () => { toggleQuickCalc(); } },
+            { id: 'search', title: 'Search Applications', shortcut: '/', icon: '🔍', action: () => { document.querySelector('.search-bar input')?.focus(); } },
+            { id: 'dashboard', title: 'Go to Dashboard', shortcut: 'G then D', icon: '📈', action: () => { showSection('dashboard'); } },
+            { id: 'applications', title: 'View Applications', shortcut: 'G then A', icon: '📄', action: () => { showSection('applications'); } },
+            { id: 'reports', title: 'Reports', shortcut: 'G then R', icon: '📊', action: () => { showSection('reports'); } },
+            { id: 'settings', title: 'Settings', shortcut: ',', icon: '⚙️', action: () => { showSection('settings'); } },
+            { id: 'shortcuts', title: 'Keyboard Shortcuts', shortcut: '?', icon: '⌨️', action: () => { showShortcuts(); } },
+            { id: 'clear-queue', title: 'Clear Work Queue', shortcut: '', icon: '🗑️', action: () => { workQueue = []; localStorage.setItem('loanSizer_workQueue', '[]'); renderWorkQueue(); showToast('Work queue cleared'); } },
+        ];
+
+        function updateCommandResults(query) {
+            const resultsContainer = document.getElementById('commandResults');
+            const filtered = query === '' ? commands : commands.filter(c => 
+                c.title.toLowerCase().includes(query.toLowerCase()) ||
+                c.shortcut.toLowerCase().includes(query.toLowerCase())
+            );
+
+            resultsContainer.innerHTML = filtered.map((cmd, idx) => `
+                <div class="command-item ${idx === 0 ? 'selected' : ''}" data-index="${idx}" data-id="${cmd.id}" onclick="executeCommand('${cmd.id}')">
+                    <span class="command-icon">${cmd.icon}</span>
+                    <span class="command-title">${highlightMatch(cmd.title, query)}</span>
+                    <span class="command-shortcut">${cmd.shortcut}</span>
+                </div>
+            `).join('');
+
+            window.commandResults = filtered;
+            window.selectedCommandIndex = 0;
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function executeCommand(id) {
+            const cmd = commands.find(c => c.id === id);
+            if (cmd) {
+                toggleCommandPalette();
+                cmd.action();
+            }
+        }
+
+        // Keyboard Shortcuts
+        let keyBuffer = '';
+        let keyBufferTimer = null;
+
+        document.addEventListener('keydown', function(e) {
+            // Ignore if in input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                }
+                return;
+            }
+
+            // Command palette toggle
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleCommandPalette();
+                return;
+            }
+
+            // Escape closes modals/palettes
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('commandPalette')?.classList.add('hidden');
+                document.getElementById('quickCalcPanel')?.classList.add('hidden');
+                document.getElementById('workQueuePanel')?.classList.add('hidden');
+                return;
+            }
+
+            // Question mark shows shortcuts
+            if (e.key === '?') {
+                e.preventDefault();
+                showShortcuts();
+                return;
+            }
+
+            // Navigation shortcuts
+            if (e.key === 'n' || e.key === 'N') {
+                keyBuffer = 'n';
+                clearTimeout(keyBufferTimer);
+                keyBufferTimer = setTimeout(() => { keyBuffer = ''; }, 1000);
+                return;
+            }
+
+            if (keyBuffer === 'n' && (e.key === 'r' || e.key === 'R')) {
+                e.preventDefault();
+                showSection('rtlSizer');
+                keyBuffer = '';
+                return;
+            }
+
+            if (keyBuffer === 'n' && (e.key === 'b' || e.key === 'B')) {
+                e.preventDefault();
+                showSection('bridgeSizer');
+                keyBuffer = '';
+                return;
+            }
+
+            if (keyBuffer === 'n' && (e.key === 'm' || e.key === 'M')) {
+                e.preventDefault();
+                showSection('multiLender');
+                keyBuffer = '';
+                return;
+            }
+
+            if (e.key === 'g' || e.key === 'G') {
+                keyBuffer = 'g';
+                clearTimeout(keyBufferTimer);
+                keyBufferTimer = setTimeout(() => { keyBuffer = ''; }, 1000);
+                return;
+            }
+
+            if (keyBuffer === 'g') {
+                const navMap = { 'd': 'dashboard', 'a': 'applications', 'r': 'reports' };
+                if (navMap[e.key.toLowerCase()]) {
+                    e.preventDefault();
+                    showSection(navMap[e.key.toLowerCase()]);
+                    keyBuffer = '';
+                    return;
+                }
+            }
+
+            // Single key shortcuts
+            const shortcuts = {
+                'u': triggerUpload,
+                'U': triggerUpload,
+                's': saveCurrentDraft,
+                'S': saveCurrentDraft,
+                'c': copyInsights,
+                'C': copyInsights,
+                'p': pinCurrentLoan,
+                'P': pinCurrentLoan,
+                'q': toggleWorkQueue,
+                'Q': toggleWorkQueue,
+                'k': toggleQuickCalc,
+                'K': toggleQuickCalc,
+                ',': () => showSection('settings'),
+                '/': () => document.querySelector('.search-bar input')?.focus(),
+            };
+
+            if (shortcuts[e.key]) {
+                e.preventDefault();
+                shortcuts[e.key]();
+            }
+        });
+
+        // Command palette keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const palette = document.getElementById('commandPalette');
+            if (palette?.classList.contains('hidden')) return;
+
+            const items = document.querySelectorAll('.command-item');
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                window.selectedCommandIndex = Math.min(window.selectedCommandIndex + 1, items.length - 1);
+                updateCommandSelection();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                window.selectedCommandIndex = Math.max(window.selectedCommandIndex - 1, 0);
+                updateCommandSelection();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const selected = items[window.selectedCommandIndex];
+                if (selected) executeCommand(selected.dataset.id);
+            }
+        });
+
+        function updateCommandSelection() {
+            document.querySelectorAll('.command-item').forEach((item, idx) => {
+                item.classList.toggle('selected', idx === window.selectedCommandIndex);
+            });
+        }
+
+        // Auto-save functionality
+        function saveCurrentDraft() {
+            const currentSection = document.querySelector('[id$="SizerSection"]:not(.hidden), #multiLenderSection:not(.hidden)');
+            if (!currentSection) {
+                showToast('No active loan form to save');
+                return;
+            }
+
+            const sectionId = currentSection.id;
+            const draft = {
+                section: sectionId,
+                timestamp: Date.now(),
+                data: {}
+            };
+
+            // Extract all input values
+            currentSection.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.id) {
+                    draft.data[input.id] = input.value;
+                }
+            });
+
+            // Save to localStorage
+            let drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            drafts = drafts.filter(d => d.section !== sectionId); // Remove old draft for this section
+            drafts.unshift(draft);
+            if (drafts.length > 20) drafts.pop(); // Keep only 20 drafts
+
+            localStorage.setItem('loanSizer_drafts', JSON.stringify(drafts));
+            showToast('Draft saved 💾');
+        }
+
+        function loadLatestDraft(sectionId) {
+            const drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            const draft = drafts.find(d => d.section === sectionId);
+
+            if (draft) {
+                Object.entries(draft.data).forEach(([id, value]) => {
+                    const input = document.getElementById(id);
+                    if (input) input.value = value;
+                });
+
+                // Check for recovery on page load
+                const timeAgo = Math.round((Date.now() - draft.timestamp) / 60000);
+                if (timeAgo < 60) { // Only offer recovery if less than 1 hour old
+                    showRecoveryDialog(draft);
+                }
+            }
+        }
+
+        function showRecoveryDialog(draft) {
+            const timeAgo = Math.round((Date.now() - draft.timestamp) / 60000);
+            const unit = timeAgo < 1 ? 'just now' : `${timeAgo} min ago`;
+
+            const html = `
+                <div style="padding: var(--space-4);">
+                    <h4 style="margin-bottom: var(--space-4);">💾 Recover Unsaved Work?</h4>
+                    <p style="color: var(--gray-400); margin-bottom: var(--space-4);">
+                        Found draft from ${unit}. Would you like to restore it?
+                    </p>
+                    <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+                        <button class="btn btn-secondary" onclick="closeModal(); discardDraft('${draft.section}')">Discard</button>
+                        <button class="btn btn-primary" onclick="closeModal(); restoreDraft('${draft.section}')">Restore</button>
+                    </div>
+                </div>
+            `;
+            showModal('Recover Draft', html);
+        }
+
+        function restoreDraft(sectionId) {
+            loadLatestDraft(sectionId);
+            showToast('Draft restored');
+        }
+
+        function discardDraft(sectionId) {
+            let drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            drafts = drafts.filter(d => d.section !== sectionId);
+            localStorage.setItem('loanSizer_drafts', JSON.stringify(drafts));
+        }
+
+        // Auto-save every 30 seconds when user is typing
+        let autoSaveTimer = null;
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    const currentSection = document.querySelector('[id$="SizerSection"]:not(.hidden), #multiLenderSection:not(.hidden)');
+                    if (currentSection) {
+                        saveCurrentDraft();
+                    }
+                }, 30000);
+            }
+        });
+
+        // Quick Calculator
+        function toggleQuickCalc() {
+            const panel = document.getElementById('quickCalcPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function calculateMonthlyPayment() {
+            const principal = parseFloat(document.getElementById('calcPrincipal')?.value) || 0;
+            const rate = parseFloat(document.getElementById('calcRate')?.value) || 0;
+            const years = parseFloat(document.getElementById('calcYears')?.value) || 30;
+
+            if (principal && rate) {
+                const monthlyRate = rate / 100 / 12;
+                const numPayments = years * 12;
+                const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+                document.getElementById('calcResultPayment').textContent = formatCurrency(payment);
+            }
+        }
+
+        function calculateDSCR() {
+            const noi = parseFloat(document.getElementById('calcNOI')?.value) || 0;
+            const debtService = parseFloat(document.getElementById('calcDebtService')?.value) || 0;
+
+            if (debtService > 0) {
+                const dscr = noi / debtService;
+                const resultEl = document.getElementById('calcResultDSCR');
+                resultEl.textContent = dscr.toFixed(2);
+                resultEl.className = dscr >= 1.25 ? 'calc-result success' : dscr >= 1.0 ? 'calc-result warning' : 'calc-result danger';
+            }
+        }
+
+        function calculateCashOnCash() {
+            const cashFlow = parseFloat(document.getElementById('calcCashFlow')?.value) || 0;
+            const invested = parseFloat(document.getElementById('calcInvested')?.value) || 0;
+
+            if (invested > 0) {
+                const coc = (cashFlow / invested) * 100;
+                document.getElementById('calcResultCoC').textContent = coc.toFixed(2) + '%';
+            }
+        }
+
+        // Work Queue Toggle
+        function toggleWorkQueue() {
+            const panel = document.getElementById('workQueuePanel');
+            panel.classList.toggle('hidden');
+            renderWorkQueue();
+        }
+
+        // Risk Indicators - Visual Bars
+        function getRiskIndicator(value, type) {
+            let percentage, color, label;
+
+            if (type === 'dscr') {
+                // DSCR: higher is better, 1.25+ is green
+                percentage = Math.min((value / 1.5) * 100, 100);
+                color = value >= 1.25 ? 'success' : value >= 1.0 ? 'warning' : 'danger';
+                label = value >= 1.25 ? 'Strong' : value >= 1.0 ? 'Adequate' : 'Weak';
+            } else if (type === 'ltv') {
+                // LTV: lower is better, <80% is green
+                percentage = Math.min(value, 100);
+                color = value <= 75 ? 'success' : value <= 80 ? 'warning' : 'danger';
+                label = value <= 75 ? 'Conservative' : value <= 80 ? 'Moderate' : 'High Risk';
+            } else if (type === 'fico') {
+                // FICO: higher is better, 720+ is green
+                percentage = Math.min(((value - 500) / 350) * 100, 100);
+                color = value >= 720 ? 'success' : value >= 680 ? 'warning' : 'danger';
+                label = value >= 720 ? 'Excellent' : value >= 680 ? 'Good' : 'Fair';
+            }
+
+            const colorMap = {
+                success: 'var(--success-500)',
+                warning: 'var(--warning-500)',
+                danger: 'var(--danger-500)'
+            };
+
+            return `
+                <div class="risk-indicator">
+                    <div class="risk-bar-bg">
+                        <div class="risk-bar-fill" style="width: ${percentage}%; background: ${colorMap[color]}"></div>
+                    </div>
+                    <span class="risk-label ${color}">${label}</span>
+                </div>
+            `;
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render work queue
+            renderWorkQueue();
+
+            // Check for recoverable drafts
+            setTimeout(() => {
+                const currentSection = document.querySelector('[id$="SizerSection"]:not(.hidden)');
+                if (currentSection) {
+                    loadLatestDraft(currentSection.id);
+                }
+            }, 1000);
+
+            // Command palette input handler
+            document.getElementById('commandInput')?.addEventListener('input', function(e) {
+                updateCommandResults(e.target.value);
+            });
+
+            // Quick calc inputs
+            ['calcPrincipal', 'calcRate', 'calcYears'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', calculateMonthlyPayment);
+            });
+            ['calcNOI', 'calcDebtService'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', calculateDSCR);
+            });
+            ['calcCashFlow', 'calcInvested'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', calculateCashOnCash);
+            });
+        });
+
+        // Expose functions globally
+        window.addToWorkQueue = addToWorkQueue;
+        window.removeFromWorkQueue = removeFromWorkQueue;
+        window.toggleCommandPalette = toggleCommandPalette;
+        window.executeCommand = executeCommand;
+        window.saveCurrentDraft = saveCurrentDraft;
+        window.restoreDraft = restoreDraft;
+        window.discardDraft = discardDraft;
+        window.toggleQuickCalc = toggleQuickCalc;
+        window.toggleWorkQueue = toggleWorkQueue;
+        window.calculateMonthlyPayment = calculateMonthlyPayment;
+        window.calculateDSCR = calculateDSCR;
+        window.calculateCashOnCash = calculateCashOnCash;
+        window.getRiskIndicator = getRiskIndicator;
+        window.pinCurrentLoan = pinCurrentLoan;
+        window.restoreLoanContext = restoreLoanContext;
     </script>
+
+    <!-- Productivity UI Elements -->
+    <!-- Command Palette (Cmd+K) -->
+    <div id="commandPalette" class="command-palette hidden">
+        <div class="command-palette-backdrop" onclick="toggleCommandPalette()"></div>
+        <div class="command-palette-container">
+            <div class="command-palette-header">
+                <i data-lucide="search" style="width: 20px; height: 20px; color: var(--gray-400);"></i>
+                <input type="text" id="commandInput" class="command-input" placeholder="Type a command or search..." autocomplete="off">
+                <span class="command-esc">ESC</span>
+            </div>
+            <div id="commandResults" class="command-results"></div>
+            <div class="command-palette-footer">
+                <span><kbd>↑</kbd> <kbd>↓</kbd> to navigate</span>
+                <span><kbd>⏎</kbd> to select</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Calculator Panel -->
+    <div id="quickCalcPanel" class="quick-calc-panel hidden">
+        <div class="panel-header">
+            <h4>🧮 Quick Calculator</h4>
+            <button class="panel-close" onclick="toggleQuickCalc()">×</button>
+        </div>
+        <div class="panel-content">
+            <div class="calc-section">
+                <h5>Monthly Payment</h5>
+                <div class="calc-inputs">
+                    <div class="calc-field">
+                        <label>Principal</label>
+                        <input type="number" id="calcPrincipal" placeholder="485000">
+                    </div>
+                    <div class="calc-field">
+                        <label>Rate (%)</label>
+                        <input type="number" id="calcRate" placeholder="7.5" step="0.125">
+                    </div>
+                    <div class="calc-field">
+                        <label>Years</label>
+                        <input type="number" id="calcYears" placeholder="30">
+                    </div>
+                </div>
+                <div class="calc-result-row">
+                    <span>Payment:</span>
+                    <span id="calcResultPayment" class="calc-result">$0</span>
+                </div>
+            </div>
+            <div class="calc-section">
+                <h5>DSCR Calculator</h5>
+                <div class="calc-inputs">
+                    <div class="calc-field">
+                        <label>Annual NOI</label>
+                        <input type="number" id="calcNOI" placeholder="58000">
+                    </div>
+                    <div class="calc-field">
+                        <label>Annual Debt</label>
+                        <input type="number" id="calcDebtService" placeholder="42000">
+                    </div>
+                </div>
+                <div class="calc-result-row">
+                    <span>DSCR:</span>
+                    <span id="calcResultDSCR" class="calc-result">0.00</span>
+                </div>
+            </div>
+            <div class="calc-section">
+                <h5>Cash-on-Cash Return</h5>
+                <div class="calc-inputs">
+                    <div class="calc-field">
+                        <label>Annual Cash Flow</label>
+                        <input type="number" id="calcCashFlow" placeholder="12000">
+                    </div>
+                    <div class="calc-field">
+                        <label>Cash Invested</label>
+                        <input type="number" id="calcInvested" placeholder="100000">
+                    </div>
+                </div>
+                <div class="calc-result-row">
+                    <span>CoC Return:</span>
+                    <span id="calcResultCoC" class="calc-result">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Queue Panel -->
+    <div id="workQueuePanel" class="work-queue-panel hidden">
+        <div class="panel-header">
+            <h4>📑 Work Queue <span id="workQueueCount" class="badge badge-primary">0</span></h4>
+            <button class="panel-close" onclick="toggleWorkQueue()">×</button>
+        </div>
+        <div id="workQueueItems" class="work-queue-items">
+            <div class="work-queue-empty">No pinned items. Press P to pin current loan.</div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 </body>
 </html>
