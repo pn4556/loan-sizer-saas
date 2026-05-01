@@ -2813,6 +2813,11 @@
                 </a>
 
                 <div class="section-label" style="margin-top: var(--space-6);">Insights</div>
+                <a href="#" class="nav-item" onclick="showSection('opportunities')">
+                    <i data-lucide="bell-ring"></i>
+                    <span class="nav-text">Opportunities</span>
+                    <span class="badge badge-warning" style="margin-left: auto; font-size: 0.625rem;">3</span>
+                </a>
                 <a href="#" class="nav-item" onclick="showSection('news')">
                     <i data-lucide="newspaper"></i>
                     <span class="nav-text">Industry News</span>
@@ -4566,6 +4571,164 @@
                     </div>
                 </div>
 
+                <!-- Opportunities Section (Smart Alerts) -->
+                <div id="opportunitiesSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="bell-ring" style="width: 20px; height: 20px; color: var(--warning-400);"></i>
+                                Smart Opportunity Alerts
+                                <span class="badge badge-warning" id="activeOpportunityCount">3 New</span>
+                            </div>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button class="btn btn-secondary btn-sm" onclick="markAllOpportunitiesRead()">
+                                    <i data-lucide="check-check" style="width: 14px; height: 14px;"></i>
+                                    Mark All Read
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
+                                AI-powered alerts to help you identify the right moment to reach out to borrowers. 
+                                Stay ahead of your competition with real-time opportunity detection.
+                            </p>
+
+                            <!-- Opportunity Categories -->
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-bottom: var(--space-6);">
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; border: 2px solid var(--success-500);">
+                                    <div style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">💰</div>
+                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Rate Improvement</div>
+                                    <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--success-500);">2</div>
+                                </div>
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; border: 2px solid var(--primary-500);">
+                                    <div style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">🏠</div>
+                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">New Listings</div>
+                                    <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-500);">1</div>
+                                </div>
+                                <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; border: 2px solid var(--warning-500);">
+                                    <div style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">📈</div>
+                                    <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Credit Boost</div>
+                                    <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--warning-500);">3</div>
+                                </div>
+                            </div>
+
+                            <!-- Opportunity List -->
+                            <div id="opportunitiesList" style="display: flex; flex-direction: column; gap: var(--space-4);">
+                                <!-- Rate Improvement Alert -->
+                                <div class="opportunity-card" style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--success-500);">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+                                        <div style="display: flex; gap: var(--space-3);">
+                                            <div style="background: var(--success-500); width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                                                <i data-lucide="trending-down" style="width: 20px; height: 20px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Rate Drop Alert - Sarah Johnson</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">2 hours ago • Refinance Opportunity</div>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-success">High Priority</span>
+                                    </div>
+                                    <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                        Market rates have dropped 0.25% since Sarah's loan closed 6 months ago. 
+                                        She could save <strong class="success-text">$267/month</strong> by refinancing now.
+                                    </p>
+                                    <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Current Loan Details:</div>
+                                        <div style="font-size: var(--text-sm); color: var(--gray-300);">
+                                            Rate: 7.25% → New Rate: 7.00% | Balance: $485,000 | Monthly Savings: $267
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-3);">
+                                        <button class="btn btn-primary btn-sm" onclick="createHomeownerStrategy('sarah-johnson-refi')">
+                                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                            Create Strategy
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" onclick="contactBorrower('sarah-johnson')">
+                                            <i data-lucide="mail" style="width: 14px; height: 14px;"></i>
+                                            Send Email
+                                        </button>
+                                        <button class="btn btn-ghost btn-sm" onclick="dismissOpportunity(this)">
+                                            Dismiss
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- New Listing Alert -->
+                                <div class="opportunity-card" style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--primary-500);">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+                                        <div style="display: flex; gap: var(--space-3);">
+                                            <div style="background: var(--primary-500); width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                                                <i data-lucide="home" style="width: 20px; height: 20px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">New Listing - Mike Chen</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">5 hours ago • Purchase Opportunity</div>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-primary">New Client</span>
+                                    </div>
+                                    <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                        Mike just listed his current home for sale. This is the perfect time to 
+                                        reach out about financing his next purchase.
+                                    </p>
+                                    <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Property Details:</div>
+                                        <div style="font-size: var(--text-sm); color: var(--gray-300);">
+                                            123 Main St, Austin, TX | List Price: $425,000 | Est. Equity: $125,000
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-3);">
+                                        <button class="btn btn-primary btn-sm" onclick="createHomeownerStrategy('mike-chen-purchase')">
+                                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                            Create Pre-Approval
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" onclick="contactBorrower('mike-chen')">
+                                            <i data-lucide="phone" style="width: 14px; height: 14px;"></i>
+                                            Call Now
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Credit Improvement Alert -->
+                                <div class="opportunity-card" style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-5); border-left: 4px solid var(--warning-500);">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+                                        <div style="display: flex; gap: var(--space-3);">
+                                            <div style="background: var(--warning-500); width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+                                                <i data-lucide="trending-up" style="width: 20px; height: 20px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Credit Score Improved - Lisa Martinez</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">1 day ago • Better Rate Available</div>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-warning">Rate Improvement</span>
+                                    </div>
+                                    <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+                                        Lisa's credit score improved from 685 to 720. She now qualifies for 
+                                        significantly better rates on her pending application.
+                                    </p>
+                                    <div style="background: var(--surface-1); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500); margin-bottom: var(--space-1);">Rate Improvement:</div>
+                                        <div style="font-size: var(--text-sm); color: var(--gray-300);">
+                                            Previous Rate: 8.25% | New Rate: 7.75% | Monthly Savings: $156
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-3);">
+                                        <button class="btn btn-primary btn-sm" onclick="updateApplicationRate('lisa-martinez')">
+                                            <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                                            Update Rate
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" onclick="contactBorrower('lisa-martinez')">
+                                            <i data-lucide="mail" style="width: 14px; height: 14px;"></i>
+                                            Notify Client
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Settings Section -->
                 <div id="settingsSection" class="hidden">
                     <div class="card" style="margin-bottom: var(--space-8);">
@@ -5093,62 +5256,277 @@
             startProcessing();
         }
 
+        // Processing simulation with REAL file parsing
         function handleFileSelect(e) {
-            if (e.target.files.length > 0) {
-                startProcessing();
+            const files = e.target.files;
+            if (files.length > 0) {
+                processFiles(files);
             }
         }
 
-        // Processing simulation
-        function startProcessing() {
+        // Real file processing with data extraction
+        async function processFiles(files) {
             document.getElementById('uploadState').classList.add('hidden');
             document.getElementById('processingState').classList.remove('hidden');
             
-            let progress = 15;
-            let elapsed = 0;
-            const steps = [
-                { title: 'Extracting document data...', subtitle: 'AI is analyzing your loan documents' },
-                { title: 'Analyzing loan parameters...', subtitle: 'Evaluating against program criteria' },
-                { title: 'Generating recommendations...', subtitle: 'Selecting best-fit programs' }
-            ];
+            let extractedData = null;
             
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                elapsed++;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                updateProcessingStatus(`Processing ${file.name}...`, `File ${i + 1} of ${files.length}`);
                 
-                if (progress > 100) progress = 100;
-                document.getElementById('progressFill').style.width = progress + '%';
-                document.getElementById('elapsedTime').textContent = formatTime(elapsed);
-                document.getElementById('estimatedTime').textContent = '~' + Math.max(5, Math.ceil((100 - progress) / 10)) + 's';
-                
-                if (progress >= 35) {
-                    document.getElementById('step1').classList.add('completed');
-                    document.getElementById('step1').classList.remove('active');
-                    document.getElementById('conn1').classList.add('completed');
-                    document.getElementById('step2').classList.add('active');
-                    document.getElementById('processingTitle').textContent = steps[1].title;
-                    document.getElementById('processingSubtitle').textContent = steps[1].subtitle;
+                try {
+                    const content = await readFileContent(file);
+                    extractedData = extractLoanData(content, file.name);
+                    
+                    if (extractedData) {
+                        showToast(`Extracted data from ${file.name}`, 'success');
+                    }
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    showToast(`Error processing ${file.name}: ${error.message}`, 'error');
                 }
-                
-                if (progress >= 70) {
-                    document.getElementById('step2').classList.add('completed');
-                    document.getElementById('step2').classList.remove('active');
-                    document.getElementById('conn2').classList.add('completed');
-                    document.getElementById('step3').classList.add('active');
-                    document.getElementById('processingTitle').textContent = steps[2].title;
-                    document.getElementById('processingSubtitle').textContent = steps[2].subtitle;
-                }
-                
-                if (progress >= 100) {
-                    clearInterval(progressInterval);
-                    setTimeout(() => {
-                        document.getElementById('processingState').classList.add('hidden');
-                        document.getElementById('resultsState').classList.remove('hidden');
-                    }, 500);
-                }
-            }, 200);
+            }
+            
+            // Complete processing
+            completeProcessing(extractedData);
         }
 
+        function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('Failed to read file'));
+                reader.readAsText(file);
+            });
+        }
+
+        // Extract loan data from file content
+        function extractLoanData(content, filename) {
+            let data = {};
+            
+            // CSV parsing
+            if (filename.endsWith('.csv')) {
+                data = parseCSVData(content);
+            } 
+            // Text file parsing
+            else if (filename.endsWith('.txt')) {
+                data = parseTextData(content);
+            }
+            // JSON parsing
+            else if (filename.endsWith('.json')) {
+                try {
+                    data = JSON.parse(content);
+                } catch (e) {
+                    console.error('Invalid JSON:', e);
+                }
+            }
+            
+            return data;
+        }
+
+        // Parse CSV data with multiple format support
+        function parseCSVData(content) {
+            const lines = content.split('\n').filter(line => line.trim());
+            if (lines.length < 2) return {};
+            
+            const data = {};
+            
+            // Try to detect format
+            const firstLine = lines[0].toLowerCase();
+            
+            // Format 1: Header row with values
+            if (firstLine.includes('borrower') || firstLine.includes('loan') || firstLine.includes('name')) {
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const values = lines[1].split(',').map(v => v.trim());
+                
+                headers.forEach((header, idx) => {
+                    const value = values[idx];
+                    mapField(data, header, value);
+                });
+            }
+            // Format 2: Key-Value pairs (Field: Value)
+            else {
+                lines.forEach(line => {
+                    const match = line.match(/^([^:]+):\s*(.+)$/);
+                    if (match) {
+                        const key = match[1].trim().toLowerCase();
+                        const value = match[2].trim();
+                        mapField(data, key, value);
+                    }
+                });
+            }
+            
+            return data;
+        }
+
+        // Parse text data with field extraction
+        function parseTextData(content) {
+            const data = {};
+            const lines = content.split('\n');
+            
+            lines.forEach(line => {
+                // Match patterns like "Borrower Name: John Doe" or "Loan Amount: $500,000"
+                const patterns = [
+                    { regex: /borrower\s*name[:\s]+(.+)/i, field: 'borrowerName' },
+                    { regex: /entity\s*name[:\s]+(.+)/i, field: 'entityName' },
+                    { regex: /loan\s*amount[:\s]+\$?([\d,]+)/i, field: 'loanAmount', transform: v => parseFloat(v.replace(/,/g, '')) },
+                    { regex: /property\s*value[:\s]+\$?([\d,]+)/i, field: 'propertyValue', transform: v => parseFloat(v.replace(/,/g, '')) },
+                    { regex: /arv[:\s]+\$?([\d,]+)/i, field: 'arv', transform: v => parseFloat(v.replace(/,/g, '')) },
+                    { regex: /fico[:\s]+(\d+)/i, field: 'fico', transform: v => parseInt(v) },
+                    { regex: /credit\s*score[:\s]+(\d+)/i, field: 'fico', transform: v => parseInt(v) },
+                    { regex: /experience[:\s]+(\d+)/i, field: 'experience', transform: v => parseInt(v) },
+                    { regex: /years\s*experience[:\s]+(\d+)/i, field: 'experience', transform: v => parseInt(v) },
+                    { regex: /property\s*address[:\s]+(.+)/i, field: 'propertyAddress' },
+                    { regex: /address[:\s]+(.+)/i, field: 'propertyAddress' },
+                    { regex: /city[:\s]+(.+)/i, field: 'city' },
+                    { regex: /state[:\s]+(.+)/i, field: 'state' },
+                    { regex: /zip[:\s]+(\d+)/i, field: 'zipCode' },
+                    { regex: /property\s*type[:\s]+(.+)/i, field: 'propertyType' },
+                    { regex: /loan\s*type[:\s]+(.+)/i, field: 'loanType' },
+                    { regex: /purchase\s*price[:\s]+\$?([\d,]+)/i, field: 'purchasePrice', transform: v => parseFloat(v.replace(/,/g, '')) },
+                    { regex: /rehab\s*budget[:\s]+\$?([\d,]+)/i, field: 'rehabBudget', transform: v => parseFloat(v.replace(/,/g, '')) },
+                    { regex: /ltv[:\s]+(\d+)/i, field: 'ltv', transform: v => parseInt(v) },
+                    { regex: /ltc[:\s]+(\d+)/i, field: 'ltc', transform: v => parseInt(v) },
+                    { regex: /term[:\s]+(\d+)/i, field: 'term', transform: v => parseInt(v) },
+                    { regex: /rate[:\s]+([\d.]+)/i, field: 'rate', transform: v => parseFloat(v) },
+                ];
+                
+                patterns.forEach(pattern => {
+                    const match = line.match(pattern.regex);
+                    if (match) {
+                        let value = match[1].trim();
+                        if (pattern.transform) {
+                            value = pattern.transform(value);
+                        }
+                        data[pattern.field] = value;
+                    }
+                });
+            });
+            
+            return data;
+        }
+
+        // Map CSV/text fields to standardized field names
+        function mapField(data, header, value) {
+            const fieldMappings = {
+                'borrower name': 'borrowerName',
+                'borrower': 'borrowerName',
+                'entity name': 'entityName',
+                'entity': 'entityName',
+                'loan amount': 'loanAmount',
+                'amount': 'loanAmount',
+                'property value': 'propertyValue',
+                'value': 'propertyValue',
+                'arv': 'arv',
+                'after repair value': 'arv',
+                'fico': 'fico',
+                'credit score': 'fico',
+                'score': 'fico',
+                'experience': 'experience',
+                'years experience': 'experience',
+                'property address': 'propertyAddress',
+                'address': 'propertyAddress',
+                'city': 'city',
+                'state': 'state',
+                'zip': 'zipCode',
+                'zip code': 'zipCode',
+                'property type': 'propertyType',
+                'type': 'propertyType',
+                'loan type': 'loanType',
+                'purchase price': 'purchasePrice',
+                'price': 'purchasePrice',
+                'rehab budget': 'rehabBudget',
+                'renovation budget': 'rehabBudget',
+                'ltv': 'ltv',
+                'ltc': 'ltc',
+                'term': 'term',
+                'loan term': 'term',
+                'rate': 'rate',
+                'interest rate': 'rate'
+            };
+            
+            const normalizedHeader = header.toLowerCase().trim();
+            if (fieldMappings[normalizedHeader]) {
+                let parsedValue = value;
+                
+                // Parse numeric values
+                if (['loanAmount', 'propertyValue', 'arv', 'purchasePrice', 'rehabBudget'].includes(fieldMappings[normalizedHeader])) {
+                    parsedValue = parseFloat(value.replace(/[$,]/g, '')) || 0;
+                } else if (['fico', 'experience', 'ltv', 'ltc', 'term'].includes(fieldMappings[normalizedHeader])) {
+                    parsedValue = parseInt(value) || 0;
+                } else if (fieldMappings[normalizedHeader] === 'rate') {
+                    parsedValue = parseFloat(value) || 0;
+                }
+                
+                data[fieldMappings[normalizedHeader]] = parsedValue;
+            }
+        }
+
+        // Update processing UI
+        function updateProcessingStatus(title, subtitle) {
+            document.getElementById('processingTitle').textContent = title;
+            document.getElementById('processingSubtitle').textContent = subtitle;
+        }
+
+        // Complete processing and populate results
+        function completeProcessing(extractedData) {
+            document.getElementById('processingState').classList.add('hidden');
+            document.getElementById('resultsState').classList.remove('hidden');
+            
+            // If we have extracted data, populate the multi-lender form
+            if (extractedData && Object.keys(extractedData).length > 0) {
+                populateMultiLenderForm(extractedData);
+                showToast('Data extracted and populated. Review and click Analyze.', 'success');
+            } else {
+                showToast('No structured data found. Please enter manually.', 'warning');
+            }
+            
+            // Reset progress
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        // Populate multi-lender form with extracted data
+        function populateMultiLenderForm(data) {
+            const fieldMappings = {
+                'mlBorrowerName': data.borrowerName || data.entityName || '',
+                'mlLoanAmount': data.loanAmount || '',
+                'mlAsIsValue': data.propertyValue || data.purchasePrice || '',
+                'mlARV': data.arv || '',
+                'mlFICO': data.fico || '',
+                'mlExperience': data.experience || '',
+                'mlPropertyAddress': data.propertyAddress || '',
+                'mlCity': data.city || '',
+                'mlState': data.state || '',
+                'mlZipCode': data.zipCode || '',
+                'mlPropertyType': data.propertyType || '',
+                'mlRehabBudget': data.rehabBudget || '',
+                'mlLTV': data.ltv || '',
+                'mlLTC': data.ltc || '',
+                'mlLoanTerm': data.term || ''
+            };
+            
+            Object.entries(fieldMappings).forEach(([fieldId, value]) => {
+                const field = document.getElementById(fieldId);
+                if (field && value) {
+                    field.value = value;
+                    // Add visual indication that field was auto-populated
+                    field.style.background = 'var(--primary-50)';
+                    field.style.borderColor = 'var(--primary-300)';
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        field.style.background = '';
+                        field.style.borderColor = '';
+                    }, 2000);
+                }
+            });
+            
+            // Store extracted data for later use
+            window.lastExtractedData = data;
+        }
+
+        // Format time helper
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
@@ -8723,6 +9101,211 @@ ltv_ratio: ${ltv}
         window.generateReport = generateReport;
         window.exportAllReports = exportAllReports;
         window.downloadReportCSV = downloadReportCSV;
+
+        // ==========================================
+        // OPPORTUNITY ALERTS & SMART FEATURES
+        // ==========================================
+        
+        function markAllOpportunitiesRead() {
+            document.querySelectorAll('.opportunity-card').forEach(card => {
+                card.style.opacity = '0.7';
+            });
+            document.getElementById('activeOpportunityCount').textContent = '0';
+            showToast('All opportunities marked as read');
+        }
+
+        function dismissOpportunity(btn) {
+            const card = btn.closest('.opportunity-card');
+            card.style.opacity = '0.5';
+            showToast('Opportunity dismissed');
+        }
+
+        function createHomeownerStrategy(opportunityId) {
+            showToast('Creating homeowner strategy...', 'info');
+            
+            setTimeout(() => {
+                // Generate strategy PDF
+                const strategy = generateStrategyReport(opportunityId);
+                downloadStrategyPDF(strategy);
+                showToast('Strategy created and downloaded!', 'success');
+            }, 1500);
+        }
+
+        function generateStrategyReport(opportunityId) {
+            const strategies = {
+                'sarah-johnson-refi': {
+                    borrower: 'Sarah Johnson',
+                    type: 'Rate Reduction Refinance',
+                    currentRate: '7.25%',
+                    newRate: '7.00%',
+                    monthlySavings: 267,
+                    annualSavings: 3204,
+                    breakEven: '18 months',
+                    recommendation: 'Strong opportunity to save $267/month. Sarah should refinance now before rates potentially rise again.'
+                },
+                'mike-chen-purchase': {
+                    borrower: 'Mike Chen',
+                    type: 'Next Home Purchase',
+                    preApproval: '$550,000',
+                    downPayment: '$110,000 (20%)',
+                    estimatedRate: '7.25%',
+                    monthlyPayment: '$3,024',
+                    recommendation: 'Mike has $125K in equity from current sale. Pre-approve for $550K purchase with 20% down.'
+                }
+            };
+            
+            return strategies[opportunityId] || { borrower: 'Unknown', recommendation: 'Contact for details' };
+        }
+
+        function downloadStrategyPDF(strategy) {
+            const content = `
+HOMEOWNER STRATEGY REPORT
+Generated: ${new Date().toLocaleString()}
+
+BORROWER: ${strategy.borrower}
+STRATEGY TYPE: ${strategy.type}
+
+CURRENT SITUATION:
+${strategy.recommendation}
+
+${strategy.currentRate ? `CURRENT RATE: ${strategy.currentRate}` : ''}
+${strategy.newRate ? `NEW RATE: ${strategy.newRate}` : ''}
+${strategy.monthlySavings ? `MONTHLY SAVINGS: $${strategy.monthlySavings}` : ''}
+${strategy.annualSavings ? `ANNUAL SAVINGS: $${strategy.annualSavings}` : ''}
+${strategy.breakEven ? `BREAK-EVEN POINT: ${strategy.breakEven}` : ''}
+
+This strategy was generated by LoanSizer Pro AI.
+Contact your loan officer to discuss next steps.
+            `;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategy-${strategy.borrower.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function contactBorrower(borrowerId) {
+            showToast(`Opening email client for ${borrowerId}...`, 'info');
+            // In real implementation, this would open email template
+        }
+
+        function updateApplicationRate(applicationId) {
+            showToast(`Updating rate for ${applicationId}...`, 'info');
+            setTimeout(() => {
+                showToast('Rate updated and borrower notified!', 'success');
+            }, 1000);
+        }
+
+        // ==========================================
+        // LIVE DEMO MODE
+        // ==========================================
+        
+        let demoMode = false;
+        let demoInterval = null;
+
+        function toggleDemoMode() {
+            demoMode = !demoMode;
+            
+            if (demoMode) {
+                startDemoMode();
+            } else {
+                stopDemoMode();
+            }
+        }
+
+        function startDemoMode() {
+            showToast('🎥 LIVE DEMO MODE ACTIVATED', 'success');
+            
+            // Add demo banner
+            const banner = document.createElement('div');
+            banner.id = 'demoModeBanner';
+            banner.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(90deg, #F59E0B, #D97706); color: white; padding: 8px; text-align: center; z-index: 10000; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 16px;">
+                    <span>🎥 LIVE DEMO MODE - Data auto-refreshes every 10 seconds</span>
+                    <button onclick="toggleDemoMode()" style="background: white; color: #D97706; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">EXIT DEMO</button>
+                </div>
+            `;
+            document.body.appendChild(banner);
+            document.body.style.paddingTop = '40px';
+            
+            // Start auto-refresh
+            demoInterval = setInterval(() => {
+                simulateLiveData();
+            }, 10000);
+            
+            // Initial data simulation
+            simulateLiveData();
+        }
+
+        function stopDemoMode() {
+            showToast('Demo mode deactivated', 'info');
+            
+            const banner = document.getElementById('demoModeBanner');
+            if (banner) {
+                banner.remove();
+            }
+            document.body.style.paddingTop = '';
+            
+            if (demoInterval) {
+                clearInterval(demoInterval);
+                demoInterval = null;
+            }
+        }
+
+        function simulateLiveData() {
+            // Simulate new opportunities appearing
+            const newOpportunityCount = Math.floor(Math.random() * 3);
+            if (newOpportunityCount > 0) {
+                const badge = document.getElementById('activeOpportunityCount');
+                if (badge) {
+                    badge.textContent = (parseInt(badge.textContent) || 0) + newOpportunityCount + ' New';
+                }
+            }
+            
+            // Update dashboard metrics with slight variations
+            const totalApps = document.getElementById('metricTotalApplications');
+            if (totalApps) {
+                const current = parseInt(totalApps.textContent) || 0;
+                if (Math.random() > 0.7) {
+                    totalApps.textContent = current + 1;
+                }
+            }
+            
+            // Simulate toast notifications
+            const demoNotifications = [
+                { message: 'New application submitted: $485,000 DSCR loan', type: 'success' },
+                { message: 'Rate alert: 30-year fixed dropped to 6.75%', type: 'info' },
+                { message: 'Credit score improved for Lisa Martinez', type: 'success' },
+                { message: 'New wholesale lender rate sheet available', type: 'info' },
+                { message: 'Application approved: Mike Chen - $350,000', type: 'success' }
+            ];
+            
+            if (Math.random() > 0.6) {
+                const notification = demoNotifications[Math.floor(Math.random() * demoNotifications.length)];
+                showToast(notification.message, notification.type);
+            }
+        }
+
+        // Add keyboard shortcut for demo mode (Ctrl/Cmd + Shift + D)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleDemoMode();
+            }
+        });
+
+        // Expose functions globally
+        window.markAllOpportunitiesRead = markAllOpportunitiesRead;
+        window.dismissOpportunity = dismissOpportunity;
+        window.createHomeownerStrategy = createHomeownerStrategy;
+        window.contactBorrower = contactBorrower;
+        window.updateApplicationRate = updateApplicationRate;
+        window.toggleDemoMode = toggleDemoMode;
+        window.startDemoMode = startDemoMode;
+        window.stopDemoMode = stopDemoMode;
     </script>
 
     <!-- Productivity UI Elements -->
