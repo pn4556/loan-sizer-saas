@@ -2491,6 +2491,204 @@
             font-size: var(--text-xs);
             color: var(--gray-300);
         }
+
+        /* ============================================
+           THEME SETTINGS - Dark/Light Mode & Colors
+        ============================================ */
+
+        /* Theme Mode Selector */
+        .theme-mode-selector {
+            display: flex;
+            gap: var(--space-3);
+            background: var(--surface-2);
+            padding: var(--space-2);
+            border-radius: var(--radius-lg);
+        }
+
+        .theme-mode-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-4) var(--space-3);
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            color: var(--gray-400);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-mode-btn:hover {
+            background: var(--surface-3);
+            color: var(--gray-200);
+        }
+
+        .theme-mode-btn.active {
+            background: var(--primary-600);
+            border-color: var(--primary-400);
+            color: white;
+        }
+
+        .theme-mode-btn i {
+            width: 24px;
+            height: 24px;
+        }
+
+        .theme-mode-btn span {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+        }
+
+        /* Color Selector */
+        .color-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+        }
+
+        .color-btn {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            background: var(--surface-2);
+            border: 3px solid transparent;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            background: var(--surface-3);
+        }
+
+        .color-btn.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--primary-500);
+        }
+
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: block;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface-3);
+            border-radius: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary-500);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(24px);
+        }
+
+        /* Light Mode Variables */
+        [data-theme="light"] {
+            --surface-0: #FFFFFF;
+            --surface-1: #F9FAFB;
+            --surface-2: #F3F4F6;
+            --surface-3: #E5E7EB;
+            --gray-100: #111827;
+            --gray-200: #1F2937;
+            --gray-300: #374151;
+            --gray-400: #4B5563;
+            --gray-500: #6B7280;
+            --gray-600: #9CA3AF;
+        }
+
+        [data-theme="light"] .card {
+            background: white;
+            border-color: var(--gray-200);
+        }
+
+        [data-theme="light"] .sidebar {
+            background: white;
+            border-color: var(--gray-200);
+        }
+
+        [data-theme="light"] .nav-item {
+            color: var(--gray-600);
+        }
+
+        [data-theme="light"] .nav-item:hover {
+            background: var(--gray-100);
+        }
+
+        [data-theme="light"] .form-input {
+            background: white;
+            border-color: var(--gray-300);
+            color: var(--gray-900);
+        }
+
+        /* High Contrast Mode */
+        [data-high-contrast="true"] {
+            --surface-0: #000000;
+            --surface-1: #0a0a0a;
+            --surface-2: #1a1a1a;
+            --surface-3: #333333;
+        }
+
+        [data-high-contrast="true"] .card,
+        [data-high-contrast="true"] .sidebar,
+        [data-high-contrast="true"] .form-input {
+            border-width: 2px;
+        }
+
+        [data-high-contrast="true"] .btn-primary {
+            box-shadow: 0 0 0 2px white;
+        }
+
+        /* Accent Colors */
+        [data-accent="purple"] { --primary-500: #8B5CF6; --primary-600: #7C3AED; --primary-400: #A78BFA; }
+        [data-accent="green"] { --primary-500: #10B981; --primary-600: #059669; --primary-400: #34D399; }
+        [data-accent="orange"] { --primary-500: #F97316; --primary-600: #EA580C; --primary-400: #FB923C; }
+        [data-accent="red"] { --primary-500: #EF4444; --primary-600: #DC2626; --primary-400: #F87171; }
+        [data-accent="pink"] { --primary-500: #EC4899; --primary-600: #DB2777; --primary-400: #F472B6; }
+        [data-accent="cyan"] { --primary-500: #06B6D4; --primary-600: #0891B2; --primary-400: #22D3EE; }
+        [data-accent="amber"] { --primary-500: #F59E0B; --primary-600: #D97706; --primary-400: #FBBF24; }
     </style>
 </head>
 <body>
@@ -3726,6 +3924,156 @@
                                             <!-- Content populated by JS -->
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settingsSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="settings" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Settings
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Theme Settings -->
+                            <div style="margin-bottom: var(--space-8);">
+                                <h3 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4);">
+                                    🎭 Appearance
+                                </h3>
+                                
+                                <!-- Theme Mode -->
+                                <div style="margin-bottom: var(--space-6);">
+                                    <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-3);">
+                                        Theme Mode
+                                    </label>
+                                    <div class="theme-mode-selector">
+                                        <button class="theme-mode-btn active" data-mode="dark" onclick="setThemeMode('dark')">
+                                            <i data-lucide="moon" style="width: 20px; height: 20px;"></i>
+                                            <span>Dark</span>
+                                        </button>
+                                        <button class="theme-mode-btn" data-mode="light" onclick="setThemeMode('light')">
+                                            <i data-lucide="sun" style="width: 20px; height: 20px;"></i>
+                                            <span>Light</span>
+                                        </button>
+                                        <button class="theme-mode-btn" data-mode="auto" onclick="setThemeMode('auto')">
+                                            <i data-lucide="monitor" style="width: 20px; height: 20px;"></i>
+                                            <span>Auto</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Accent Color -->
+                                <div style="margin-bottom: var(--space-6);">
+                                    <label style="display: block; font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-3);">
+                                        Accent Color
+                                    </label>
+                                    <div class="color-selector">
+                                        <button class="color-btn active" data-color="blue" onclick="setAccentColor('blue')" title="Blue">
+                                            <span class="color-swatch" style="background: #2563EB;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="purple" onclick="setAccentColor('purple')" title="Purple">
+                                            <span class="color-swatch" style="background: #8B5CF6;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="green" onclick="setAccentColor('green')" title="Green">
+                                            <span class="color-swatch" style="background: #10B981;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="orange" onclick="setAccentColor('orange')" title="Orange">
+                                            <span class="color-swatch" style="background: #F59E0B;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="red" onclick="setAccentColor('red')" title="Red">
+                                            <span class="color-swatch" style="background: #EF4444;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="pink" onclick="setAccentColor('pink')" title="Pink">
+                                            <span class="color-swatch" style="background: #EC4899;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="cyan" onclick="setAccentColor('cyan')" title="Cyan">
+                                            <span class="color-swatch" style="background: #06B6D4;"></span>
+                                        </button>
+                                        <button class="color-btn" data-color="amber" onclick="setAccentColor('amber')" title="Amber">
+                                            <span class="color-swatch" style="background: #F59E0B;"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- High Contrast Mode -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--surface-2); border-radius: var(--radius-lg);">
+                                    <div>
+                                        <div style="font-weight: var(--font-medium); color: var(--gray-200);">High Contrast Mode</div>
+                                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Increase contrast for better visibility</div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="highContrastToggle" onchange="toggleHighContrast(this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Preferences -->
+                            <div style="margin-bottom: var(--space-8);">
+                                <h3 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4);">
+                                    ⚙️ Preferences
+                                </h3>
+                                
+                                <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--surface-2); border-radius: var(--radius-lg);">
+                                        <div>
+                                            <div style="font-weight: var(--font-medium); color: var(--gray-200);">Auto-Save Drafts</div>
+                                            <div style="font-size: var(--text-xs); color: var(--gray-500);">Automatically save loan forms every 30 seconds</div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleAutoSave(this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--surface-2); border-radius: var(--radius-lg);">
+                                        <div>
+                                            <div style="font-weight: var(--font-medium); color: var(--gray-200);">Keyboard Shortcuts</div>
+                                            <div style="font-size: var(--text-xs); color: var(--gray-500);">Enable keyboard navigation (Cmd+K for palette)</div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="shortcutsToggle" checked onchange="toggleKeyboardShortcuts(this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--surface-2); border-radius: var(--radius-lg);">
+                                        <div>
+                                            <div style="font-weight: var(--font-medium); color: var(--gray-200);">Sound Effects</div>
+                                            <div style="font-size: var(--text-xs); color: var(--gray-500);">Play sounds for actions and notifications</div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="soundToggle" onchange="toggleSoundEffects(this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Management -->
+                            <div>
+                                <h3 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100); margin-bottom: var(--space-4);">
+                                    💾 Data Management
+                                </h3>
+                                
+                                <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                                    <button class="btn btn-secondary" onclick="exportAllData()">
+                                        <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                        Export All Data
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearAllDrafts()">
+                                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                                        Clear All Drafts
+                                    </button>
+                                    <button class="btn btn-danger" onclick="resetAllSettings()">
+                                        <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+                                        Reset to Defaults
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -6122,6 +6470,201 @@ ltv_ratio: ${ltv}
         window.getRiskIndicator = getRiskIndicator;
         window.pinCurrentLoan = pinCurrentLoan;
         window.restoreLoanContext = restoreLoanContext;
+
+        // ============================================
+        // THEME SETTINGS - Dark/Light Mode & Colors
+        // ============================================
+
+        // Theme state
+        let currentTheme = localStorage.getItem('loanSizer_theme') || 'dark';
+        let currentAccent = localStorage.getItem('loanSizer_accent') || 'blue';
+        let highContrast = localStorage.getItem('loanSizer_highContrast') === 'true';
+
+        // Initialize theme on load
+        function initTheme() {
+            applyTheme(currentTheme);
+            applyAccentColor(currentAccent);
+            if (highContrast) {
+                document.documentElement.setAttribute('data-high-contrast', 'true');
+            }
+            updateSettingsUI();
+        }
+
+        // Set theme mode (dark/light/auto)
+        function setThemeMode(mode) {
+            currentTheme = mode;
+            localStorage.setItem('loanSizer_theme', mode);
+            applyTheme(mode);
+            updateSettingsUI();
+            showToast(`Theme set to ${mode}`);
+        }
+
+        function applyTheme(mode) {
+            const root = document.documentElement;
+            
+            if (mode === 'auto') {
+                // Check system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                mode = prefersDark ? 'dark' : 'light';
+            }
+            
+            if (mode === 'light') {
+                root.setAttribute('data-theme', 'light');
+            } else {
+                root.removeAttribute('data-theme');
+            }
+        }
+
+        // Set accent color
+        function setAccentColor(color) {
+            currentAccent = color;
+            localStorage.setItem('loanSizer_accent', color);
+            applyAccentColor(color);
+            updateSettingsUI();
+            showToast(`Accent color changed to ${color}`);
+        }
+
+        function applyAccentColor(color) {
+            const root = document.documentElement;
+            root.setAttribute('data-accent', color);
+        }
+
+        // Toggle high contrast
+        function toggleHighContrast(enabled) {
+            highContrast = enabled;
+            localStorage.setItem('loanSizer_highContrast', enabled);
+            
+            if (enabled) {
+                document.documentElement.setAttribute('data-high-contrast', 'true');
+            } else {
+                document.documentElement.removeAttribute('data-high-contrast');
+            }
+            
+            showToast(enabled ? 'High contrast mode enabled' : 'High contrast mode disabled');
+        }
+
+        // Toggle auto-save
+        function toggleAutoSave(enabled) {
+            localStorage.setItem('loanSizer_autoSave', enabled);
+            showToast(enabled ? 'Auto-save enabled' : 'Auto-save disabled');
+        }
+
+        // Toggle keyboard shortcuts
+        function toggleKeyboardShortcuts(enabled) {
+            localStorage.setItem('loanSizer_keyboardShortcuts', enabled);
+            showToast(enabled ? 'Keyboard shortcuts enabled' : 'Keyboard shortcuts disabled');
+        }
+
+        // Toggle sound effects
+        function toggleSoundEffects(enabled) {
+            localStorage.setItem('loanSizer_soundEffects', enabled);
+            showToast(enabled ? 'Sound effects enabled' : 'Sound effects disabled');
+        }
+
+        // Update settings UI to reflect current state
+        function updateSettingsUI() {
+            // Update theme buttons
+            document.querySelectorAll('.theme-mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === currentTheme);
+            });
+
+            // Update color buttons
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === currentAccent);
+            });
+
+            // Update toggles
+            const highContrastToggle = document.getElementById('highContrastToggle');
+            if (highContrastToggle) highContrastToggle.checked = highContrast;
+
+            const autoSaveToggle = document.getElementById('autoSaveToggle');
+            if (autoSaveToggle) autoSaveToggle.checked = localStorage.getItem('loanSizer_autoSave') !== 'false';
+
+            const shortcutsToggle = document.getElementById('shortcutsToggle');
+            if (shortcutsToggle) shortcutsToggle.checked = localStorage.getItem('loanSizer_keyboardShortcuts') !== 'false';
+
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle) soundToggle.checked = localStorage.getItem('loanSizer_soundEffects') === 'true';
+        }
+
+        // Export all data
+        function exportAllData() {
+            const data = {
+                theme: currentTheme,
+                accent: currentAccent,
+                highContrast: highContrast,
+                workQueue: JSON.parse(localStorage.getItem('loanSizer_workQueue') || '[]'),
+                drafts: JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]'),
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `loan-sizer-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('All data exported');
+        }
+
+        // Clear all drafts
+        function clearAllDrafts() {
+            if (confirm('Clear all saved drafts? This cannot be undone.')) {
+                localStorage.removeItem('loanSizer_drafts');
+                showToast('All drafts cleared');
+            }
+        }
+
+        // Reset all settings
+        function resetAllSettings() {
+            if (confirm('Reset all settings to defaults? This will clear your theme preferences and work queue.')) {
+                localStorage.removeItem('loanSizer_theme');
+                localStorage.removeItem('loanSizer_accent');
+                localStorage.removeItem('loanSizer_highContrast');
+                localStorage.removeItem('loanSizer_autoSave');
+                localStorage.removeItem('loanSizer_keyboardShortcuts');
+                localStorage.removeItem('loanSizer_soundEffects');
+                localStorage.removeItem('loanSizer_workQueue');
+                localStorage.removeItem('loanSizer_drafts');
+                
+                // Reset to defaults
+                currentTheme = 'dark';
+                currentAccent = 'blue';
+                highContrast = false;
+                
+                applyTheme('dark');
+                applyAccentColor('blue');
+                document.documentElement.removeAttribute('data-high-contrast');
+                updateSettingsUI();
+                
+                showToast('All settings reset to defaults');
+            }
+        }
+
+        // Initialize theme on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+        });
+
+        // Listen for system theme changes when in auto mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            if (currentTheme === 'auto') {
+                applyTheme('auto');
+            }
+        });
+
+        // Expose theme functions globally
+        window.setThemeMode = setThemeMode;
+        window.setAccentColor = setAccentColor;
+        window.toggleHighContrast = toggleHighContrast;
+        window.toggleAutoSave = toggleAutoSave;
+        window.toggleKeyboardShortcuts = toggleKeyboardShortcuts;
+        window.toggleSoundEffects = toggleSoundEffects;
+        window.exportAllData = exportAllData;
+        window.clearAllDrafts = clearAllDrafts;
+        window.resetAllSettings = resetAllSettings;
     </script>
 
     <!-- Productivity UI Elements -->
