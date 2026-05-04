@@ -6944,9 +6944,9 @@
             resultsDiv.style.display = 'block';
             
             // Count approvals
-            const approved = result.results.filter(r => r.approval_status === 'approved').length;
-            const conditional = result.results.filter(r => r.approval_status === 'conditional').length;
-            const declined = result.results.filter(r => r.approval_status === 'declined').length;
+            const approvedCount = result.results?.filter(r => r.approval_status === 'approved').length || 0;
+            const conditionalCount = result.results?.filter(r => r.approval_status === 'conditional').length || 0;
+            const declinedCount = result.results?.filter(r => r.approval_status === 'declined').length || 0;
             
             // Generate AI Recommendation
             const bestLender = result.results[0];
@@ -6983,16 +6983,16 @@
             `;
             
             // Approval status summary
-            const approvalColor = approved >= 2 ? 'success' : approved === 1 ? 'warning' : 'danger';
-            const approvalIcon = approved >= 2 ? '✓' : approved === 1 ? '!' : '✗';
-            const approvalText = approved >= 2 ? 'Strong Approval' : approved === 1 ? 'Limited Options' : 'Declined';
+            const approvalColor = approvedCount >= 2 ? 'success' : approvedCount === 1 ? 'warning' : 'danger';
+            const approvalIcon = approvedCount >= 2 ? '✓' : approvedCount === 1 ? '!' : '✗';
+            const approvalText = approvedCount >= 2 ? 'Strong Approval' : approvedCount === 1 ? 'Limited Options' : 'Declined';
             
             approvalSummaryDiv.innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);">
                     <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; border: 2px solid var(--${approvalColor}-500);">
                         <div style="font-size: var(--text-3xl); margin-bottom: var(--space-2);">${approvalIcon}</div>
                         <div style="font-weight: var(--font-semibold); color: var(--${approvalColor}-500);">${approvalText}</div>
-                        <div style="font-size: var(--text-xs); color: var(--gray-500);">${approved} Approved, ${conditional} Conditional, ${declined} Declined</div>
+                        <div style="font-size: var(--text-xs); color: var(--gray-500);">${approvedCount} Approved, ${conditionalCount} Conditional, ${declinedCount} Declined</div>
                     </div>
                     <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
                         <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-400);">${result.input_summary.fico}</div>
@@ -7042,7 +7042,17 @@
 
         // Generate AI recommendation based on all factors
         function generateAIRecommendation(results, inputSummary) {
-            const approved = results.filter(r => r.approval_status === 'approved');
+            if (!results || results.length === 0) {
+                return {
+                    bestLender: 'N/A',
+                    confidence: 0,
+                    summary: 'No results available for analysis.',
+                    reasoning: 'Missing lender data',
+                    alternative: null
+                };
+            }
+            
+            const approved = results.filter(r => r?.approval_status === 'approved');
             const best = approved.length > 0 ? approved[0] : results[0];
             
             const fico = parseInt(inputSummary.fico);
