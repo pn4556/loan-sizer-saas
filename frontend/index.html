@@ -6652,21 +6652,24 @@
             result.as_is_value = extractValue(text, [
                 /as[_\s-]?is[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
                 /current[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /as[_\s-]?is[=:]\s*[$]?([\d,]+)/i
+                /as[_\s-]?is[=:]\s*[$]?([\d,]+)/i,
+                /as.is.property.value[=:]\s*[$]?([\d,]+)/i  // JotForm specific
             ]);
             
             // Extract ARV
             result.arv = extractValue(text, [
                 /arv[=:]\s*[$]?([\d,]+)/i,
                 /after[_\s-]?repair[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /after[_\s-]?renovation[_\s-]?value[=:]\s*[$]?([\d,]+)/i
+                /after[_\s-]?renovation[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
+                /after.repair.property.value[=:]\s*[$]?([\d,]+)/i  // JotForm specific
             ]);
             
             // Extract Purchase Price
             result.purchase_price = extractValue(text, [
                 /purchase[_\s-]?price[=:]\s*[$]?([\d,]+)/i,
                 /purchase[=:]\s*[$]?([\d,]+)/i,
-                /price[=:]\s*[$]?([\d,]+)/i
+                /price[=:]\s*[$]?([\d,]+)/i,
+                /purchase.price[=:]\s*[$]?([\d,]+)/i  // JotForm specific
             ]);
             
             // Extract Rehab Budget
@@ -6674,7 +6677,8 @@
                 /rehab[_\s-]?budget[=:]\s*[$]?([\d,]+)/i,
                 /renovation[_\s-]?budget[=:]\s*[$]?([\d,]+)/i,
                 /rehab[=:]\s*[$]?([\d,]+)/i,
-                /budget[=:]\s*[$]?([\d,]+)/i
+                /budget[=:]\s*[$]?([\d,]+)/i,
+                /rehab.amount.requested[=:]\s*[$]?([\d,]+)/i  // JotForm specific
             ]);
             
             // Extract FICO
@@ -6702,6 +6706,8 @@
                 result.property_type = 'SFR';
             } else if (text.includes('multi') || text.includes('2-4') || text.includes('duplex')) {
                 result.property_type = 'Multi';
+            } else if (text.includes('attached pud') || text.includes('pud')) {
+                result.property_type = 'PUD';  // JotForm specific
             }
             
             // CSV parsing - check for comma-separated values
