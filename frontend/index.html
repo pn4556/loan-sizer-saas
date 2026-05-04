@@ -4155,7 +4155,8 @@
                                 </div>
                                 <h4 style="color: var(--gray-200); margin-bottom: var(--space-2);">Upload Loan Application</h4>
                                 <p style="color: var(--gray-500); font-size: var(--text-sm); margin-bottom: var(--space-4);">
-                                    Drag & drop or click to upload. Supports: CSV, TXT, Excel (.xlsx), PDF
+                                    <strong>Direct parsing:</strong> CSV, TXT files<br>
+                                    <small style="color: var(--gray-600);">PDF/Excel require backend processing (coming soon)</small>
                                 </p>
                                 <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
                                     <button class="btn btn-secondary" onclick="document.getElementById('mlFileUpload').click()">
@@ -6525,6 +6526,26 @@
             statusDiv.innerHTML = '<span class="badge badge-info">Processing...</span>';
 
             try {
+                const ext = file.name.split('.').pop().toLowerCase();
+                
+                // Check if PDF - need special handling
+                if (ext === 'pdf') {
+                    statusDiv.innerHTML = '<span class="badge badge-warning">PDF parsing requires backend processing</span>';
+                    showToast('PDF support coming soon. Please use TXT or CSV format for now.', 5000);
+                    event.target.value = '';
+                    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+                    return;
+                }
+                
+                // Check if Excel - need special handling
+                if (ext === 'xlsx' || ext === 'xls') {
+                    statusDiv.innerHTML = '<span class="badge badge-warning">Excel parsing requires backend processing</span>';
+                    showToast('Excel support coming soon. Please use TXT or CSV format for now.', 5000);
+                    event.target.value = '';
+                    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+                    return;
+                }
+                
                 const content = await file.text();
                 const parsed = parseLoanApplicationFile(content, file.name);
                 
