@@ -6208,7 +6208,7 @@
                         <tr><td>Recommended Amount:</td><td><strong>$${result.recommended_loan_amount?.toLocaleString() || 'N/A'}</strong></td></tr>
                     </table>
                 </div>
-                ${result.failures.length > 0 ? `
+                ${result.failures?.length > 0 ? `
                 <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--danger-50); border-radius: var(--radius-lg);">
                     <h4 style="color: var(--danger-500); margin-bottom: var(--space-2);">Issues</h4>
                     <ul style="margin-left: var(--space-4);">
@@ -6404,7 +6404,7 @@
                         <tr><td><strong>Total Loan:</strong></td><td><strong>$${result.total_loan?.toLocaleString()}</strong></td></tr>
                     </table>
                 </div>
-                ${result.failures.length > 0 ? `
+                ${result.failures?.length > 0 ? `
                 <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--warning-50); border-radius: var(--radius-lg);">
                     <h4 style="color: var(--warning-600); margin-bottom: var(--space-2);">Warnings</h4>
                     <ul style="margin-left: var(--space-4);">
@@ -9453,6 +9453,44 @@ ltv_ratio: ${ltv}
         window.exportProcessedApplications = exportProcessedApplications;
         window.viewApplicationDetails = viewApplicationDetails;
         window.deleteApplication = deleteApplication;
+        
+        // Download term sheet for an application
+        function downloadTermSheet(appId) {
+            const app = processedApplications.find(a => a.id === appId);
+            if (!app) {
+                showToast('Application not found', 'error');
+                return;
+            }
+            
+            // Generate simple term sheet content
+            const content = `
+TERM SHEET
+LoanSizer Pro Generated
+
+Application ID: ${app.id}
+Applicant: ${app.applicant_name || 'N/A'}
+Property Address: ${app.property_address || 'N/A'}
+Loan Amount: ${app.loan_amount || 'N/A'}
+Program: ${app.program || 'N/A'}
+Status: ${app.status || 'N/A'}
+
+Generated: ${new Date().toLocaleString()}
+            `.trim();
+            
+            // Create and download file
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TermSheet-${app.id}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Term sheet downloaded');
+        }
+        
         window.downloadTermSheet = downloadTermSheet;
         window.updateDashboardMetrics = updateDashboardMetrics;
         window.generateReport = generateReport;
