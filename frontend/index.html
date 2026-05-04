@@ -6831,6 +6831,12 @@
             const ext = filename.split('.').pop().toLowerCase();
             const result = {};
             
+            console.log('=== PARSING FILE ===');
+            console.log('Filename:', filename);
+            console.log('Extension:', ext);
+            console.log('Content length:', content.length);
+            console.log('First 2000 chars:', content.substring(0, 2000));
+            
             // Try to extract values using regex patterns
             const extractValue = (text, patterns, fieldName) => {
                 for (const pattern of patterns) {
@@ -6838,10 +6844,13 @@
                     if (match && match[1]) {
                         const val = match[1].replace(/[$,\s]/g, '').trim();
                         const numVal = parseFloat(val);
-                        console.log(`Extracted ${fieldName}:`, numVal, 'from pattern:', pattern);
-                        return numVal || val;
+                        if (!isNaN(numVal) && numVal > 0) {
+                            console.log(`✓ Extracted ${fieldName}:`, numVal, 'pattern:', pattern.toString().substring(0, 50));
+                            return numVal;
+                        }
                     }
                 }
+                console.log(`✗ ${fieldName}: No match found`);
                 return null;
             };
             
@@ -6849,88 +6858,113 @@
             const originalText = content;
             const lowerText = content.toLowerCase();
             
-            console.log('Parsing file:', filename, 'Extension:', ext);
-            console.log('Content preview (first 1000 chars):', content.substring(0, 1000));
+            // ========== EXTRACT NUMERIC FIELDS ==========
             
-            // Extract As-Is Value - try multiple patterns for JotForm compatibility
+            // Extract As-Is Value - comprehensive patterns
             result.as_is_value = extractValue(lowerText, [
-                /as[_\s-]?is[_\s-]?value[:\s]+\$?([\d,]+)/i,
-                /current[_\s-]?value[:\s]+\$?([\d,]+)/i,
-                /as[_\s-]?is[:\s]+\$?([\d,]+)/i,
-                /as\.is\.property\.value[:\s]+\$?([\d,]+)/i,
-                /as-is property value[:\s]+\$?([\d,]+)/i,
-                /as.is.value[:\s]+\$?([\d,]+)/i,
-                /property value[:\s]+\$?([\d,]+)/i
+                /as[-_\s]?is[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /as[-_\s]?is[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /current[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /property[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /as\.is\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                // Look for numbers near "as-is" or "value"
+                /as[-_\s]?is.*?\$?([\d,]{5,})/i,
+                /value.*?\$?([\d,]{5,})/i,
             ], 'as_is_value');
-            
-            // Extract ARV
-            result.arv = extractValue(lowerText, [
-                /arv[:\s]+\$?([\d,]+)/i,
-                /after[_\s-]?repair[_\s-]?value[:\s]+\$?([\d,]+)/i,
-                /after[_\s-]?renovation[_\s-]?value[:\s]+\$?([\d,]+)/i,
-                /after\.repair\.property\.value[:\s]+\$?([\d,]+)/i,
-                /after repair value[:\s]+\$?([\d,]+)/i
-            ], 'arv');
             
             // Extract Purchase Price
             result.purchase_price = extractValue(lowerText, [
-                /purchase[_\s-]?price[:\s]+\$?([\d,]+)/i,
-                /purchase[:\s]+\$?([\d,]+)/i,
-                /price[:\s]+\$?([\d,]+)/i,
-                /purchase\.price[:\s]+\$?([\d,]+)/i,
-                /purchase price[:\s]+\$?([\d,]+)/i
+                /purchase[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /purchase[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /contract[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /purchase\.price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                // Look for numbers near "purchase"
+                /purchase.*?\$?([\d,]{5,})/i,
             ], 'purchase_price');
+            
+            // Extract ARV
+            result.arv = extractValue(lowerText, [
+                /arv[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /after[-_\s]?repair[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /after[-_\s]?renovation[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /after\.repair\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /after repair value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                // Look for numbers near "arv" or "after repair"
+                /arv.*?\$?([\d,]{5,})/i,
+                /after repair.*?\$?([\d,]{5,})/i,
+            ], 'arv');
             
             // Extract Rehab Budget
             result.rehab_budget = extractValue(lowerText, [
-                /rehab[_\s-]?budget[:\s]+\$?([\d,]+)/i,
-                /renovation[_\s-]?budget[:\s]+\$?([\d,]+)/i,
-                /rehab[:\s]+\$?([\d,]+)/i,
-                /budget[:\s]+\$?([\d,]+)/i,
-                /rehab\.amount\.requested[:\s]+\$?([\d,]+)/i,
-                /rehab amount[:\s]+\$?([\d,]+)/i,
-                /rehab amount requested[:\s]+\$?([\d,]+)/i
+                /rehab[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /rehab[-_\s]?amount[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /renovation[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /rehab\.amount\.requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /rehab amount requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                /budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                // Look for numbers near "rehab"
+                /rehab.*?\$?([\d,]{4,})/i,
             ], 'rehab_budget');
             
-            // Extract FICO - look for 3-digit numbers after fico/credit score
-            result.fico = extractValue(lowerText, [
-                /fico[:\s]+(\d{3})/i,
-                /credit[_\s-]?score[:\s]+(\d{3})/i,
-                /score[:\s]+(\d{3})/i,
-                /fico score[:\s]+(\d{3})/i
-            ], 'fico');
+            // Extract FICO - look for 3-digit numbers
+            const ficoMatch = lowerText.match(/fico[:\s]+(\d{3})/i) ||
+                             lowerText.match(/credit[-_\s]?score[:\s]+(\d{3})/i) ||
+                             lowerText.match(/score[:\s]+(\d{3})/i) ||
+                             lowerText.match(/fico.*?\b(\d{3})\b/i);
+            if (ficoMatch) {
+                result.fico = parseInt(ficoMatch[1]);
+                console.log('✓ Found fico:', result.fico);
+            }
             
             // Extract Experience
-            result.experience = extractValue(lowerText, [
-                /experience[:\s]+(\d+)/i,
-                /years[_\s-]?experience[:\s]+(\d+)/i,
-                /flip[_\s-]?experience[:\s]+(\d+)/i,
-                /years?[:\s]+(\d+)/i
-            ], 'experience');
+            const expMatch = lowerText.match(/experience[:\s]+(\d+)/i) ||
+                            lowerText.match(/years[-_\s]?experience[:\s]+(\d+)/i) ||
+                            lowerText.match(/flip[-_\s]?experience[:\s]+(\d+)/i) ||
+                            lowerText.match(/experience.*?\b(\d{1,2})\s*years?\b/i);
+            if (expMatch) {
+                result.experience = parseInt(expMatch[1]);
+                console.log('✓ Found experience:', result.experience);
+            }
             
-            // Extract Loan Purpose and Loan Type
-            if (lowerText.includes('bridge') || lowerText.includes('bridge loan')) {
+            // ========== EXTRACT LOAN TYPE ==========
+            
+            // Detect loan type from content
+            if (lowerText.includes('bridge') || lowerText.includes('bridge loan') || 
+                lowerText.includes('short[-_\s]?term') || filename.toLowerCase().includes('bridge')) {
                 result.loan_purpose = 'bridge';
                 result.loan_type = 'bridge';
-            } else if (lowerText.includes('fix and flip') || lowerText.includes('fix & flip') || lowerText.includes('fix&flip') || lowerText.includes('renovation')) {
+                console.log('✓ Detected loan type: Bridge');
+            } else if (lowerText.includes('fix and flip') || lowerText.includes('fix & flip') || 
+                       lowerText.includes('fix&flip') || lowerText.includes('renovation') ||
+                       lowerText.includes('rehab') || lowerText.includes('flip')) {
                 result.loan_purpose = 'purchase';
                 result.loan_type = 'fix_flip';
-            } else if (lowerText.includes('dscr') || lowerText.includes('rental') || lowerText.includes('investment property')) {
+                console.log('✓ Detected loan type: Fix & Flip');
+            } else if (lowerText.includes('dscr') || lowerText.includes('rental') || 
+                       lowerText.includes('investment property') || lowerText.includes('cash flowing')) {
                 result.loan_purpose = 'refinance';
                 result.loan_type = 'dscr';
+                console.log('✓ Detected loan type: DSCR');
             } else if (lowerText.includes('purchase')) {
                 result.loan_purpose = 'purchase';
                 result.loan_type = 'fix_flip';
-            } else if (lowerText.includes('refinance')) {
+                console.log('✓ Detected loan type: Purchase (defaulting to Fix & Flip)');
+            } else if (lowerText.includes('refinance') || lowerText.includes('refi')) {
                 result.loan_purpose = 'refinance';
-            } else if (lowerText.includes('cash out') || lowerText.includes('cashout')) {
-                result.loan_purpose = 'cash_out';
+                result.loan_type = 'fix_flip';
+                console.log('✓ Detected loan type: Refinance');
             }
             
-            // Extract Property Type
-            if (lowerText.includes('single family') || lowerText.includes('sfr') || lowerText.includes('single')) {
+            // ========== EXTRACT PROPERTY TYPE ==========
+            
+            if (lowerText.includes('single family') || lowerText.includes('sfr') || 
+                lowerText.includes('single') || lowerText.includes('sfh')) {
                 result.property_type = 'SFR';
-            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || lowerText.includes('duplex') || lowerText.includes('triplex') || lowerText.includes('fourplex')) {
+            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || 
+                       lowerText.includes('duplex') || lowerText.includes('triplex') || 
+                       lowerText.includes('fourplex')) {
                 result.property_type = 'Multi';
             } else if (lowerText.includes('attached pud') || lowerText.includes('pud')) {
                 result.property_type = 'PUD';
@@ -6940,75 +6974,72 @@
                 result.property_type = 'Commercial';
             }
             
-            // Extract Exit Strategy (for bridge loans)
-            if (lowerText.includes('exit strategy') || lowerText.includes('exit:')) {
-                if (lowerText.includes('refinance') || lowerText.includes('refi')) {
-                    result.exit_strategy = 'refinance';
-                } else if (lowerText.includes('sale') || lowerText.includes('sell')) {
-                    result.exit_strategy = 'sale';
-                }
-            }
+            // ========== CSV/TXT FALLBACK PARSING ==========
             
-            // Extract Loan Term
-            const termMatch = lowerText.match(/loan[_\s-]?term[:\s]+(\d+)/i) || 
-                              lowerText.match(/term[:\s]+(\d+)/i) ||
-                              lowerText.match(/(\d+)\s*months/i);
-            if (termMatch) {
-                result.loan_term = parseInt(termMatch[1]);
-            }
-            
-            // CSV/TXT parsing - check for comma-separated or key-value pairs
-            if (ext === 'csv' || ext === 'txt' || content.includes(',')) {
+            // If we haven't found much data, try CSV/line-based parsing
+            if (Object.keys(result).length < 3 && (ext === 'csv' || ext === 'txt' || content.includes('\n'))) {
+                console.log('Trying line-by-line parsing...');
                 const lines = content.split('\n');
+                
                 for (const line of lines) {
-                    // Try colon-separated first
+                    // Try colon-separated
                     if (line.includes(':')) {
                         const parts = line.split(':');
                         if (parts.length >= 2) {
                             const key = parts[0].toLowerCase().trim().replace(/[_\s-]/g, '');
                             const val = parts[1].replace(/[$,]/g, '').trim();
+                            const numVal = parseFloat(val);
                             
-                            if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
-                                result.as_is_value = parseFloat(val) || result.as_is_value;
-                            } else if (key.includes('arv') && !result.arv) {
-                                result.arv = parseFloat(val) || result.arv;
-                            } else if (key.includes('purchase') && !result.purchase_price) {
-                                result.purchase_price = parseFloat(val) || result.purchase_price;
-                            } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
-                                result.rehab_budget = parseFloat(val) || result.rehab_budget;
-                            } else if ((key.includes('fico') || key.includes('credit')) && !result.fico) {
-                                result.fico = parseFloat(val) || result.fico;
-                            } else if (key.includes('experience') && !result.experience) {
-                                result.experience = parseFloat(val) || result.experience;
+                            if (!isNaN(numVal) && numVal > 0) {
+                                if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
+                                    result.as_is_value = numVal;
+                                    console.log('✓ Line parsed - as_is_value:', numVal);
+                                } else if (key.includes('arv') && !result.arv) {
+                                    result.arv = numVal;
+                                    console.log('✓ Line parsed - arv:', numVal);
+                                } else if (key.includes('purchase') && !result.purchase_price) {
+                                    result.purchase_price = numVal;
+                                    console.log('✓ Line parsed - purchase_price:', numVal);
+                                } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
+                                    result.rehab_budget = numVal;
+                                    console.log('✓ Line parsed - rehab_budget:', numVal);
+                                } else if ((key.includes('fico') || key.includes('credit')) && !result.fico) {
+                                    result.fico = parseInt(val);
+                                    console.log('✓ Line parsed - fico:', result.fico);
+                                } else if (key.includes('experience') && !result.experience) {
+                                    result.experience = parseInt(val);
+                                    console.log('✓ Line parsed - experience:', result.experience);
+                                }
                             }
                         }
                     }
-                    // Then try comma-separated
+                    // Try comma-separated
                     else if (line.includes(',')) {
                         const parts = line.split(',');
                         if (parts.length >= 2) {
                             const key = parts[0].toLowerCase().trim().replace(/[_\s-]/g, '');
                             const val = parts[1].replace(/[$,]/g, '').trim();
+                            const numVal = parseFloat(val);
                             
-                            if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
-                                result.as_is_value = parseFloat(val) || result.as_is_value;
-                            } else if (key.includes('arv') && !result.arv) {
-                                result.arv = parseFloat(val) || result.arv;
-                            } else if (key.includes('purchase') && !result.purchase_price) {
-                                result.purchase_price = parseFloat(val) || result.purchase_price;
-                            } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
-                                result.rehab_budget = parseFloat(val) || result.rehab_budget;
-                            } else if ((key.includes('fico') || key.includes('credit')) && !result.fico) {
-                                result.fico = parseFloat(val) || result.fico;
-                            } else if (key.includes('experience') && !result.experience) {
-                                result.experience = parseFloat(val) || result.experience;
+                            if (!isNaN(numVal) && numVal > 0) {
+                                if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
+                                    result.as_is_value = numVal;
+                                } else if (key.includes('arv') && !result.arv) {
+                                    result.arv = numVal;
+                                } else if (key.includes('purchase') && !result.purchase_price) {
+                                    result.purchase_price = numVal;
+                                } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
+                                    result.rehab_budget = numVal;
+                                }
                             }
                         }
                     }
                 }
             }
             
-            console.log('Final parsed result:', result);
+            console.log('=== FINAL PARSED RESULT ===');
+            console.log(result);
+            
             return Object.keys(result).length > 0 ? result : null;
         }
 
