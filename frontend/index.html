@@ -4185,30 +4185,73 @@
                             </div>
 
                             <form id="multiLenderForm" onsubmit="handleMultiLenderSubmit(event)">
+                                <!-- Loan Type Selector -->
+                                <div style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                                    <label class="form-label" style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-200); margin-bottom: var(--space-3); display: block;">
+                                        <i data-lucide="home" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2); color: var(--primary-400);"></i>
+                                        Select Loan Type
+                                    </label>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3);">
+                                        <label class="loan-type-option" style="cursor: pointer;">
+                                            <input type="radio" name="loanType" value="fix_flip" checked onchange="updateLoanTypeFields(this.value)" style="display: none;">
+                                            <div id="loanType-fixflip" class="loan-type-card" style="border: 2px solid var(--primary-500); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
+                                                <i data-lucide="hammer" style="width: 32px; height: 32px; color: var(--primary-400); margin-bottom: var(--space-2);"></i>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Fix & Flip</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Reno + Resale</div>
+                                            </div>
+                                        </label>
+                                        <label class="loan-type-option" style="cursor: pointer;">
+                                            <input type="radio" name="loanType" value="bridge" onchange="updateLoanTypeFields(this.value)" style="display: none;">
+                                            <div id="loanType-bridge" class="loan-type-card" style="border: 2px solid var(--surface-3); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
+                                                <i data-lucide="bridge" style="width: 32px; height: 32px; color: var(--warning-400); margin-bottom: var(--space-2);"></i>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Bridge</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Short-term</div>
+                                            </div>
+                                        </label>
+                                        <label class="loan-type-option" style="cursor: pointer;">
+                                            <input type="radio" name="loanType" value="dscr" onchange="updateLoanTypeFields(this.value)" style="display: none;">
+                                            <div id="loanType-dscr" class="loan-type-card" style="border: 2px solid var(--surface-3); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
+                                                <i data-lucide="building" style="width: 32px; height: 32px; color: var(--success-400); margin-bottom: var(--space-2);"></i>
+                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">DSCR</div>
+                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Rental Income</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <style>
+                                        .loan-type-option input:checked + .loan-type-card {
+                                            border-color: var(--primary-500) !important;
+                                            background: linear-gradient(135deg, var(--primary-900), var(--surface-1)) !important;
+                                        }
+                                        .loan-type-card:hover {
+                                            border-color: var(--primary-400) !important;
+                                        }
+                                    </style>
+                                </div>
+
                                 <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
                                     <div class="form-group">
-                                        <label class="form-label">As-Is Value</label>
+                                        <label class="form-label">As-Is Value <span style="color: var(--danger-500);">*</span></label>
                                         <div class="input-prefix">
                                             <span class="prefix">$</span>
                                             <input type="number" class="form-input" id="mlAsIsValue" placeholder="400000" required>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">ARV</label>
+                                    <div class="form-group" id="arvField">
+                                        <label class="form-label">ARV <span style="color: var(--danger-500);">*</span></label>
                                         <div class="input-prefix">
                                             <span class="prefix">$</span>
                                             <input type="number" class="form-input" id="mlARV" placeholder="650000" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Purchase Price</label>
+                                        <label class="form-label">Purchase Price <span style="color: var(--danger-500);">*</span></label>
                                         <div class="input-prefix">
                                             <span class="prefix">$</span>
                                             <input type="number" class="form-input" id="mlPurchasePrice" placeholder="350000" required>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Rehab Budget</label>
+                                    <div class="form-group" id="rehabField">
+                                        <label class="form-label">Rehab Budget <span style="color: var(--danger-500);">*</span></label>
                                         <div class="input-prefix">
                                             <span class="prefix">$</span>
                                             <input type="number" class="form-input" id="mlRehabBudget" placeholder="80000" required>
@@ -4216,29 +4259,75 @@
                                     </div>
                                 </div>
 
-                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
-                                    <div class="form-group">
-                                        <label class="form-label">FICO Score</label>
-                                        <input type="number" class="form-input" id="mlFICO" placeholder="740" min="300" max="850" required>
+                                <!-- Bridge Loan Specific Fields -->
+                                <div id="bridgeLoanFields" style="display: none; background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), transparent); border: 1px solid var(--warning-700); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                                    <h4 style="color: var(--warning-400); margin-bottom: var(--space-4); font-size: var(--text-base);">
+                                        <i data-lucide="bridge" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2);"></i>
+                                        Bridge Loan Details
+                                    </h4>
+                                    <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+                                        <div class="form-group">
+                                            <label class="form-label">Exit Strategy <span style="color: var(--danger-500);">*</span></label>
+                                            <select class="form-select" id="mlExitStrategy">
+                                                <option value="refinance">Refinance</option>
+                                                <option value="sale">Property Sale</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Loan Term (Months)</label>
+                                            <select class="form-select" id="mlLoanTerm">
+                                                <option value="6">6 Months</option>
+                                                <option value="12" selected>12 Months</option>
+                                                <option value="18">18 Months</option>
+                                                <option value="24">24 Months</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Liquidity ($)</label>
+                                            <div class="input-prefix">
+                                                <span class="prefix">$</span>
+                                                <input type="number" class="form-input" id="mlLiquidity" placeholder="50000">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Property Type</label>
+                                            <select class="form-select" id="mlBridgePropertyType">
+                                                <option value="single_family">Single Family</option>
+                                                <option value="multi_family">2-4 Units</option>
+                                                <option value="commercial">Commercial</option>
+                                                <option value="land">Land</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
+                                </div>
+
+                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
+                                    <div class="form-group" id="ficoField">
+                                        <label class="form-label">FICO Score</label>
+                                        <input type="number" class="form-input" id="mlFICO" placeholder="740" min="300" max="850">
+                                        <small style="color: var(--gray-500); font-size: var(--text-xs);">Optional for Bridge</small>
+                                    </div>
+                                    <div class="form-group" id="experienceField">
                                         <label class="form-label">Experience (Years)</label>
-                                        <input type="number" class="form-input" id="mlExperience" placeholder="5" min="0" required>
+                                        <input type="number" class="form-input" id="mlExperience" placeholder="5" min="0">
+                                        <small style="color: var(--gray-500); font-size: var(--text-xs);">Optional for Bridge</small>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Loan Purpose</label>
-                                        <select class="form-select" id="mlLoanPurpose">
+                                        <select class="form-select" id="mlLoanPurpose" onchange="handlePurposeChange(this.value)">
                                             <option value="purchase">Purchase</option>
                                             <option value="refinance">Refinance</option>
                                             <option value="cash_out">Cash Out</option>
                                             <option value="bridge">Bridge</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" id="propertyTypeField">
                                         <label class="form-label">Property Type</label>
                                         <select class="form-select" id="mlPropertyType">
                                             <option value="SFR">Single Family</option>
                                             <option value="Multi">2-4 Units</option>
+                                            <option value="Commercial">Commercial</option>
                                         </select>
                                     </div>
                                 </div>
@@ -6613,6 +6702,19 @@
                 console.log('Parsed data:', parsed);
                 
                 if (parsed && Object.keys(parsed).length > 0) {
+                    // Handle loan type detection first
+                    if (parsed.loan_type === 'bridge') {
+                        // Set bridge loan type
+                        document.querySelector('input[name="loanType"][value="bridge"]').checked = true;
+                        updateLoanTypeFields('bridge');
+                    } else if (parsed.loan_type === 'dscr') {
+                        document.querySelector('input[name="loanType"][value="dscr"]').checked = true;
+                        updateLoanTypeFields('dscr');
+                    } else {
+                        document.querySelector('input[name="loanType"][value="fix_flip"]').checked = true;
+                        updateLoanTypeFields('fix_flip');
+                    }
+                    
                     // Fill in the form with parsed data
                     let populatedFields = [];
                     
@@ -6649,6 +6751,27 @@
                         populatedFields.push(`Property Type: ${parsed.property_type}`);
                     }
                     
+                    // Handle bridge-specific fields
+                    if (parsed.exit_strategy) {
+                        const exitStrategySelect = document.getElementById('mlExitStrategy');
+                        if (exitStrategySelect) {
+                            exitStrategySelect.value = parsed.exit_strategy;
+                            populatedFields.push(`Exit Strategy: ${parsed.exit_strategy}`);
+                        }
+                    }
+                    if (parsed.loan_term) {
+                        const loanTermSelect = document.getElementById('mlLoanTerm');
+                        if (loanTermSelect) {
+                            // Find closest term option
+                            const terms = [6, 12, 18, 24];
+                            const closest = terms.reduce((prev, curr) => 
+                                Math.abs(curr - parsed.loan_term) < Math.abs(prev - parsed.loan_term) ? curr : prev
+                            );
+                            loanTermSelect.value = closest.toString();
+                            populatedFields.push(`Loan Term: ${parsed.loan_term} months`);
+                        }
+                    }
+                    
                     statusDiv.innerHTML = '<span class="badge badge-success">✓ File processed successfully!</span>';
                     
                     // Show detailed toast with populated fields
@@ -6656,7 +6779,8 @@
                         ? '\n' + populatedFields.map(f => '• ' + f).join('\n')
                         : '\n(No numeric fields found - please verify data)';
                     
-                    showToast(`Loaded data from ${file.name}.${fieldsList}`, 8000);
+                    const loanTypeLabel = parsed.loan_type === 'bridge' ? ' (Bridge Loan)' : '';
+                    showToast(`Loaded${loanTypeLabel} data from ${file.name}.${fieldsList}`, 8000);
                     
                     // Scroll to form to show populated values
                     document.getElementById('multiLenderForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -6784,21 +6908,53 @@
                 /years?[:\s]+(\d+)/i
             ], 'experience');
             
-            // Extract Loan Purpose
-            if (lowerText.includes('bridge') || lowerText.includes('bridge loan')) result.loan_purpose = 'bridge';
-            else if (lowerText.includes('purchase')) result.loan_purpose = 'purchase';
-            else if (lowerText.includes('refinance')) result.loan_purpose = 'refinance';
-            else if (lowerText.includes('cash out') || lowerText.includes('cashout')) result.loan_purpose = 'cash_out';
+            // Extract Loan Purpose and Loan Type
+            if (lowerText.includes('bridge') || lowerText.includes('bridge loan')) {
+                result.loan_purpose = 'bridge';
+                result.loan_type = 'bridge';
+            } else if (lowerText.includes('fix and flip') || lowerText.includes('fix & flip') || lowerText.includes('fix&flip') || lowerText.includes('renovation')) {
+                result.loan_purpose = 'purchase';
+                result.loan_type = 'fix_flip';
+            } else if (lowerText.includes('dscr') || lowerText.includes('rental') || lowerText.includes('investment property')) {
+                result.loan_purpose = 'refinance';
+                result.loan_type = 'dscr';
+            } else if (lowerText.includes('purchase')) {
+                result.loan_purpose = 'purchase';
+                result.loan_type = 'fix_flip';
+            } else if (lowerText.includes('refinance')) {
+                result.loan_purpose = 'refinance';
+            } else if (lowerText.includes('cash out') || lowerText.includes('cashout')) {
+                result.loan_purpose = 'cash_out';
+            }
             
             // Extract Property Type
             if (lowerText.includes('single family') || lowerText.includes('sfr') || lowerText.includes('single')) {
                 result.property_type = 'SFR';
-            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || lowerText.includes('duplex')) {
+            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || lowerText.includes('duplex') || lowerText.includes('triplex') || lowerText.includes('fourplex')) {
                 result.property_type = 'Multi';
             } else if (lowerText.includes('attached pud') || lowerText.includes('pud')) {
                 result.property_type = 'PUD';
-            } else if (lowerText.includes('condo')) {
+            } else if (lowerText.includes('condo') || lowerText.includes('condominium')) {
                 result.property_type = 'Condo';
+            } else if (lowerText.includes('commercial')) {
+                result.property_type = 'Commercial';
+            }
+            
+            // Extract Exit Strategy (for bridge loans)
+            if (lowerText.includes('exit strategy') || lowerText.includes('exit:')) {
+                if (lowerText.includes('refinance') || lowerText.includes('refi')) {
+                    result.exit_strategy = 'refinance';
+                } else if (lowerText.includes('sale') || lowerText.includes('sell')) {
+                    result.exit_strategy = 'sale';
+                }
+            }
+            
+            // Extract Loan Term
+            const termMatch = lowerText.match(/loan[_\s-]?term[:\s]+(\d+)/i) || 
+                              lowerText.match(/term[:\s]+(\d+)/i) ||
+                              lowerText.match(/(\d+)\s*months/i);
+            if (termMatch) {
+                result.loan_term = parseInt(termMatch[1]);
             }
             
             // CSV/TXT parsing - check for comma-separated or key-value pairs
@@ -6943,19 +7099,30 @@
         async function handleMultiLenderSubmit(event) {
             event.preventDefault();
 
+            // Get loan type
+            const loanType = document.querySelector('input[name="loanType"]:checked')?.value || 'fix_flip';
+
             const data = {
                 as_is_value: parseFloat(document.getElementById('mlAsIsValue').value),
-                arv: parseFloat(document.getElementById('mlARV').value),
+                arv: parseFloat(document.getElementById('mlARV').value) || 0,
                 purchase_price: parseFloat(document.getElementById('mlPurchasePrice').value),
-                rehab_budget: parseFloat(document.getElementById('mlRehabBudget').value),
-                fico: parseInt(document.getElementById('mlFICO').value),
-                experience: parseInt(document.getElementById('mlExperience').value),
+                rehab_budget: parseFloat(document.getElementById('mlRehabBudget').value) || 0,
+                fico: parseInt(document.getElementById('mlFICO').value) || 0,
+                experience: parseInt(document.getElementById('mlExperience').value) || 0,
                 loan_purpose: document.getElementById('mlLoanPurpose').value,
-                property_type: document.getElementById('mlPropertyType').value
+                property_type: document.getElementById('mlPropertyType').value,
+                loan_type: loanType
             };
+            
+            // Add bridge-specific fields if applicable
+            if (loanType === 'bridge') {
+                data.exit_strategy = document.getElementById('mlExitStrategy')?.value || 'refinance';
+                data.loan_term = parseInt(document.getElementById('mlLoanTerm')?.value) || 12;
+                data.liquidity = parseFloat(document.getElementById('mlLiquidity')?.value) || 0;
+            }
 
             try {
-                showToast('Comparing lenders...');
+                showToast(loanType === 'bridge' ? 'Analyzing bridge loan options...' : 'Comparing lenders...');
                 const response = await fetch(`${API_BASE_URL}/multi-lender/compare`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -6982,19 +7149,39 @@
 
         // Client-side fallback calculation
         function calculateMultiLenderFallback(data) {
-            const totalCost = data.purchase_price + data.rehab_budget;
+            const totalCost = data.purchase_price + (data.rehab_budget || 0);
             
-            // Determine approval status based on FICO and experience
+            // Check if this is a bridge loan
+            const isBridgeLoan = data.loan_type === 'bridge' || data.loan_purpose === 'bridge';
+            
+            // For bridge loans, use different approval logic
             let approvalStatus = 'approved';
             let confidence = 'High';
             
-            if (data.fico < 680 || data.experience === 0) {
-                approvalStatus = 'conditional';
-                confidence = 'Medium';
-            }
-            if (data.fico < 660) {
-                approvalStatus = 'declined';
-                confidence = 'Low';
+            if (isBridgeLoan) {
+                // Bridge loans are primarily asset-based
+                // Approval based on LTV and liquidity, not FICO/experience
+                const ltv = (totalCost / data.as_is_value) * 100;
+                if (ltv <= 75) {
+                    approvalStatus = 'approved';
+                    confidence = 'High';
+                } else if (ltv <= 80) {
+                    approvalStatus = 'conditional';
+                    confidence = 'Medium';
+                } else {
+                    approvalStatus = 'declined';
+                    confidence = 'Low';
+                }
+            } else {
+                // Traditional fix & flip logic based on FICO and experience
+                if (data.fico < 680 || data.experience === 0) {
+                    approvalStatus = 'conditional';
+                    confidence = 'Medium';
+                }
+                if (data.fico < 660) {
+                    approvalStatus = 'declined';
+                    confidence = 'Low';
+                }
             }
             
             // Calculate borrower grade for Eastview
@@ -7003,8 +7190,77 @@
             let totalScore = creditPoints + expPoints;
             let borrowerGrade = totalScore >= 7 ? 'A+' : (totalScore >= 5 ? 'A' : (totalScore >= 2 ? 'B' : 'C'));
             
-            // Get FICO tier
-            let ficoTier = data.fico >= 740 ? '740+' : (data.fico >= 700 ? '700-739' : (data.fico >= 680 ? '680-699' : '660-679'));
+            // Get FICO tier (default to 700-739 if not provided for bridge loans)
+            let ficoTier = data.fico >= 740 ? '740+' : (data.fico >= 700 ? '700-739' : (data.fico >= 680 ? '680-699' : (data.fico >= 660 ? '660-679' : '700-739')));
+            
+            // ========== BRIDGE LOAN LENDERS ==========
+            if (isBridgeLoan) {
+                // Bridge Capital (bridge loan specialist)
+                const bridgeMaxLtv = 0.75;
+                const bridgeMaxLoan = data.as_is_value * bridgeMaxLtv;
+                const bridgeRate = 9.5; // Bridge loans typically 9-11%
+                const bridgePoints = 0.015; // 1.5 points
+                
+                const bridgeLtv = (totalCost / data.as_is_value) * 100;
+                let bridgeApprovalStatus = bridgeLtv <= 75 ? 'approved' : (bridgeLtv <= 80 ? 'conditional' : 'declined');
+                
+                // Eastview Bridge Program
+                const eastviewBridgeMaxLtv = 0.80;
+                const eastviewBridgeMaxLoan = data.as_is_value * eastviewBridgeMaxLtv;
+                const eastviewBridgeRate = 9.25; 
+                const eastviewBridgePoints = 0.02;
+                
+                let eastviewBridgeApprovalStatus = bridgeLtv <= 80 ? 'approved' : 'declined';
+                
+                return {
+                    results: [
+                        {
+                            lender: 'Bridge Capital',
+                            program: 'Bridge Program',
+                            rate: bridgeRate.toFixed(2),
+                            rate_formatted: bridgeRate.toFixed(2) + '%',
+                            points: bridgePoints,
+                            points_formatted: (bridgePoints * 100).toFixed(1) + '%',
+                            max_loan: bridgeMaxLoan,
+                            max_loan_formatted: '$' + Math.round(bridgeMaxLoan).toLocaleString(),
+                            ltv: bridgeLtv.toFixed(1),
+                            approval_status: bridgeApprovalStatus,
+                            confidence: bridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
+                            monthly_payment: (bridgeMaxLoan * (bridgeRate / 100) / 12).toFixed(0),
+                            total_cost: (bridgeMaxLoan * bridgePoints).toFixed(0),
+                            note: 'Asset-based bridge loan'
+                        },
+                        {
+                            lender: 'Eastview',
+                            program: 'Bridge Program',
+                            rate: eastviewBridgeRate.toFixed(2),
+                            rate_formatted: eastviewBridgeRate.toFixed(2) + '%',
+                            points: eastviewBridgePoints,
+                            points_formatted: (eastviewBridgePoints * 100).toFixed(1) + '%',
+                            max_loan: eastviewBridgeMaxLoan,
+                            max_loan_formatted: '$' + Math.round(eastviewBridgeMaxLoan).toLocaleString(),
+                            ltv: bridgeLtv.toFixed(1),
+                            approval_status: eastviewBridgeApprovalStatus,
+                            confidence: eastviewBridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
+                            monthly_payment: (eastviewBridgeMaxLoan * (eastviewBridgeRate / 100) / 12).toFixed(0),
+                            total_cost: (eastviewBridgeMaxLoan * eastviewBridgePoints).toFixed(0),
+                            note: 'Up to 80% LTV bridge financing'
+                        }
+                    ],
+                    input_summary: {
+                        as_is_value: '$' + data.as_is_value.toLocaleString(),
+                        arv: '$' + (data.arv || data.as_is_value).toLocaleString(),
+                        purchase_price: '$' + data.purchase_price.toLocaleString(),
+                        rehab_budget: '$' + (data.rehab_budget || 0).toLocaleString(),
+                        fico: data.fico || 'N/A',
+                        experience: data.experience || 'N/A'
+                    },
+                    comparison_summary: `Bridge Loan: ${bridgeLtv.toFixed(1)}% LTV on $${data.as_is_value.toLocaleString()} property`,
+                    best_rate_lender: 'Bridge Capital',
+                    best_rate_formatted: bridgeRate.toFixed(2) + '%',
+                    loan_type: 'bridge'
+                };
+            }
             
             // ========== IFC CALCULATION (Renovation Program) ==========
             // IFC Pricing tiers based on backend multi_lender_logic.py
@@ -7023,13 +7279,13 @@
             
             const ifcMaxLtLoan = data.as_is_value * ifcMaxLtv;
             const ifcMaxLtcLoan = totalCost * ifcMaxLtc;
-            const ifcMaxLtarvLoan = data.arv * ifcMaxLtarv;
+            const ifcMaxLtarvLoan = (data.arv || data.as_is_value) * ifcMaxLtarv;
             const ifcMaxLoan = Math.min(ifcMaxLtLoan, ifcMaxLtcLoan, ifcMaxLtarvLoan);
             
             // Calculate LTV/LTC/LTARV based on actual max loan
             const ifcLtv = (ifcMaxLoan / data.as_is_value) * 100;
             const ifcLtc = (ifcMaxLoan / totalCost) * 100;
-            const ifcLtarv = (ifcMaxLoan / data.arv) * 100;
+            const ifcLtarv = (ifcMaxLoan / (data.arv || data.as_is_value)) * 100;
             
             // Get IFC rate based on FICO tier and LTV bucket
             let ifcRateIndex = Math.min(Math.floor(ifcLtv / 5) - 13, 5); // Convert LTV to index (65-70=0, 70-75=1, etc.)
@@ -7069,12 +7325,12 @@
             
             const iceMaxLtLoan = data.as_is_value * iceMaxLtv;
             const iceMaxLtcLoan = totalCost * iceMaxLtc;
-            const iceMaxLtarvLoan = data.arv * iceMaxLtarv;
+            const iceMaxLtarvLoan = (data.arv || data.as_is_value) * iceMaxLtarv;
             const iceMaxLoan = Math.min(iceMaxLtLoan, iceMaxLtcLoan, iceMaxLtarvLoan);
             
             const iceLtv = (iceMaxLoan / data.as_is_value) * 100;
             const iceLtc = (iceMaxLoan / totalCost) * 100;
-            const iceLtarv = (iceMaxLoan / data.arv) * 100;
+            const iceLtarv = (iceMaxLoan / (data.arv || data.as_is_value)) * 100;
             
             // ICE min FICO: 680
             let iceApprovalStatus = data.fico >= 680 ? approvalStatus : 'declined';
@@ -8587,11 +8843,96 @@ ltv_ratio: ${ltv}
             }).format(amount);
         }
 
+        // Update form fields based on loan type selection
+        function updateLoanTypeFields(loanType) {
+            // Update visual selection
+            document.querySelectorAll('.loan-type-card').forEach(card => {
+                card.style.borderColor = 'var(--surface-3)';
+                card.style.background = 'var(--surface-1)';
+            });
+            
+            const selectedCard = document.getElementById(`loanType-${loanType === 'fix_flip' ? 'fixflip' : loanType}`);
+            if (selectedCard) {
+                selectedCard.style.borderColor = 'var(--primary-500)';
+                selectedCard.style.background = 'linear-gradient(135deg, var(--primary-900), var(--surface-1))';
+            }
+            
+            // Show/hide fields based on loan type
+            const arvField = document.getElementById('arvField');
+            const rehabField = document.getElementById('rehabField');
+            const ficoField = document.getElementById('ficoField');
+            const experienceField = document.getElementById('experienceField');
+            const bridgeLoanFields = document.getElementById('bridgeLoanFields');
+            const loanPurpose = document.getElementById('mlLoanPurpose');
+            
+            if (loanType === 'bridge') {
+                // Bridge loan - ARV and Rehab optional, FICO/Experience not required
+                arvField.querySelector('label').innerHTML = 'ARV <small style="color: var(--gray-500);">(Optional)</small>';
+                arvField.querySelector('input').removeAttribute('required');
+                
+                rehabField.querySelector('label').innerHTML = 'Rehab Budget <small style="color: var(--gray-500);">(Optional)</small>';
+                rehabField.querySelector('input').removeAttribute('required');
+                
+                ficoField.style.display = 'none';
+                experienceField.style.display = 'none';
+                
+                bridgeLoanFields.style.display = 'block';
+                
+                // Set loan purpose to bridge
+                loanPurpose.value = 'bridge';
+            } else if (loanType === 'dscr') {
+                // DSCR loan - ARV and Rehab not needed
+                arvField.style.display = 'none';
+                rehabField.style.display = 'none';
+                
+                ficoField.style.display = 'block';
+                experienceField.style.display = 'none';
+                
+                bridgeLoanFields.style.display = 'none';
+                
+                loanPurpose.value = 'refinance';
+            } else {
+                // Fix & Flip - all fields required
+                arvField.style.display = 'block';
+                arvField.querySelector('label').innerHTML = 'ARV <span style="color: var(--danger-500);">*</span>';
+                arvField.querySelector('input').setAttribute('required', 'true');
+                
+                rehabField.style.display = 'block';
+                rehabField.querySelector('label').innerHTML = 'Rehab Budget <span style="color: var(--danger-500);">*</span>';
+                rehabField.querySelector('input').setAttribute('required', 'true');
+                
+                ficoField.style.display = 'block';
+                experienceField.style.display = 'block';
+                
+                bridgeLoanFields.style.display = 'none';
+                
+                loanPurpose.value = 'purchase';
+            }
+            
+            // Re-render icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Handle loan purpose change
+        function handlePurposeChange(purpose) {
+            if (purpose === 'bridge') {
+                // Auto-select bridge loan type
+                document.querySelector('input[name="loanType"][value="bridge"]').checked = true;
+                updateLoanTypeFields('bridge');
+            }
+        }
+
         // Reset multi-lender form
         function resetMultiLenderForm() {
             document.getElementById('multiLenderForm').reset();
             document.getElementById('multiLenderResults').style.display = 'none';
             lastMultiLenderResults = null;
+            
+            // Reset to Fix & Flip as default
+            document.querySelector('input[name="loanType"][value="fix_flip"]').checked = true;
+            updateLoanTypeFields('fix_flip');
             
             // Reset card styles
             ['ifcCard', 'iceCard', 'eastviewCard'].forEach(id => {
