@@ -4140,6 +4140,7 @@
                                     <option value="challenging">Challenging Deal (FICO 620, 0yr)</option>
                                     <option value="luxury">Luxury Flip (FICO 780, 10yr)</option>
                                     <option value="first_time">First-Time Investor (FICO 700, 0yr)</option>
+                                    <option value="bridge">Bridge Loan (FICO 720, 3yr)</option>
                                 </select>
                                 <button class="btn btn-secondary btn-sm" onclick="resetMultiLenderForm()">
                                     <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
@@ -4222,6 +4223,7 @@
                                             <option value="purchase">Purchase</option>
                                             <option value="refinance">Refinance</option>
                                             <option value="cash_out">Cash Out</option>
+                                            <option value="bridge">Bridge</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -6496,6 +6498,16 @@
                 experience: 0,
                 loan_purpose: 'purchase',
                 property_type: 'SFR'
+            },
+            bridge: {
+                as_is_value: 500000,
+                arv: 0,
+                purchase_price: 450000,
+                rehab_budget: 0,
+                fico: 720,
+                experience: 3,
+                loan_purpose: 'bridge',
+                property_type: 'SFR'
             }
         };
 
@@ -6672,7 +6684,8 @@
             ]);
             
             // Extract Loan Purpose
-            if (text.includes('purchase')) result.loan_purpose = 'purchase';
+            if (text.includes('bridge') || text.includes('bridge loan')) result.loan_purpose = 'bridge';
+            else if (text.includes('purchase')) result.loan_purpose = 'purchase';
             else if (text.includes('refinance')) result.loan_purpose = 'refinance';
             else if (text.includes('cash out') || text.includes('cashout')) result.loan_purpose = 'cash_out';
             
@@ -6894,80 +6907,154 @@
             const evMonthlyPayment = evMaxLoan * (evBaseRate / 100) / 12;
             const evTotalCost = evMaxLoan * evPoints + (evMonthlyPayment * 12);
             
-            const results = [
-                {
-                    lender: 'IFC',
-                    program: 'Renovation',
-                    rate: ifcBaseRate,
-                    rate_formatted: ifcBaseRate.toFixed(2) + '%',
-                    points: ifcPoints * 100,
-                    points_formatted: (ifcPoints * 100).toFixed(2) + '%',
-                    max_loan: Math.round(ifcMaxLoan),
-                    max_loan_formatted: '$' + Math.round(ifcMaxLoan).toLocaleString(),
-                    ltv: ifcLtv,
-                    ltv_formatted: ifcLtv.toFixed(1) + '%',
-                    ltc: ifcLtc,
-                    ltc_formatted: ifcLtc.toFixed(1) + '%',
-                    ltarv: ifcLtarv,
-                    ltarv_formatted: ifcLtarv.toFixed(1) + '%',
-                    monthly_payment: Math.round(ifcMonthlyPayment),
-                    monthly_payment_formatted: '$' + Math.round(ifcMonthlyPayment).toLocaleString(),
-                    total_cost: Math.round(ifcTotalCost),
-                    total_cost_formatted: '$' + Math.round(ifcTotalCost).toLocaleString(),
-                    approval_confidence: ifcConfidence,
-                    approval_status: ifcApprovalStatus,
-                    borrower_grade: null,
-                    ranking: 1
-                },
-                {
-                    lender: 'ICE',
-                    program: 'Light Rehab',
-                    rate: iceBaseRate,
-                    rate_formatted: iceBaseRate.toFixed(2) + '%',
-                    points: icePoints * 100,
-                    points_formatted: (icePoints * 100).toFixed(2) + '%',
-                    max_loan: Math.round(iceMaxLoan),
-                    max_loan_formatted: '$' + Math.round(iceMaxLoan).toLocaleString(),
-                    ltv: iceLtv,
-                    ltv_formatted: iceLtv.toFixed(1) + '%',
-                    ltc: iceLtc,
-                    ltc_formatted: iceLtc.toFixed(1) + '%',
-                    ltarv: iceLtarv,
-                    ltarv_formatted: iceLtarv.toFixed(1) + '%',
-                    monthly_payment: Math.round(iceMonthlyPayment),
-                    monthly_payment_formatted: '$' + Math.round(iceMonthlyPayment).toLocaleString(),
-                    total_cost: Math.round(iceTotalCost),
-                    total_cost_formatted: '$' + Math.round(iceTotalCost).toLocaleString(),
-                    approval_confidence: iceConfidence,
-                    approval_status: iceApprovalStatus,
-                    borrower_grade: null,
-                    ranking: 2
-                },
-                {
-                    lender: 'Eastview',
-                    program: 'Fix & Flip (' + borrowerGrade + ')',
-                    rate: evBaseRate,
-                    rate_formatted: evBaseRate.toFixed(2) + '%',
-                    points: evPoints * 100,
-                    points_formatted: (evPoints * 100).toFixed(2) + '%',
-                    max_loan: Math.round(evMaxLoan),
-                    max_loan_formatted: '$' + Math.round(evMaxLoan).toLocaleString(),
-                    ltv: evLtv,
-                    ltv_formatted: evLtv.toFixed(1) + '%',
-                    ltc: evLtc,
-                    ltc_formatted: evLtc.toFixed(1) + '%',
-                    ltarv: evLtarv,
-                    ltarv_formatted: evLtarv.toFixed(1) + '%',
-                    monthly_payment: Math.round(evMonthlyPayment),
-                    monthly_payment_formatted: '$' + Math.round(evMonthlyPayment).toLocaleString(),
-                    total_cost: Math.round(evTotalCost),
-                    total_cost_formatted: '$' + Math.round(evTotalCost).toLocaleString(),
-                    approval_confidence: evConfidence,
-                    approval_status: evApprovalStatus,
-                    borrower_grade: borrowerGrade,
-                    ranking: 3
-                }
-            ];
+            // ========== BRIDGE LENDER CALCULATION (For Bridge Loans) ==========
+            // Bridge loan specific calculations
+            const bridgeBaseRate = 9.50; // 9.5% typical bridge rate
+            const bridgePoints = 0.015; // 1.5 points
+            const bridgeMaxLtv = 0.75; // 75% LTV for bridge
+            const bridgeMaxLoan = data.as_is_value * bridgeMaxLtv;
+            const bridgeLtv = (bridgeMaxLoan / data.as_is_value) * 100;
+            const bridgeLtc = (bridgeMaxLoan / totalCost) * 100;
+            
+            // Bridge loan approval (more lenient, based on equity)
+            let bridgeApprovalStatus = data.fico >= 620 ? approvalStatus : 'conditional';
+            let bridgeConfidence = data.fico >= 680 ? 'High' : 'Medium';
+            
+            const bridgeMonthlyPayment = bridgeMaxLoan * (bridgeBaseRate / 100) / 12;
+            const bridgeTotalCost = bridgeMaxLoan * bridgePoints + (bridgeMonthlyPayment * 12);
+            
+            // Build results array based on loan purpose
+            let results = [];
+            
+            if (data.loan_purpose === 'bridge') {
+                // For bridge loans, prioritize bridge lenders
+                results = [
+                    {
+                        lender: 'Bridge Capital',
+                        program: 'Bridge Loan',
+                        rate: bridgeBaseRate,
+                        rate_formatted: bridgeBaseRate.toFixed(2) + '%',
+                        points: bridgePoints * 100,
+                        points_formatted: (bridgePoints * 100).toFixed(2) + '%',
+                        max_loan: Math.round(bridgeMaxLoan),
+                        max_loan_formatted: '$' + Math.round(bridgeMaxLoan).toLocaleString(),
+                        ltv: bridgeLtv,
+                        ltv_formatted: bridgeLtv.toFixed(1) + '%',
+                        ltc: bridgeLtc,
+                        ltc_formatted: bridgeLtc.toFixed(1) + '%',
+                        ltarv: null,
+                        ltarv_formatted: 'N/A',
+                        monthly_payment: Math.round(bridgeMonthlyPayment),
+                        monthly_payment_formatted: '$' + Math.round(bridgeMonthlyPayment).toLocaleString(),
+                        total_cost: Math.round(bridgeTotalCost),
+                        total_cost_formatted: '$' + Math.round(bridgeTotalCost).toLocaleString(),
+                        approval_confidence: bridgeConfidence,
+                        approval_status: bridgeApprovalStatus,
+                        borrower_grade: null,
+                        ranking: 1
+                    },
+                    {
+                        lender: 'Eastview',
+                        program: 'Bridge Program (' + borrowerGrade + ')',
+                        rate: evBaseRate + 0.50, // Higher rate for bridge
+                        rate_formatted: (evBaseRate + 0.50).toFixed(2) + '%',
+                        points: evPoints * 100,
+                        points_formatted: (evPoints * 100).toFixed(2) + '%',
+                        max_loan: Math.round(evMaxLoan * 0.8), // Lower max for bridge
+                        max_loan_formatted: '$' + Math.round(evMaxLoan * 0.8).toLocaleString(),
+                        ltv: evLtv,
+                        ltv_formatted: evLtv.toFixed(1) + '%',
+                        ltc: evLtc,
+                        ltc_formatted: evLtc.toFixed(1) + '%',
+                        ltarv: null,
+                        ltarv_formatted: 'N/A',
+                        monthly_payment: Math.round(evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12),
+                        monthly_payment_formatted: '$' + Math.round(evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12).toLocaleString(),
+                        total_cost: Math.round(evMaxLoan * 0.8 * evPoints + (evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12) * 12),
+                        total_cost_formatted: '$' + Math.round(evMaxLoan * 0.8 * evPoints + (evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12) * 12).toLocaleString(),
+                        approval_confidence: evConfidence,
+                        approval_status: evApprovalStatus,
+                        borrower_grade: borrowerGrade,
+                        ranking: 2
+                    }
+                ];
+            } else {
+                // Standard renovation loans
+                results = [
+                    {
+                        lender: 'IFC',
+                        program: 'Renovation',
+                        rate: ifcBaseRate,
+                        rate_formatted: ifcBaseRate.toFixed(2) + '%',
+                        points: ifcPoints * 100,
+                        points_formatted: (ifcPoints * 100).toFixed(2) + '%',
+                        max_loan: Math.round(ifcMaxLoan),
+                        max_loan_formatted: '$' + Math.round(ifcMaxLoan).toLocaleString(),
+                        ltv: ifcLtv,
+                        ltv_formatted: ifcLtv.toFixed(1) + '%',
+                        ltc: ifcLtc,
+                        ltc_formatted: ifcLtc.toFixed(1) + '%',
+                        ltarv: ifcLtarv,
+                        ltarv_formatted: ifcLtarv.toFixed(1) + '%',
+                        monthly_payment: Math.round(ifcMonthlyPayment),
+                        monthly_payment_formatted: '$' + Math.round(ifcMonthlyPayment).toLocaleString(),
+                        total_cost: Math.round(ifcTotalCost),
+                        total_cost_formatted: '$' + Math.round(ifcTotalCost).toLocaleString(),
+                        approval_confidence: ifcConfidence,
+                        approval_status: ifcApprovalStatus,
+                        borrower_grade: null,
+                        ranking: 1
+                    },
+                    {
+                        lender: 'ICE',
+                        program: 'Light Rehab',
+                        rate: iceBaseRate,
+                        rate_formatted: iceBaseRate.toFixed(2) + '%',
+                        points: icePoints * 100,
+                        points_formatted: (icePoints * 100).toFixed(2) + '%',
+                        max_loan: Math.round(iceMaxLoan),
+                        max_loan_formatted: '$' + Math.round(iceMaxLoan).toLocaleString(),
+                        ltv: iceLtv,
+                        ltv_formatted: iceLtv.toFixed(1) + '%',
+                        ltc: iceLtc,
+                        ltc_formatted: iceLtc.toFixed(1) + '%',
+                        ltarv: iceLtarv,
+                        ltarv_formatted: iceLtarv.toFixed(1) + '%',
+                        monthly_payment: Math.round(iceMonthlyPayment),
+                        monthly_payment_formatted: '$' + Math.round(iceMonthlyPayment).toLocaleString(),
+                        total_cost: Math.round(iceTotalCost),
+                        total_cost_formatted: '$' + Math.round(iceTotalCost).toLocaleString(),
+                        approval_confidence: iceConfidence,
+                        approval_status: iceApprovalStatus,
+                        borrower_grade: null,
+                        ranking: 2
+                    },
+                    {
+                        lender: 'Eastview',
+                        program: 'Fix & Flip (' + borrowerGrade + ')',
+                        rate: evBaseRate,
+                        rate_formatted: evBaseRate.toFixed(2) + '%',
+                        points: evPoints * 100,
+                        points_formatted: (evPoints * 100).toFixed(2) + '%',
+                        max_loan: Math.round(evMaxLoan),
+                        max_loan_formatted: '$' + Math.round(evMaxLoan).toLocaleString(),
+                        ltv: evLtv,
+                        ltv_formatted: evLtv.toFixed(1) + '%',
+                        ltc: evLtc,
+                        ltc_formatted: evLtc.toFixed(1) + '%',
+                        ltarv: evLtarv,
+                        ltarv_formatted: evLtarv.toFixed(1) + '%',
+                        monthly_payment: Math.round(evMonthlyPayment),
+                        monthly_payment_formatted: '$' + Math.round(evMonthlyPayment).toLocaleString(),
+                        total_cost: Math.round(evTotalCost),
+                        total_cost_formatted: '$' + Math.round(evTotalCost).toLocaleString(),
+                        approval_confidence: evConfidence,
+                        approval_status: evApprovalStatus,
+                        borrower_grade: borrowerGrade,
+                        ranking: 3
+                    }
+                ];
+            }
             
             // Re-rank based on total cost
             results.sort((a, b) => a.total_cost - b.total_cost);
