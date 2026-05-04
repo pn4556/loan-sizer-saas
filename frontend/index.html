@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Initialize PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <script src="batch-processor.js"></script>
     <style>
         :root {
@@ -4155,8 +4160,8 @@
                                 </div>
                                 <h4 style="color: var(--gray-200); margin-bottom: var(--space-2);">Upload Loan Application</h4>
                                 <p style="color: var(--gray-500); font-size: var(--text-sm); margin-bottom: var(--space-4);">
-                                    <strong>Direct parsing:</strong> CSV, TXT files<br>
-                                    <small style="color: var(--gray-600);">PDF/Excel require backend processing (coming soon)</small>
+                                    <strong>Supported formats:</strong> TXT, CSV, PDF<br>
+                                    <small style="color: var(--gray-600);">Excel (.xlsx) coming soon</small>
                                 </p>
                                 <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
                                     <button class="btn btn-secondary" onclick="document.getElementById('mlFileUpload').click()">
@@ -6527,26 +6532,29 @@
 
             try {
                 const ext = file.name.split('.').pop().toLowerCase();
+                let content = '';
                 
-                // Check if PDF - need special handling
+                // Handle PDF files
                 if (ext === 'pdf') {
-                    statusDiv.innerHTML = '<span class="badge badge-warning">PDF parsing requires backend processing</span>';
-                    showToast('PDF support coming soon. Please use TXT or CSV format for now.', 5000);
-                    event.target.value = '';
-                    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
-                    return;
+                    statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
+                    content = await extractTextFromPDF(file);
+                    if (!content || content.trim().length === 0) {
+                        throw new Error('Could not extract text from PDF');
+                    }
                 }
-                
-                // Check if Excel - need special handling
-                if (ext === 'xlsx' || ext === 'xls') {
+                // Handle Excel files - still need backend
+                else if (ext === 'xlsx' || ext === 'xls') {
                     statusDiv.innerHTML = '<span class="badge badge-warning">Excel parsing requires backend processing</span>';
-                    showToast('Excel support coming soon. Please use TXT or CSV format for now.', 5000);
+                    showToast('Excel support coming soon. Please use TXT or PDF format for now.', 5000);
                     event.target.value = '';
                     setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
                     return;
                 }
+                // Handle TXT/CSV files
+                else {
+                    content = await file.text();
+                }
                 
-                const content = await file.text();
                 const parsed = parseLoanApplicationFile(content, file.name);
                 
                 if (parsed) {
@@ -6576,6 +6584,29 @@
             
             // Reset file input
             event.target.value = '';
+        }
+
+        // Extract text from PDF using PDF.js
+        async function extractTextFromPDF(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                let fullText = '';
+                
+                // Extract text from all pages
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+                
+                return fullText;
+            } catch (error) {
+                console.error('Error extracting PDF text:', error);
+                throw new Error('Failed to read PDF file');
+            }
         }
 
         // Parse loan application from various file formats
