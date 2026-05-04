@@ -4252,7 +4252,7 @@
                                 </div>
                             </form>
 
-                            <!-- Comparison Results -->
+                                <!-- Comparison Results -->
                             <div id="multiLenderResults" style="display: none; margin-top: var(--space-8);">
                                 <!-- Results Header with Export -->
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
@@ -4265,6 +4265,39 @@
                                             <i data-lucide="download" style="width: 16px; height: 16px;"></i>
                                             Export Report
                                         </button>
+                                    </div>
+                                </div>
+
+                                <!-- Results Filter Bar -->
+                                <div id="mlResultsFilter" style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4);">
+                                        <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;">
+                                            <span style="font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--gray-300);">
+                                                <i data-lucide="filter" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: var(--space-1);"></i>
+                                                Filter Results:
+                                            </span>
+                                            <select id="mlFilterStatus" class="form-select" style="width: auto; min-width: 150px; font-size: var(--text-sm);" onchange="applyMLFilter()">
+                                                <option value="all">All Statuses</option>
+                                                <option value="approved">Approved</option>
+                                                <option value="conditional">Conditional</option>
+                                                <option value="declined">Declined</option>
+                                            </select>
+                                            <select id="mlFilterLender" class="form-select" style="width: auto; min-width: 140px; font-size: var(--text-sm);" onchange="applyMLFilter()">
+                                                <option value="all">All Lenders</option>
+                                                <option value="IFC">IFC</option>
+                                                <option value="ICE">ICE/Guides</option>
+                                                <option value="Eastview">Eastview</option>
+                                            </select>
+                                            <select id="mlFilterSort" class="form-select" style="width: auto; min-width: 160px; font-size: var(--text-sm);" onchange="applyMLFilter()">
+                                                <option value="rate_asc">Rate: Low to High</option>
+                                                <option value="rate_desc">Rate: High to Low</option>
+                                                <option value="maxloan_desc">Max Loan: High to Low</option>
+                                                <option value="points_asc">Points: Low to High</option>
+                                            </select>
+                                        </div>
+                                        <div id="mlFilterStats" style="font-size: var(--text-sm); color: var(--gray-400);">
+                                            <!-- Stats populated by JS -->
+                                        </div>
                                     </div>
                                 </div>
 
@@ -6558,8 +6591,9 @@
                 if (ext === 'pdf') {
                     statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
                     content = await extractTextFromPDF(file);
+                    console.log('PDF content extracted:', content.substring(0, 500));
                     if (!content || content.trim().length === 0) {
-                        throw new Error('Could not extract text from PDF');
+                        throw new Error('Could not extract text from PDF - PDF may be image-based or encrypted');
                     }
                 }
                 // Handle Excel files - still need backend
@@ -6576,30 +6610,69 @@
                 }
                 
                 const parsed = parseLoanApplicationFile(content, file.name);
+                console.log('Parsed data:', parsed);
                 
-                if (parsed) {
+                if (parsed && Object.keys(parsed).length > 0) {
                     // Fill in the form with parsed data
-                    if (parsed.as_is_value) document.getElementById('mlAsIsValue').value = parsed.as_is_value;
-                    if (parsed.arv) document.getElementById('mlARV').value = parsed.arv;
-                    if (parsed.purchase_price) document.getElementById('mlPurchasePrice').value = parsed.purchase_price;
-                    if (parsed.rehab_budget) document.getElementById('mlRehabBudget').value = parsed.rehab_budget;
-                    if (parsed.fico) document.getElementById('mlFICO').value = parsed.fico;
-                    if (parsed.experience !== undefined) document.getElementById('mlExperience').value = parsed.experience;
-                    if (parsed.loan_purpose) document.getElementById('mlLoanPurpose').value = parsed.loan_purpose;
-                    if (parsed.property_type) document.getElementById('mlPropertyType').value = parsed.property_type;
+                    let populatedFields = [];
                     
-                    statusDiv.innerHTML = '<span class="badge badge-success">File processed successfully!</span>';
-                    showToast(`Loaded data from ${file.name}. Review and click Analyze.`);
+                    if (parsed.as_is_value) {
+                        document.getElementById('mlAsIsValue').value = parsed.as_is_value;
+                        populatedFields.push(`As-Is Value: $${parsed.as_is_value.toLocaleString()}`);
+                    }
+                    if (parsed.arv) {
+                        document.getElementById('mlARV').value = parsed.arv;
+                        populatedFields.push(`ARV: $${parsed.arv.toLocaleString()}`);
+                    }
+                    if (parsed.purchase_price) {
+                        document.getElementById('mlPurchasePrice').value = parsed.purchase_price;
+                        populatedFields.push(`Purchase Price: $${parsed.purchase_price.toLocaleString()}`);
+                    }
+                    if (parsed.rehab_budget) {
+                        document.getElementById('mlRehabBudget').value = parsed.rehab_budget;
+                        populatedFields.push(`Rehab Budget: $${parsed.rehab_budget.toLocaleString()}`);
+                    }
+                    if (parsed.fico) {
+                        document.getElementById('mlFICO').value = parsed.fico;
+                        populatedFields.push(`FICO: ${parsed.fico}`);
+                    }
+                    if (parsed.experience !== undefined && parsed.experience !== null) {
+                        document.getElementById('mlExperience').value = parsed.experience;
+                        populatedFields.push(`Experience: ${parsed.experience} years`);
+                    }
+                    if (parsed.loan_purpose) {
+                        document.getElementById('mlLoanPurpose').value = parsed.loan_purpose;
+                        populatedFields.push(`Purpose: ${parsed.loan_purpose}`);
+                    }
+                    if (parsed.property_type) {
+                        document.getElementById('mlPropertyType').value = parsed.property_type;
+                        populatedFields.push(`Property Type: ${parsed.property_type}`);
+                    }
+                    
+                    statusDiv.innerHTML = '<span class="badge badge-success">✓ File processed successfully!</span>';
+                    
+                    // Show detailed toast with populated fields
+                    const fieldsList = populatedFields.length > 0 
+                        ? '\n' + populatedFields.map(f => '• ' + f).join('\n')
+                        : '\n(No numeric fields found - please verify data)';
+                    
+                    showToast(`Loaded data from ${file.name}.${fieldsList}`, 8000);
+                    
+                    // Scroll to form to show populated values
+                    document.getElementById('multiLenderForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     
                     setTimeout(() => {
                         statusDiv.style.display = 'none';
-                    }, 3000);
+                    }, 5000);
                 } else {
-                    throw new Error('Could not parse file');
+                    statusDiv.innerHTML = '<span class="badge badge-warning">⚠ Could not auto-extract data</span>';
+                    showToast('Could not automatically extract loan data. Please enter values manually or try a different file format.', 6000);
+                    console.warn('No data parsed from file:', file.name);
                 }
             } catch (error) {
-                statusDiv.innerHTML = '<span class="badge badge-danger">Error: Could not parse file</span>';
-                showToast('Error parsing file. Please check format.');
+                console.error('File upload error:', error);
+                statusDiv.innerHTML = '<span class="badge badge-danger">✕ Error: ' + error.message + '</span>';
+                showToast('Error: ' + error.message, 5000);
             }
             
             // Reset file input
@@ -6635,112 +6708,237 @@
             const result = {};
             
             // Try to extract values using regex patterns
-            const extractValue = (text, patterns) => {
+            const extractValue = (text, patterns, fieldName) => {
                 for (const pattern of patterns) {
                     const match = text.match(pattern);
-                    if (match) {
-                        const val = match[1].replace(/[$,]/g, '').trim();
-                        return parseFloat(val) || val;
+                    if (match && match[1]) {
+                        const val = match[1].replace(/[$,\s]/g, '').trim();
+                        const numVal = parseFloat(val);
+                        console.log(`Extracted ${fieldName}:`, numVal, 'from pattern:', pattern);
+                        return numVal || val;
                     }
                 }
                 return null;
             };
             
-            const text = content.toLowerCase();
+            // Keep original text for case-sensitive patterns, use lowercase for general search
+            const originalText = content;
+            const lowerText = content.toLowerCase();
             
-            // Extract As-Is Value
-            result.as_is_value = extractValue(text, [
-                /as[_\s-]?is[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /current[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /as[_\s-]?is[=:]\s*[$]?([\d,]+)/i,
-                /as.is.property.value[=:]\s*[$]?([\d,]+)/i  // JotForm specific
-            ]);
+            console.log('Parsing file:', filename, 'Extension:', ext);
+            console.log('Content preview (first 1000 chars):', content.substring(0, 1000));
+            
+            // Extract As-Is Value - try multiple patterns for JotForm compatibility
+            result.as_is_value = extractValue(lowerText, [
+                /as[_\s-]?is[_\s-]?value[:\s]+\$?([\d,]+)/i,
+                /current[_\s-]?value[:\s]+\$?([\d,]+)/i,
+                /as[_\s-]?is[:\s]+\$?([\d,]+)/i,
+                /as\.is\.property\.value[:\s]+\$?([\d,]+)/i,
+                /as-is property value[:\s]+\$?([\d,]+)/i,
+                /as.is.value[:\s]+\$?([\d,]+)/i,
+                /property value[:\s]+\$?([\d,]+)/i
+            ], 'as_is_value');
             
             // Extract ARV
-            result.arv = extractValue(text, [
-                /arv[=:]\s*[$]?([\d,]+)/i,
-                /after[_\s-]?repair[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /after[_\s-]?renovation[_\s-]?value[=:]\s*[$]?([\d,]+)/i,
-                /after.repair.property.value[=:]\s*[$]?([\d,]+)/i  // JotForm specific
-            ]);
+            result.arv = extractValue(lowerText, [
+                /arv[:\s]+\$?([\d,]+)/i,
+                /after[_\s-]?repair[_\s-]?value[:\s]+\$?([\d,]+)/i,
+                /after[_\s-]?renovation[_\s-]?value[:\s]+\$?([\d,]+)/i,
+                /after\.repair\.property\.value[:\s]+\$?([\d,]+)/i,
+                /after repair value[:\s]+\$?([\d,]+)/i
+            ], 'arv');
             
             // Extract Purchase Price
-            result.purchase_price = extractValue(text, [
-                /purchase[_\s-]?price[=:]\s*[$]?([\d,]+)/i,
-                /purchase[=:]\s*[$]?([\d,]+)/i,
-                /price[=:]\s*[$]?([\d,]+)/i,
-                /purchase.price[=:]\s*[$]?([\d,]+)/i  // JotForm specific
-            ]);
+            result.purchase_price = extractValue(lowerText, [
+                /purchase[_\s-]?price[:\s]+\$?([\d,]+)/i,
+                /purchase[:\s]+\$?([\d,]+)/i,
+                /price[:\s]+\$?([\d,]+)/i,
+                /purchase\.price[:\s]+\$?([\d,]+)/i,
+                /purchase price[:\s]+\$?([\d,]+)/i
+            ], 'purchase_price');
             
             // Extract Rehab Budget
-            result.rehab_budget = extractValue(text, [
-                /rehab[_\s-]?budget[=:]\s*[$]?([\d,]+)/i,
-                /renovation[_\s-]?budget[=:]\s*[$]?([\d,]+)/i,
-                /rehab[=:]\s*[$]?([\d,]+)/i,
-                /budget[=:]\s*[$]?([\d,]+)/i,
-                /rehab.amount.requested[=:]\s*[$]?([\d,]+)/i  // JotForm specific
-            ]);
+            result.rehab_budget = extractValue(lowerText, [
+                /rehab[_\s-]?budget[:\s]+\$?([\d,]+)/i,
+                /renovation[_\s-]?budget[:\s]+\$?([\d,]+)/i,
+                /rehab[:\s]+\$?([\d,]+)/i,
+                /budget[:\s]+\$?([\d,]+)/i,
+                /rehab\.amount\.requested[:\s]+\$?([\d,]+)/i,
+                /rehab amount[:\s]+\$?([\d,]+)/i,
+                /rehab amount requested[:\s]+\$?([\d,]+)/i
+            ], 'rehab_budget');
             
-            // Extract FICO
-            result.fico = extractValue(text, [
-                /fico[=:]\s*(\d{3})/i,
-                /credit[_\s-]?score[=:]\s*(\d{3})/i,
-                /score[=:]\s*(\d{3})/i
-            ]);
+            // Extract FICO - look for 3-digit numbers after fico/credit score
+            result.fico = extractValue(lowerText, [
+                /fico[:\s]+(\d{3})/i,
+                /credit[_\s-]?score[:\s]+(\d{3})/i,
+                /score[:\s]+(\d{3})/i,
+                /fico score[:\s]+(\d{3})/i
+            ], 'fico');
             
             // Extract Experience
-            result.experience = extractValue(text, [
-                /experience[=:]\s*(\d+)/i,
-                /years[_\s-]?experience[=:]\s*(\d+)/i,
-                /flip[_\s-]?experience[=:]\s*(\d+)/i
-            ]);
+            result.experience = extractValue(lowerText, [
+                /experience[:\s]+(\d+)/i,
+                /years[_\s-]?experience[:\s]+(\d+)/i,
+                /flip[_\s-]?experience[:\s]+(\d+)/i,
+                /years?[:\s]+(\d+)/i
+            ], 'experience');
             
             // Extract Loan Purpose
-            if (text.includes('bridge') || text.includes('bridge loan')) result.loan_purpose = 'bridge';
-            else if (text.includes('purchase')) result.loan_purpose = 'purchase';
-            else if (text.includes('refinance')) result.loan_purpose = 'refinance';
-            else if (text.includes('cash out') || text.includes('cashout')) result.loan_purpose = 'cash_out';
+            if (lowerText.includes('bridge') || lowerText.includes('bridge loan')) result.loan_purpose = 'bridge';
+            else if (lowerText.includes('purchase')) result.loan_purpose = 'purchase';
+            else if (lowerText.includes('refinance')) result.loan_purpose = 'refinance';
+            else if (lowerText.includes('cash out') || lowerText.includes('cashout')) result.loan_purpose = 'cash_out';
             
             // Extract Property Type
-            if (text.includes('single family') || text.includes('sfr') || text.includes('single')) {
+            if (lowerText.includes('single family') || lowerText.includes('sfr') || lowerText.includes('single')) {
                 result.property_type = 'SFR';
-            } else if (text.includes('multi') || text.includes('2-4') || text.includes('duplex')) {
+            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || lowerText.includes('duplex')) {
                 result.property_type = 'Multi';
-            } else if (text.includes('attached pud') || text.includes('pud')) {
-                result.property_type = 'PUD';  // JotForm specific
+            } else if (lowerText.includes('attached pud') || lowerText.includes('pud')) {
+                result.property_type = 'PUD';
+            } else if (lowerText.includes('condo')) {
+                result.property_type = 'Condo';
             }
             
-            // CSV parsing - check for comma-separated values
-            if (ext === 'csv' || content.includes(',')) {
+            // CSV/TXT parsing - check for comma-separated or key-value pairs
+            if (ext === 'csv' || ext === 'txt' || content.includes(',')) {
                 const lines = content.split('\n');
                 for (const line of lines) {
-                    const parts = line.split(',');
-                    if (parts.length >= 2) {
-                        const key = parts[0].toLowerCase().trim().replace(/[_\s-]/g, '');
-                        const val = parts[1].replace(/[$,]/g, '').trim();
-                        
-                        if (key.includes('asis') || key.includes('currentvalue')) {
-                            result.as_is_value = parseFloat(val) || result.as_is_value;
-                        } else if (key.includes('arv')) {
-                            result.arv = parseFloat(val) || result.arv;
-                        } else if (key.includes('purchase')) {
-                            result.purchase_price = parseFloat(val) || result.purchase_price;
-                        } else if (key.includes('rehab') || key.includes('budget')) {
-                            result.rehab_budget = parseFloat(val) || result.rehab_budget;
-                        } else if (key.includes('fico') || key.includes('credit')) {
-                            result.fico = parseFloat(val) || result.fico;
-                        } else if (key.includes('experience')) {
-                            result.experience = parseFloat(val) || result.experience;
+                    // Try colon-separated first
+                    if (line.includes(':')) {
+                        const parts = line.split(':');
+                        if (parts.length >= 2) {
+                            const key = parts[0].toLowerCase().trim().replace(/[_\s-]/g, '');
+                            const val = parts[1].replace(/[$,]/g, '').trim();
+                            
+                            if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
+                                result.as_is_value = parseFloat(val) || result.as_is_value;
+                            } else if (key.includes('arv') && !result.arv) {
+                                result.arv = parseFloat(val) || result.arv;
+                            } else if (key.includes('purchase') && !result.purchase_price) {
+                                result.purchase_price = parseFloat(val) || result.purchase_price;
+                            } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
+                                result.rehab_budget = parseFloat(val) || result.rehab_budget;
+                            } else if ((key.includes('fico') || key.includes('credit')) && !result.fico) {
+                                result.fico = parseFloat(val) || result.fico;
+                            } else if (key.includes('experience') && !result.experience) {
+                                result.experience = parseFloat(val) || result.experience;
+                            }
+                        }
+                    }
+                    // Then try comma-separated
+                    else if (line.includes(',')) {
+                        const parts = line.split(',');
+                        if (parts.length >= 2) {
+                            const key = parts[0].toLowerCase().trim().replace(/[_\s-]/g, '');
+                            const val = parts[1].replace(/[$,]/g, '').trim();
+                            
+                            if ((key.includes('asis') || key.includes('currentvalue')) && !result.as_is_value) {
+                                result.as_is_value = parseFloat(val) || result.as_is_value;
+                            } else if (key.includes('arv') && !result.arv) {
+                                result.arv = parseFloat(val) || result.arv;
+                            } else if (key.includes('purchase') && !result.purchase_price) {
+                                result.purchase_price = parseFloat(val) || result.purchase_price;
+                            } else if ((key.includes('rehab') || key.includes('budget')) && !result.rehab_budget) {
+                                result.rehab_budget = parseFloat(val) || result.rehab_budget;
+                            } else if ((key.includes('fico') || key.includes('credit')) && !result.fico) {
+                                result.fico = parseFloat(val) || result.fico;
+                            } else if (key.includes('experience') && !result.experience) {
+                                result.experience = parseFloat(val) || result.experience;
+                            }
                         }
                     }
                 }
             }
             
+            console.log('Final parsed result:', result);
             return Object.keys(result).length > 0 ? result : null;
         }
 
-        // Store last comparison results for export
+        // Store last comparison results for export and filtering
         let lastMultiLenderResults = null;
+        let currentFilteredResults = null;
+
+        // Apply filters to multi-lender results
+        function applyMLFilter() {
+            if (!lastMultiLenderResults || !lastMultiLenderResults.results) return;
+            
+            const statusFilter = document.getElementById('mlFilterStatus').value;
+            const lenderFilter = document.getElementById('mlFilterLender').value;
+            const sortBy = document.getElementById('mlFilterSort').value;
+            
+            // Filter results
+            let filtered = [...lastMultiLenderResults.results];
+            
+            // Apply status filter
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(r => r.approval_status === statusFilter);
+            }
+            
+            // Apply lender filter
+            if (lenderFilter !== 'all') {
+                filtered = filtered.filter(r => r.lender === lenderFilter);
+            }
+            
+            // Apply sorting
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'rate_asc':
+                        return parseFloat(a.rate) - parseFloat(b.rate);
+                    case 'rate_desc':
+                        return parseFloat(b.rate) - parseFloat(a.rate);
+                    case 'maxloan_desc':
+                        return (b.max_loan || 0) - (a.max_loan || 0);
+                    case 'points_asc':
+                        return (a.points || 0) - (b.points || 0);
+                    default:
+                        return 0;
+                }
+            });
+            
+            currentFilteredResults = filtered;
+            
+            // Update stats display
+            const statsDiv = document.getElementById('mlFilterStats');
+            statsDiv.innerHTML = `Showing ${filtered.length} of ${lastMultiLenderResults.results.length} lenders`;
+            
+            // Re-render cards with filtered/sorted results
+            renderLenderCards(filtered);
+        }
+
+        // Render lender cards based on filtered results
+        function renderLenderCards(results) {
+            // Hide all cards first
+            document.getElementById('ifcCard').style.display = 'none';
+            document.getElementById('iceCard').style.display = 'none';
+            document.getElementById('eastviewCard').style.display = 'none';
+            
+            // Show only filtered cards
+            results.forEach((result, index) => {
+                const cardMap = {
+                    'IFC': 'ifcCard',
+                    'ICE': 'iceCard',
+                    'Eastview': 'eastviewCard'
+                };
+                
+                const cardId = cardMap[result.lender];
+                if (cardId) {
+                    const card = document.getElementById(cardId);
+                    card.style.display = 'block';
+                    
+                    // Update ranking badge
+                    const rankingDiv = document.getElementById(cardId.replace('Card', 'Ranking'));
+                    if (index === 0) {
+                        rankingDiv.innerHTML = '<span class="badge badge-success">#1 Best Rate</span>';
+                    } else if (index === 1) {
+                        rankingDiv.innerHTML = '<span class="badge badge-warning">#2</span>';
+                    } else {
+                        rankingDiv.innerHTML = `<span class="badge badge-secondary">#${index + 1}</span>`;
+                    }
+                }
+            });
+        }
 
         async function handleMultiLenderSubmit(event) {
             event.preventDefault();
@@ -7096,10 +7294,23 @@
             
             resultsDiv.style.display = 'block';
             
+            // Reset filters to default
+            document.getElementById('mlFilterStatus').value = 'all';
+            document.getElementById('mlFilterLender').value = 'all';
+            document.getElementById('mlFilterSort').value = 'rate_asc';
+            
+            // Make all cards visible initially
+            document.getElementById('ifcCard').style.display = 'block';
+            document.getElementById('iceCard').style.display = 'block';
+            document.getElementById('eastviewCard').style.display = 'block';
+            
             // Count approvals
             const approvedCount = result.results?.filter(r => r.approval_status === 'approved').length || 0;
             const conditionalCount = result.results?.filter(r => r.approval_status === 'conditional').length || 0;
             const declinedCount = result.results?.filter(r => r.approval_status === 'declined').length || 0;
+            
+            // Update filter stats
+            document.getElementById('mlFilterStats').innerHTML = `Showing ${result.results?.length || 0} of ${result.results?.length || 0} lenders`;
             
             // Generate AI Recommendation
             const bestLender = result.results[0];
@@ -7184,10 +7395,27 @@
                 </div>
             `;
 
-            // Update lender cards with AI insights
-            result.results.forEach(lenderResult => {
+            // Update lender cards with AI insights - show all cards initially
+            result.results.forEach((lenderResult, index) => {
                 updateLenderCard(lenderResult);
                 updateLenderAIInsight(lenderResult, result.input_summary);
+                
+                // Update ranking badge
+                const cardMap = {
+                    'IFC': 'ifcRanking',
+                    'ICE': 'iceRanking',
+                    'Eastview': 'eastviewRanking'
+                };
+                const rankingDiv = document.getElementById(cardMap[lenderResult.lender]);
+                if (rankingDiv) {
+                    if (index === 0) {
+                        rankingDiv.innerHTML = '<span class="badge badge-success">#1 Best Rate</span>';
+                    } else if (index === 1) {
+                        rankingDiv.innerHTML = '<span class="badge badge-warning">#2</span>';
+                    } else {
+                        rankingDiv.innerHTML = '<span class="badge badge-secondary">#3</span>';
+                    }
+                }
             });
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
