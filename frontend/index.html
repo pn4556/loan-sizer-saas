@@ -6751,6 +6751,50 @@
                         populatedFields.push(`Property Type: ${parsed.property_type}`);
                     }
                     
+                    // Populate address fields
+                    if (parsed.property_address) {
+                        const addrField = document.getElementById('mlPropertyAddress');
+                        if (addrField) {
+                            addrField.value = parsed.property_address;
+                            populatedFields.push(`Address: ${parsed.property_address}`);
+                        }
+                    }
+                    if (parsed.city) {
+                        const cityField = document.getElementById('mlCity');
+                        if (cityField) {
+                            cityField.value = parsed.city;
+                            populatedFields.push(`City: ${parsed.city}`);
+                        }
+                    }
+                    if (parsed.state) {
+                        const stateField = document.getElementById('mlState');
+                        if (stateField) {
+                            stateField.value = parsed.state;
+                            populatedFields.push(`State: ${parsed.state}`);
+                        }
+                    }
+                    if (parsed.zip_code) {
+                        const zipField = document.getElementById('mlZipCode');
+                        if (zipField) {
+                            zipField.value = parsed.zip_code;
+                            populatedFields.push(`Zip: ${parsed.zip_code}`);
+                        }
+                    }
+                    if (parsed.expected_closing_date) {
+                        const closingField = document.getElementById('mlClosingDate');
+                        if (closingField) {
+                            // Try to format as YYYY-MM-DD for input type="date"
+                            const dateMatch = parsed.expected_closing_date.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                            if (dateMatch) {
+                                const year = dateMatch[3];
+                                const month = dateMatch[1].padStart(2, '0');
+                                const day = dateMatch[2].padStart(2, '0');
+                                closingField.value = `${year}-${month}-${day}`;
+                            }
+                            populatedFields.push(`Closing: ${parsed.expected_closing_date}`);
+                        }
+                    }
+                    
                     // Handle bridge-specific fields
                     if (parsed.exit_strategy) {
                         const exitStrategySelect = document.getElementById('mlExitStrategy');
@@ -6858,74 +6902,194 @@
             const originalText = content;
             const lowerText = content.toLowerCase();
             
-            // ========== EXTRACT NUMERIC FIELDS ==========
+            // ========== LINE-BASED PARSING FOR JOTFORM PDFs ==========
+            // JotForm PDFs have format: "Field Label:" on one line, value on next line
+            const lines = content.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+            const lineMap = {};
             
-            // Extract As-Is Value - comprehensive patterns
-            result.as_is_value = extractValue(lowerText, [
-                /as[-_\s]?is[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /as[-_\s]?is[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /current[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /property[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /as\.is\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                // Look for numbers near "as-is" or "value"
-                /as[-_\s]?is.*?\$?([\d,]{5,})/i,
-                /value.*?\$?([\d,]{5,})/i,
-            ], 'as_is_value');
-            
-            // Extract Purchase Price
-            result.purchase_price = extractValue(lowerText, [
-                /purchase[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /purchase[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /contract[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /purchase\.price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                // Look for numbers near "purchase"
-                /purchase.*?\$?([\d,]{5,})/i,
-            ], 'purchase_price');
-            
-            // Extract ARV
-            result.arv = extractValue(lowerText, [
-                /arv[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /after[-_\s]?repair[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /after[-_\s]?renovation[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /after\.repair\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /after repair value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                // Look for numbers near "arv" or "after repair"
-                /arv.*?\$?([\d,]{5,})/i,
-                /after repair.*?\$?([\d,]{5,})/i,
-            ], 'arv');
-            
-            // Extract Rehab Budget
-            result.rehab_budget = extractValue(lowerText, [
-                /rehab[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /rehab[-_\s]?amount[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /renovation[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /rehab\.amount\.requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /rehab amount requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                /budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
-                // Look for numbers near "rehab"
-                /rehab.*?\$?([\d,]{4,})/i,
-            ], 'rehab_budget');
-            
-            // Extract FICO - look for 3-digit numbers
-            const ficoMatch = lowerText.match(/fico[:\s]+(\d{3})/i) ||
-                             lowerText.match(/credit[-_\s]?score[:\s]+(\d{3})/i) ||
-                             lowerText.match(/score[:\s]+(\d{3})/i) ||
-                             lowerText.match(/fico.*?\b(\d{3})\b/i);
-            if (ficoMatch) {
-                result.fico = parseInt(ficoMatch[1]);
-                console.log('✓ Found fico:', result.fico);
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].toLowerCase();
+                const nextLine = lines[i + 1] ? lines[i + 1].trim() : '';
+                
+                // Map field labels to their values (next non-empty line)
+                if (line.endsWith(':')) {
+                    const key = line.replace(/:$/, '').trim();
+                    if (nextLine && !nextLine.endsWith(':')) {
+                        lineMap[key] = nextLine;
+                        console.log(`Line-based: "${key}" -> "${nextLine}"`);
+                    }
+                }
             }
             
-            // Extract Experience
-            const expMatch = lowerText.match(/experience[:\s]+(\d+)/i) ||
-                            lowerText.match(/years[-_\s]?experience[:\s]+(\d+)/i) ||
-                            lowerText.match(/flip[-_\s]?experience[:\s]+(\d+)/i) ||
-                            lowerText.match(/experience.*?\b(\d{1,2})\s*years?\b/i);
-            if (expMatch) {
-                result.experience = parseInt(expMatch[1]);
-                console.log('✓ Found experience:', result.experience);
+            // ========== EXTRACT NUMERIC FIELDS ==========
+            
+            // Extract As-Is Value - try line-based first, then regex
+            if (lineMap['as-is property value'] || lineMap['as-is value'] || lineMap['property value']) {
+                const valStr = (lineMap['as-is property value'] || lineMap['as-is value'] || lineMap['property value'])
+                    .replace(/[$,\s]/g, '');
+                result.as_is_value = parseFloat(valStr) || null;
+                console.log('✓ Line-based as_is_value:', result.as_is_value);
+            }
+            if (!result.as_is_value) {
+                result.as_is_value = extractValue(lowerText, [
+                    /as[-_\s]?is[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /as[-_\s]?is[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /current[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /property[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /as\.is\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /as[-_\s]?is.*?\$?([\d,]{5,})/i,
+                    /value.*?\$?([\d,]{5,})/i,
+                ], 'as_is_value');
+            }
+            
+            // Extract Purchase Price - try line-based first
+            if (lineMap['purchase price'] || lineMap['price']) {
+                const valStr = (lineMap['purchase price'] || lineMap['price'])
+                    .replace(/[$,\s]/g, '');
+                result.purchase_price = parseFloat(valStr) || null;
+                console.log('✓ Line-based purchase_price:', result.purchase_price);
+            }
+            if (!result.purchase_price) {
+                result.purchase_price = extractValue(lowerText, [
+                    /purchase[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /purchase[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /contract[-_\s]?price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /purchase\.price[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /purchase.*?\$?([\d,]{5,})/i,
+                ], 'purchase_price');
+            }
+            
+            // Extract ARV - try line-based first
+            if (lineMap['after repair property value'] || lineMap['after repair value'] || lineMap['arv']) {
+                const valStr = (lineMap['after repair property value'] || lineMap['after repair value'] || lineMap['arv'])
+                    .replace(/[$,\s]/g, '');
+                result.arv = parseFloat(valStr) || null;
+                console.log('✓ Line-based arv:', result.arv);
+            }
+            if (!result.arv) {
+                result.arv = extractValue(lowerText, [
+                    /arv[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /after[-_\s]?repair[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /after[-_\s]?renovation[-_\s]?value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /after\.repair\.property\.value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /after repair value[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /arv.*?\$?([\d,]{5,})/i,
+                    /after repair.*?\$?([\d,]{5,})/i,
+                ], 'arv');
+            }
+            
+            // Extract Rehab Budget - try line-based first
+            if (lineMap['rehab amount requested'] || lineMap['rehab budget'] || lineMap['rehab amount']) {
+                const valStr = (lineMap['rehab amount requested'] || lineMap['rehab budget'] || lineMap['rehab amount'])
+                    .replace(/[$,\s]/g, '');
+                result.rehab_budget = parseFloat(valStr) || null;
+                console.log('✓ Line-based rehab_budget:', result.rehab_budget);
+            }
+            if (!result.rehab_budget) {
+                result.rehab_budget = extractValue(lowerText, [
+                    /rehab[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /rehab[-_\s]?amount[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /renovation[-_\s]?budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /rehab\.amount\.requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /rehab amount requested[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /budget[:\s]+\$?([\d,]+(?:\.\d{2})?)/i,
+                    /rehab.*?\$?([\d,]{4,})/i,
+                ], 'rehab_budget');
+            }
+            
+            // Extract FICO - try line-based first, then look for 3-digit numbers
+            if (lineMap['fico'] || lineMap['credit score']) {
+                const valStr = (lineMap['fico'] || lineMap['credit score']).replace(/\D/g, '');
+                result.fico = parseInt(valStr) || null;
+                console.log('✓ Line-based fico:', result.fico);
+            }
+            if (!result.fico) {
+                const ficoMatch = lowerText.match(/fico[:\s]+(\d{3})/i) ||
+                                 lowerText.match(/credit[-_\s]?score[:\s]+(\d{3})/i) ||
+                                 lowerText.match(/score[:\s]+(\d{3})/i) ||
+                                 lowerText.match(/fico.*?\b(\d{3})\b/i);
+                if (ficoMatch) {
+                    result.fico = parseInt(ficoMatch[1]);
+                    console.log('✓ Found fico:', result.fico);
+                }
+            }
+            
+            // Extract Experience - parse "3 sold/ 9 kept for rent" format
+            if (lineMap['# of homes flipped/exited in last 24 months'] || lineMap['experience']) {
+                const expStr = lineMap['# of homes flipped/exited in last 24 months'] || lineMap['experience'];
+                // Parse patterns like "3 sold/ 9 kept" or "5" or "12 deals"
+                const soldMatch = expStr.match(/(\d+)\s*sold/i);
+                const totalMatch = expStr.match(/(\d+)\s*(deals?|properties?|homes?|flips?)/i);
+                const justNum = expStr.match(/^\d+$/);
+                
+                if (soldMatch) {
+                    result.experience = parseInt(soldMatch[1]);
+                    console.log('✓ Line-based experience (sold):', result.experience);
+                } else if (totalMatch) {
+                    result.experience = parseInt(totalMatch[1]);
+                    console.log('✓ Line-based experience (total):', result.experience);
+                } else if (justNum) {
+                    result.experience = parseInt(justNum[0]);
+                    console.log('✓ Line-based experience (number):', result.experience);
+                }
+            }
+            if (!result.experience) {
+                const expMatch = lowerText.match(/experience[:\s]+(\d+)/i) ||
+                                lowerText.match(/years[-_\s]?experience[:\s]+(\d+)/i) ||
+                                lowerText.match(/flip[-_\s]?experience[:\s]+(\d+)/i) ||
+                                lowerText.match(/experience.*?\b(\d{1,2})\s*years?\b/i);
+                if (expMatch) {
+                    result.experience = parseInt(expMatch[1]);
+                    console.log('✓ Found experience:', result.experience);
+                }
+            }
+            
+            // ========== EXTRACT ZIP CODE ==========
+            if (lineMap['zip code'] || lineMap['zip']) {
+                const zipStr = (lineMap['zip code'] || lineMap['zip']).match(/\d{5}/);
+                if (zipStr) {
+                    result.zip_code = zipStr[0];
+                    console.log('✓ Line-based zip_code:', result.zip_code);
+                }
+            }
+            if (!result.zip_code) {
+                const zipMatch = lowerText.match(/zip[:\s]+(\d{5})/i) ||
+                                lowerText.match(/zip\s?code[:\s]+(\d{5})/i) ||
+                                lowerText.match(/\b(\d{5})\b/);
+                if (zipMatch) {
+                    result.zip_code = zipMatch[1];
+                    console.log('✓ Found zip_code:', result.zip_code);
+                }
+            }
+            
+            // ========== EXTRACT PROPERTY ADDRESS ==========
+            if (lineMap['subject property address'] || lineMap['property address'] || lineMap['address']) {
+                result.property_address = lineMap['subject property address'] || lineMap['property address'] || lineMap['address'];
+                console.log('✓ Line-based property_address:', result.property_address);
+            }
+            
+            // ========== EXTRACT CITY/STATE ==========
+            if (lineMap['city']) {
+                result.city = lineMap['city'];
+                console.log('✓ Line-based city:', result.city);
+            }
+            if (lineMap['state']) {
+                result.state = lineMap['state'].toUpperCase();
+                console.log('✓ Line-based state:', result.state);
+            }
+            
+            // ========== EXTRACT CLOSING DATE ==========
+            if (lineMap['expected closing date'] || lineMap['closing date']) {
+                const dateStr = lineMap['expected closing date'] || lineMap['closing date'];
+                // Try to parse various date formats
+                const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/) ||
+                                 dateStr.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+                if (dateMatch) {
+                    result.expected_closing_date = dateStr;
+                    console.log('✓ Line-based closing_date:', result.expected_closing_date);
+                }
             }
             
             // ========== EXTRACT LOAN TYPE ==========
@@ -6958,20 +7122,40 @@
             }
             
             // ========== EXTRACT PROPERTY TYPE ==========
+            // Try line-based first
+            if (lineMap['property type']) {
+                const pt = lineMap['property type'].toLowerCase();
+                if (pt.includes('single-family') || pt.includes('single family') || pt.includes('sfr') || pt.includes('sfh')) {
+                    result.property_type = 'SFR';
+                    console.log('✓ Line-based property_type: SFR');
+                } else if (pt.includes('attached pud') || pt.includes('pud')) {
+                    result.property_type = 'PUD';
+                    console.log('✓ Line-based property_type: PUD');
+                } else if (pt.includes('multi') || pt.includes('duplex') || pt.includes('triplex') || pt.includes('fourplex')) {
+                    result.property_type = 'Multi';
+                    console.log('✓ Line-based property_type: Multi');
+                } else if (pt.includes('condo')) {
+                    result.property_type = 'Condo';
+                    console.log('✓ Line-based property_type: Condo');
+                }
+            }
             
-            if (lowerText.includes('single family') || lowerText.includes('sfr') || 
-                lowerText.includes('single') || lowerText.includes('sfh')) {
-                result.property_type = 'SFR';
-            } else if (lowerText.includes('multi') || lowerText.includes('2-4') || 
-                       lowerText.includes('duplex') || lowerText.includes('triplex') || 
-                       lowerText.includes('fourplex')) {
-                result.property_type = 'Multi';
-            } else if (lowerText.includes('attached pud') || lowerText.includes('pud')) {
-                result.property_type = 'PUD';
-            } else if (lowerText.includes('condo') || lowerText.includes('condominium')) {
-                result.property_type = 'Condo';
-            } else if (lowerText.includes('commercial')) {
-                result.property_type = 'Commercial';
+            // Fallback to text search
+            if (!result.property_type) {
+                if (lowerText.includes('single family') || lowerText.includes('sfr') || 
+                    lowerText.includes('single') || lowerText.includes('sfh')) {
+                    result.property_type = 'SFR';
+                } else if (lowerText.includes('multi') || lowerText.includes('2-4') || 
+                           lowerText.includes('duplex') || lowerText.includes('triplex') || 
+                           lowerText.includes('fourplex')) {
+                    result.property_type = 'Multi';
+                } else if (lowerText.includes('attached pud') || lowerText.includes('pud')) {
+                    result.property_type = 'PUD';
+                } else if (lowerText.includes('condo') || lowerText.includes('condominium')) {
+                    result.property_type = 'Condo';
+                } else if (lowerText.includes('commercial')) {
+                    result.property_type = 'Commercial';
+                }
             }
             
             // ========== CSV/TXT FALLBACK PARSING ==========
