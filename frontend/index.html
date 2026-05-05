@@ -6974,13 +6974,14 @@
                         if (isNaN(numVal)) continue;
                         
                         // Valid number: > 1000 (to exclude small junk numbers)
-                        // Include it if it's a reasonable dollar amount (even 5-digit amounts like 40000)
-                        // BUT exclude obvious zip codes (5 digits that look like US zips)
+                        // For 5-digit numbers, we need to be careful:
+                        // - If there are other larger values (like 260k, 405k), assume small values are rehab budgets
+                        // - If all values are 5-digit, then they might be zips
                         const isFiveDigits = /^\d{5}$/.test(cleanVal);
-                        const isObviousZip = isFiveDigits && numVal >= 1000 && numVal <= 99950;
                         
-                        if (numVal > 1000 && !isObviousZip) {
-                            numericValues.push({ original: val, numeric: numVal });
+                        if (numVal > 1000) {
+                            // Collect all numeric values first, we'll filter zips later
+                            numericValues.push({ original: val, numeric: numVal, isFiveDigits });
                             continue;
                         }
                     }
@@ -6994,39 +6995,80 @@
                     }
                 }
                 
-                console.log('Numeric values:', numericValues);
+                console.log('Raw numeric values:', numericValues);
                 console.log('Text values:', textValues);
                 
+                // Find state (2 uppercase letters) and zip (5 digits) from values
+                let extractedZipCode = null;
+                for (const val of values) {
+                    if (/^[A-Z]{2}$/.test(val)) {
+                        lineMap['state'] = val;
+                        console.log('  state ->', val);
+                    }
+                    if (/^\d{5}$/.test(val)) {
+                        lineMap['zip_code'] = val;
+                        extractedZipCode = val;
+                        console.log('  zip_code ->', val);
+                    }
+                }
+                
+                // SMART FILTER: Determine which 5-digit numbers are zips vs loan amounts
+                const hasLargeValues = numericValues.some(v => v.numeric > 100000);
+                
+                let filteredNumericValues = [];
+                if (hasLargeValues) {
+                    // Separate 5-digit values
+                    const fiveDigitValues = numericValues.filter(v => v.isFiveDigits);
+                    const largeValues = numericValues.filter(v => !v.isFiveDigits);
+                    
+                    // Keep all large values (6+ digits)
+                    filteredNumericValues = [...largeValues];
+                    
+                    // For 5-digit values: exclude the one that matches the zip code
+                    const nonZipFiveDigitValues = fiveDigitValues.filter(v => v.original !== extractedZipCode);
+                    
+                    if (nonZipFiveDigitValues.length > 0) {
+                        // Keep the smallest non-zip 5-digit value (rehab budget)
+                        nonZipFiveDigitValues.sort((a, b) => a.numeric - b.numeric);
+                        filteredNumericValues.push(nonZipFiveDigitValues[0]);
+                    }
+                } else {
+                    // No large values - exclude all 5-digit numbers (they're probably all zips)
+                    filteredNumericValues = numericValues.filter(v => !v.isFiveDigits);
+                }
+                
+                console.log('Filtered numeric values:', filteredNumericValues);
+                
                 // Sort numeric values to help with assignment
-                numericValues.sort((a, b) => a.numeric - b.numeric);
+                filteredNumericValues.sort((a, b) => a.numeric - b.numeric);
                 
                 // Assign numeric values to fields based on typical loan application patterns
                 // Usually: Rehab (40k) < Purchase Price (260k) < As-Is Value (269k) < ARV (405k)
-                if (numericValues.length >= 4) {
-                    lineMap['rehab_budget'] = numericValues[0].original;  // Smallest = Rehab
-                    lineMap['purchase_price'] = numericValues[1].original; // 2nd = Purchase
-                    lineMap['as_is_value'] = numericValues[2].original;    // 3rd = As-Is
-                    lineMap['arv'] = numericValues[numericValues.length - 1].original; // Largest = ARV
+                if (filteredNumericValues.length >= 4) {
+                    lineMap['rehab_budget'] = filteredNumericValues[0].original;  // Smallest = Rehab
+                    lineMap['purchase_price'] = filteredNumericValues[1].original; // 2nd = Purchase
+                    lineMap['as_is_value'] = filteredNumericValues[2].original;    // 3rd = As-Is
+                    lineMap['arv'] = filteredNumericValues[filteredNumericValues.length - 1].original; // Largest = ARV
                     
                     console.log('Smart-mapped numeric values:');
                     console.log('  rehab_budget ->', lineMap['rehab_budget']);
                     console.log('  purchase_price ->', lineMap['purchase_price']);
                     console.log('  as_is_value ->', lineMap['as_is_value']);
                     console.log('  arv ->', lineMap['arv']);
-                } else if (numericValues.length === 3) {
+                } else if (filteredNumericValues.length === 3) {
                     // If only 3 values, assume: Rehab, Purchase, ARV (no as-is) or Purchase, As-Is, ARV
-                    if (numericValues[0].numeric < 100000) {
-                        lineMap['rehab_budget'] = numericValues[0].original;
-                        lineMap['purchase_price'] = numericValues[1].original;
-                        lineMap['arv'] = numericValues[2].original;
+                    if (filteredNumericValues[0].numeric < 100000) {
+                        lineMap['rehab_budget'] = filteredNumericValues[0].original;
+                        lineMap['purchase_price'] = filteredNumericValues[1].original;
+                        lineMap['arv'] = filteredNumericValues[2].original;
                     } else {
-                        lineMap['purchase_price'] = numericValues[0].original;
-                        lineMap['as_is_value'] = numericValues[1].original;
-                        lineMap['arv'] = numericValues[2].original;
+                        lineMap['purchase_price'] = filteredNumericValues[0].original;
+                        lineMap['as_is_value'] = filteredNumericValues[1].original;
+                        lineMap['arv'] = filteredNumericValues[2].original;
                     }
-                } else if (numericValues.length === 2) {
-                    lineMap['purchase_price'] = numericValues[0].original;
-                    lineMap['arv'] = numericValues[1].original;
+                } else if (filteredNumericValues.length === 2) {
+                    lineMap['purchase_price'] = filteredNumericValues[0].original;
+                    lineMap['arv'] = filteredNumericValues[1].original;
                 }
                 
                 // Find text-based fields
@@ -7065,18 +7107,6 @@
                             lineMap['city'] = val;
                             console.log('  city ->', val);
                         }
-                    }
-                }
-                
-                // Find state (2 uppercase letters) and zip (5 digits) from values
-                for (const val of values) {
-                    if (/^[A-Z]{2}$/.test(val)) {
-                        lineMap['state'] = val;
-                        console.log('  state ->', val);
-                    }
-                    if (/^\d{5}$/.test(val)) {
-                        lineMap['zip_code'] = val;
-                        console.log('  zip_code ->', val);
                     }
                 }
             }
