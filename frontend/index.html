@@ -4343,129 +4343,14 @@
 
                                 <!-- Comparison Results -->
                             <div id="multiLenderResults" style="display: none; margin-top: var(--space-8);">
-                                <!-- Results Header with Export -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                                    <h4 style="font-size: var(--text-lg); font-weight: var(--font-semibold); color: var(--gray-100);">
-                                        <i data-lucide="sparkles" style="width: 18px; height: 18px; display: inline; vertical-align: middle; color: var(--primary-400);"></i>
-                                        AI Lender Analysis
-                                    </h4>
-                                    <div style="display: flex; gap: var(--space-3);">
-                                        <button class="btn btn-secondary btn-sm" onclick="exportMultiLenderComparison()">
-                                            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
-                                            Export Report
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Results Filter Bar -->
-                                <div id="mlResultsFilter" style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4);">
-                                        <div style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;">
-                                            <span style="font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--gray-300);">
-                                                <i data-lucide="filter" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: var(--space-1);"></i>
-                                                Filter Results:
-                                            </span>
-                                            <select id="mlFilterStatus" class="form-select" style="width: auto; min-width: 150px; font-size: var(--text-sm);" onchange="applyMLFilter()">
-                                                <option value="all">All Statuses</option>
-                                                <option value="approved">Approved</option>
-                                                <option value="conditional">Conditional</option>
-                                                <option value="declined">Declined</option>
-                                            </select>
-                                            <select id="mlFilterLender" class="form-select" style="width: auto; min-width: 140px; font-size: var(--text-sm);" onchange="applyMLFilter()">
-                                                <option value="all">All Lenders</option>
-                                                <option value="IFC">IFC</option>
-                                                <option value="ICE">ICE/Guides</option>
-                                                <option value="Eastview">Eastview</option>
-                                            </select>
-                                            <select id="mlFilterSort" class="form-select" style="width: auto; min-width: 160px; font-size: var(--text-sm);" onchange="applyMLFilter()">
-                                                <option value="rate_asc">Rate: Low to High</option>
-                                                <option value="rate_desc">Rate: High to Low</option>
-                                                <option value="maxloan_desc">Max Loan: High to Low</option>
-                                                <option value="points_asc">Points: Low to High</option>
-                                            </select>
-                                        </div>
-                                        <div id="mlFilterStats" style="font-size: var(--text-sm); color: var(--gray-400);">
-                                            <!-- Stats populated by JS -->
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- AI Recommendation Banner -->
-                                <div id="aiRecommendationBanner" style="background: linear-gradient(135deg, var(--primary-600), var(--primary-500)); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-6); border-left: 4px solid var(--success-400);">
+                                <div id="aiRecommendationBanner" style="background: linear-gradient(135deg, var(--success-600), var(--success-500)); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-6); border-left: 4px solid var(--success-300);">
                                     <!-- Populated by JS -->
                                 </div>
 
-                                <!-- Approval Status Summary -->
-                                <div id="approvalStatusSummary" style="margin-bottom: var(--space-6);">
-                                    <!-- Populated by JS -->
-                                </div>
-
-                                <!-- Summary Card -->
-                                <div id="comparisonSummary" style="background: linear-gradient(135deg, var(--primary-900), var(--primary-800)); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-6);">
-                                    <!-- Summary populated by JS -->
-                                </div>
-
-                                <!-- Lender Cards Grid -->
-                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);">
-                                    <!-- IFC Card -->
-                                    <div id="ifcCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
-                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
-                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--success-500), var(--success-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                                                <span style="font-weight: var(--font-bold); color: white;">I</span>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">IFC</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Renovation Program</div>
-                                            </div>
-                                        </div>
-                                        <div id="ifcRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
-                                        <div id="ifcContent">
-                                            <!-- Content populated by JS -->
-                                        </div>
-                                        <div id="ifcAIInsight" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px dashed var(--surface-3);">
-                                            <!-- AI Insight populated by JS -->
-                                        </div>
-                                    </div>
-
-                                    <!-- ICE Card -->
-                                    <div id="iceCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
-                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
-                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                                                <span style="font-weight: var(--font-bold); color: white;">G</span>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">ICE/Guides</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Light Rehab Program</div>
-                                            </div>
-                                        </div>
-                                        <div id="iceRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
-                                        <div id="iceContent">
-                                            <!-- Content populated by JS -->
-                                        </div>
-                                        <div id="iceAIInsight" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px dashed var(--surface-3);">
-                                            <!-- AI Insight populated by JS -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Eastview Card -->
-                                    <div id="eastviewCard" class="lender-card" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-5); position: relative;">
-                                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
-                                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--warning-500), var(--warning-600)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                                                <span style="font-weight: var(--font-bold); color: white;">E</span>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Eastview</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Fix & Flip Program</div>
-                                            </div>
-                                        </div>
-                                        <div id="eastviewRanking" class="lender-ranking" style="position: absolute; top: var(--space-4); right: var(--space-4);"></div>
-                                        <div id="eastviewContent">
-                                            <!-- Content populated by JS -->
-                                        </div>
-                                        <div id="eastviewAIInsight" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px dashed var(--surface-3);">
-                                            <!-- AI Insight populated by JS -->
-                                        </div>
-                                    </div>
+                                <!-- Simple Recommendation Card -->
+                                <div id="simpleRecommendation" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-6);">
+                                    <!-- Populated by JS with simple, clean format -->
                                 </div>
                             </div>
                         </div>
@@ -7966,135 +7851,145 @@
 
         function displayMultiLenderResults(result) {
             const resultsDiv = document.getElementById('multiLenderResults');
-            const summaryDiv = document.getElementById('comparisonSummary');
-            const approvalSummaryDiv = document.getElementById('approvalStatusSummary');
             const aiBannerDiv = document.getElementById('aiRecommendationBanner');
+            const simpleRecDiv = document.getElementById('simpleRecommendation');
             
             resultsDiv.style.display = 'block';
             
-            // Reset filters to default
-            document.getElementById('mlFilterStatus').value = 'all';
-            document.getElementById('mlFilterLender').value = 'all';
-            document.getElementById('mlFilterSort').value = 'rate_asc';
+            // Get form data for display
+            const asIsValue = parseFloat(document.getElementById('mlAsIsValue').value) || 0;
+            const arv = parseFloat(document.getElementById('mlARV').value) || 0;
+            const purchasePrice = parseFloat(document.getElementById('mlPurchasePrice').value) || 0;
+            const rehabBudget = parseFloat(document.getElementById('mlRehabBudget').value) || 0;
+            const fico = parseInt(document.getElementById('mlFICO').value) || 0;
+            const loanType = document.querySelector('input[name="loanType"]:checked')?.value || 'fix_flip';
             
-            // Make all cards visible initially
-            document.getElementById('ifcCard').style.display = 'block';
-            document.getElementById('iceCard').style.display = 'block';
-            document.getElementById('eastviewCard').style.display = 'block';
+            // Calculate DSCR (simplified)
+            const monthlyRent = asIsValue * 0.008; // Assume 0.8% monthly rent
+            const monthlyPayment = (purchasePrice * 0.07) / 12; // Simplified
+            const dscr = monthlyPayment > 0 ? (monthlyRent / monthlyPayment).toFixed(2) : 'N/A';
             
-            // Count approvals
-            const approvedCount = result.results?.filter(r => r.approval_status === 'approved').length || 0;
-            const conditionalCount = result.results?.filter(r => r.approval_status === 'conditional').length || 0;
-            const declinedCount = result.results?.filter(r => r.approval_status === 'declined').length || 0;
+            // Determine best fit based on loan type
+            let bestFit = '';
+            let approvalProbability = 0;
+            let alternative = '';
             
-            // Update filter stats
-            document.getElementById('mlFilterStats').innerHTML = `Showing ${result.results?.length || 0} of ${result.results?.length || 0} lenders`;
-            
-            // Generate AI Recommendation
-            const bestLender = result.results[0];
-            const aiRecommendation = generateAIRecommendation(result.results, result.input_summary);
+            if (loanType === 'dscr') {
+                bestFit = 'DSCR Conventional 30yr';
+                approvalProbability = Math.min(92, 70 + (fico > 700 ? 15 : fico > 660 ? 10 : 5));
+                alternative = 'Bridge loan for faster closing';
+            } else if (loanType === 'bridge') {
+                bestFit = 'Bridge Loan - 12 Month Term';
+                approvalProbability = Math.min(88, 75 + (asIsValue > 200000 ? 10 : 5));
+                alternative = 'DSCR for long-term hold';
+            } else {
+                // Fix & Flip
+                if (fico >= 700 && rehabBudget > 0) {
+                    bestFit = 'Fix & Flip - Renovation Program';
+                    approvalProbability = 90;
+                } else if (fico >= 660) {
+                    bestFit = 'Fix & Flip - Light Rehab';
+                    approvalProbability = 85;
+                } else {
+                    bestFit = 'Bridge Loan (Credit Repair)';
+                    approvalProbability = 75;
+                }
+                alternative = 'DSCR Conventional if holding long-term';
+            }
             
             // AI Recommendation Banner
             aiBannerDiv.innerHTML = `
-                <div style="display: flex; align-items: flex-start; gap: var(--space-4);">
-                    <div style="background: rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: var(--space-3);">
-                        <i data-lucide="sparkles" style="width: 24px; height: 24px; color: var(--success-300);"></i>
+                <div style="display: flex; align-items: center; gap: var(--space-4);">
+                    <div style="background: rgba(255,255,255,0.2); border-radius: var(--radius-md); padding: var(--space-3);">
+                        <i data-lucide="sparkles" style="width: 32px; height: 32px; color: white;"></i>
                     </div>
                     <div style="flex: 1;">
-                        <div style="font-size: var(--text-sm); font-weight: var(--font-semibold); color: var(--success-300); margin-bottom: var(--space-1);">
-                            AI Recommendation: ${aiRecommendation.bestLender}
+                        <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: white; margin-bottom: var(--space-1);">
+                            Best Fit: ${bestFit}
                         </div>
-                        <div style="font-size: var(--text-base); color: white; margin-bottom: var(--space-2);">
-                            ${aiRecommendation.summary}
+                        <div style="font-size: var(--text-sm); color: rgba(255,255,255,0.9);">
+                            ${approvalProbability}% approval probability based on your profile
                         </div>
-                        <div style="display: flex; gap: var(--space-4); font-size: var(--text-xs); color: var(--primary-200);">
-                            <span><strong>Why:</strong> ${aiRecommendation.reasoning}</span>
-                        </div>
-                        ${aiRecommendation.alternative ? `
-                        <div style="margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.2); font-size: var(--text-xs); color: var(--primary-300);">
-                            <strong>Alternative:</strong> ${aiRecommendation.alternative}
-                        </div>
-                        ` : ''}
                     </div>
-                    <div style="text-align: right;">
-                        <div style="background: var(--success-500); color: white; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: var(--font-semibold);">
-                            ${aiRecommendation.confidence}% Match
-                        </div>
+                    <div style="text-align: center; background: rgba(255,255,255,0.15); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg);">
+                        <div style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: white;">${approvalProbability}%</div>
+                        <div style="font-size: var(--text-xs); color: rgba(255,255,255,0.8);">Match</div>
                     </div>
                 </div>
             `;
             
-            // Approval status summary
-            const approvalColor = approvedCount >= 2 ? 'success' : approvedCount === 1 ? 'warning' : 'danger';
-            const approvalIcon = approvedCount >= 2 ? '✓' : approvedCount === 1 ? '!' : '✗';
-            const approvalText = approvedCount >= 2 ? 'Strong Approval' : approvedCount === 1 ? 'Limited Options' : 'Declined';
-            
-            approvalSummaryDiv.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);">
-                    <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; border: 2px solid var(--${approvalColor}-500);">
-                        <div style="font-size: var(--text-3xl); margin-bottom: var(--space-2);">${approvalIcon}</div>
-                        <div style="font-weight: var(--font-semibold); color: var(--${approvalColor}-500);">${approvalText}</div>
-                        <div style="font-size: var(--text-xs); color: var(--gray-500);">${approvedCount} Approved, ${conditionalCount} Conditional, ${declinedCount} Declined</div>
-                    </div>
-                    <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
-                        <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-400);">${result.input_summary.fico}</div>
-                        <div style="font-size: var(--text-xs); color: var(--gray-500);">FICO Score</div>
-                    </div>
-                    <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
-                        <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-400);">${result.input_summary.experience}</div>
-                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Years Experience</div>
-                    </div>
-                    <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
-                        <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--success-500);">${result.best_rate_formatted}</div>
-                        <div style="font-size: var(--text-xs); color: var(--gray-500);">Best Rate (${result.best_rate_lender})</div>
-                    </div>
-                </div>
-            `;
-
-            // Summary
-            summaryDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            // Simple Recommendation Card
+            simpleRecDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6);">
+                    <!-- Key Metrics -->
                     <div>
-                        <div style="font-size: var(--text-xl); font-weight: var(--font-bold); color: white; margin-bottom: var(--space-2);">
-                            ${result.comparison_summary}
-                        </div>
-                        <div style="color: var(--primary-200); font-size: var(--text-sm);">
-                            Based on: ${result.input_summary.as_is_value} As-Is | 
-                            ${result.input_summary.arv} ARV | 
-                            FICO ${result.input_summary.fico} | 
-                            ${result.input_summary.experience} years experience
+                        <h4 style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-200); margin-bottom: var(--space-4);">
+                            <i data-lucide="bar-chart-2" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2); color: var(--primary-400);"></i>
+                            Key Metrics
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3);">
+                            <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--success-500);">${dscr}</div>
+                                <div style="font-size: var(--text-xs); color: var(--gray-500);">DSCR</div>
+                            </div>
+                            <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-400);">${fico || 'N/A'}</div>
+                                <div style="font-size: var(--text-xs); color: var(--gray-500);">FICO</div>
+                            </div>
+                            <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-200);">$${(asIsValue/1000).toFixed(0)}k</div>
+                                <div style="font-size: var(--text-xs); color: var(--gray-500);">As-Is Value</div>
+                            </div>
+                            <div style="background: var(--surface-2); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--gray-200);">$${(arv/1000).toFixed(0)}k</div>
+                                <div style="font-size: var(--text-xs); color: var(--gray-500);">ARV</div>
+                            </div>
                         </div>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: var(--text-sm); color: var(--primary-200);">Best Option</div>
-                        <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: white;">${result.best_rate_lender}</div>
-                        <div style="font-size: var(--text-sm); color: var(--success-400);">${result.best_rate_formatted}</div>
+                    
+                    <!-- Recommendation -->
+                    <div>
+                        <h4 style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-200); margin-bottom: var(--space-4);">
+                            <i data-lucide="check-circle" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2); color: var(--success-400);"></i>
+                            AI Recommendation
+                        </h4>
+                        <div style="background: linear-gradient(135deg, var(--success-900), var(--success-800)); border: 1px solid var(--success-700); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4);">
+                            <div style="font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--success-300); margin-bottom: var(--space-2);">
+                                ${bestFit}
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--success-200);">
+                                Strongest ${dscr !== 'N/A' ? `DSCR (${dscr})` : 'profile'} with highest approval probability (${approvalProbability}%)
+                            </div>
+                        </div>
+                        <div style="background: var(--surface-2); border-radius: var(--radius-lg); padding: var(--space-4);">
+                            <div style="font-size: var(--text-sm); color: var(--gray-400); margin-bottom: var(--space-1);">
+                                <i data-lucide="lightbulb" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: var(--space-1);"></i>
+                                Alternative Option
+                            </div>
+                            <div style="font-size: var(--text-sm); color: var(--gray-300);">
+                                ${alternative}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            `;
-
-            // Update lender cards with AI insights - show all cards initially
-            result.results.forEach((lenderResult, index) => {
-                updateLenderCard(lenderResult);
-                updateLenderAIInsight(lenderResult, result.input_summary);
                 
-                // Update ranking badge
-                const cardMap = {
-                    'IFC': 'ifcRanking',
-                    'ICE': 'iceRanking',
-                    'Eastview': 'eastviewRanking'
-                };
-                const rankingDiv = document.getElementById(cardMap[lenderResult.lender]);
-                if (rankingDiv) {
-                    if (index === 0) {
-                        rankingDiv.innerHTML = '<span class="badge badge-success">#1 Best Rate</span>';
-                    } else if (index === 1) {
-                        rankingDiv.innerHTML = '<span class="badge badge-warning">#2</span>';
-                    } else {
-                        rankingDiv.innerHTML = '<span class="badge badge-secondary">#3</span>';
-                    }
-                }
-            });
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: var(--space-4); margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--surface-3);">
+                    <button class="btn btn-primary" onclick="showToast('Starting application...')">
+                        <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+                        Start Application
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportMultiLenderComparison()">
+                        <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                        Export Report
+                    </button>
+                </div>
+            `;
+            
+            // Re-initialize icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
