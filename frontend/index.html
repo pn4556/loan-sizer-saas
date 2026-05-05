@@ -6964,16 +6964,22 @@
                     // Check if it's ONLY digits, commas, and dots (no letters, no ellipsis)
                     if (/^[\d,\.]+$/.test(val)) {
                         const cleanVal = val.replace(/[$,]/g, '');
-                        const numVal = parseFloat(cleanVal);
+                        let numVal;
+                        try {
+                            numVal = parseFloat(cleanVal);
+                        } catch (e) {
+                            continue;
+                        }
                         
-                        // Valid number: > 10000 and not a zip code (5 digits between 00501-99950)
-                        // Most loan amounts will be > 50000, while most zips when parsed as numbers are < 99950
-                        // But we need to be careful: 40000 could be either a rehab budget OR a zip
-                        // Strategy: If it's a 5-digit number, check if there are other clearly non-zip values
+                        if (isNaN(numVal)) continue;
+                        
+                        // Valid number: > 1000 (to exclude small junk numbers)
+                        // Include it if it's a reasonable dollar amount (even 5-digit amounts like 40000)
+                        // BUT exclude obvious zip codes (5 digits that look like US zips)
                         const isFiveDigits = /^\d{5}$/.test(cleanVal);
-                        const isZipLike = isFiveDigits && numVal < 99950 && numVal > 500;
+                        const isObviousZip = isFiveDigits && numVal >= 1000 && numVal <= 99950;
                         
-                        if (!isNaN(numVal) && numVal > 10000 && (!isZipLike || numVal > 100000)) {
+                        if (numVal > 1000 && !isObviousZip) {
                             numericValues.push({ original: val, numeric: numVal });
                             continue;
                         }
