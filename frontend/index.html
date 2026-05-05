@@ -6829,6 +6829,15 @@
                     // Scroll to form to show populated values
                     document.getElementById('multiLenderForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     
+                    // Auto-trigger lender comparison after a short delay to allow form to update
+                    setTimeout(() => {
+                        const form = document.getElementById('multiLenderForm');
+                        if (form) {
+                            handleMultiLenderSubmit({ preventDefault: () => {} });
+                            showToast('Auto-comparing lenders with extracted data...', 3000);
+                        }
+                    }, 1000);
+                    
                     setTimeout(() => {
                         statusDiv.style.display = 'none';
                     }, 5000);
