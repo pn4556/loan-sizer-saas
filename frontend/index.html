@@ -6902,33 +6902,191 @@
             const originalText = content;
             const lowerText = content.toLowerCase();
             
-            // ========== LINE-BASED PARSING FOR JOTFORM PDFs ==========
-            // JotForm PDFs have format: "Field Label:" on one line, value on next line
+            // ========== SMART JOTFORM PDF PARSING ==========
+            // JotForm PDFs have a specific structure: headers, then form labels, then values
             const lines = content.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
             const lineMap = {};
             
+            // Find where the actual data starts (look for "Purchase Price" or "Is The Property Under Contract")
+            let dataStartIndex = -1;
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].toLowerCase();
-                const nextLine = lines[i + 1] ? lines[i + 1].trim() : '';
+                if (line.includes('purchase price') || line.includes('is the property under contract')) {
+                    dataStartIndex = i;
+                    break;
+                }
+            }
+            
+            if (dataStartIndex === -1) {
+                console.log('Could not find data section start');
+            } else {
+                console.log('Data section starts at line:', dataStartIndex);
                 
-                // Map field labels to their values (next non-empty line)
-                if (line.endsWith(':')) {
-                    const key = line.replace(/:$/, '').trim();
-                    if (nextLine && !nextLine.endsWith(':')) {
-                        lineMap[key] = nextLine;
-                        console.log(`Line-based: "${key}" -> "${nextLine}"`);
+                // Extract labels (lines ending with :) and values (lines not ending with :)
+                // starting from the data section
+                const labels = [];
+                const values = [];
+                
+                for (let i = dataStartIndex; i < lines.length; i++) {
+                    const line = lines[i];
+                    const lowerLine = line.toLowerCase();
+                    
+                    // Skip descriptive text and headers
+                    if (lowerLine.startsWith('please ') || 
+                        lowerLine === 'bridge loan application' ||
+                        lowerLine === 'loan details' ||
+                        lowerLine.includes('closing agent')) {
+                        continue;
+                    }
+                    
+                    // Handle special case: "State" without colon
+                    if (lowerLine === 'state' && i + 1 < lines.length) {
+                        labels.push('state');
+                        continue;
+                    }
+                    
+                    if (line.endsWith(':')) {
+                        labels.push(line.slice(0, -1).toLowerCase().trim());
+                    } else if (line.length > 0) {
+                        values.push(line);
+                    }
+                }
+                
+                console.log('Labels:', labels.slice(0, 15));
+                console.log('Values:', values.slice(0, 15));
+                
+                // SMART MATCHING: Instead of position-based, analyze values to determine fields
+                // First, extract all numeric values from the values array
+                const numericValues = [];
+                const textValues = [];
+                
+                for (const val of values) {
+                    // Check if it's ONLY digits, commas, and dots (no letters, no ellipsis)
+                    if (/^[\d,\.]+$/.test(val)) {
+                        const cleanVal = val.replace(/[$,]/g, '');
+                        const numVal = parseFloat(cleanVal);
+                        
+                        // Valid number: > 10000 and not a zip code (5 digits between 00501-99950)
+                        // Most loan amounts will be > 50000, while most zips when parsed as numbers are < 99950
+                        // But we need to be careful: 40000 could be either a rehab budget OR a zip
+                        // Strategy: If it's a 5-digit number, check if there are other clearly non-zip values
+                        const isFiveDigits = /^\d{5}$/.test(cleanVal);
+                        const isZipLike = isFiveDigits && numVal < 99950 && numVal > 500;
+                        
+                        if (!isNaN(numVal) && numVal > 10000 && (!isZipLike || numVal > 100000)) {
+                            numericValues.push({ original: val, numeric: numVal });
+                            continue;
+                        }
+                    }
+                    
+                    // Not a valid dollar amount, treat as text
+                    if (val.length > 1 && 
+                        !val.toLowerCase().startsWith('yes') && 
+                        !val.toLowerCase().startsWith('no') &&
+                        val !== '0...') {
+                        textValues.push(val);
+                    }
+                }
+                
+                console.log('Numeric values:', numericValues);
+                console.log('Text values:', textValues);
+                
+                // Sort numeric values to help with assignment
+                numericValues.sort((a, b) => a.numeric - b.numeric);
+                
+                // Assign numeric values to fields based on typical loan application patterns
+                // Usually: Rehab (40k) < Purchase Price (260k) < As-Is Value (269k) < ARV (405k)
+                if (numericValues.length >= 4) {
+                    lineMap['rehab_budget'] = numericValues[0].original;  // Smallest = Rehab
+                    lineMap['purchase_price'] = numericValues[1].original; // 2nd = Purchase
+                    lineMap['as_is_value'] = numericValues[2].original;    // 3rd = As-Is
+                    lineMap['arv'] = numericValues[numericValues.length - 1].original; // Largest = ARV
+                    
+                    console.log('Smart-mapped numeric values:');
+                    console.log('  rehab_budget ->', lineMap['rehab_budget']);
+                    console.log('  purchase_price ->', lineMap['purchase_price']);
+                    console.log('  as_is_value ->', lineMap['as_is_value']);
+                    console.log('  arv ->', lineMap['arv']);
+                } else if (numericValues.length === 3) {
+                    // If only 3 values, assume: Rehab, Purchase, ARV (no as-is) or Purchase, As-Is, ARV
+                    if (numericValues[0].numeric < 100000) {
+                        lineMap['rehab_budget'] = numericValues[0].original;
+                        lineMap['purchase_price'] = numericValues[1].original;
+                        lineMap['arv'] = numericValues[2].original;
+                    } else {
+                        lineMap['purchase_price'] = numericValues[0].original;
+                        lineMap['as_is_value'] = numericValues[1].original;
+                        lineMap['arv'] = numericValues[2].original;
+                    }
+                } else if (numericValues.length === 2) {
+                    lineMap['purchase_price'] = numericValues[0].original;
+                    lineMap['arv'] = numericValues[1].original;
+                }
+                
+                // Find text-based fields
+                for (const val of textValues) {
+                    const lowerVal = val.toLowerCase();
+                    
+                    // Property type
+                    if (lowerVal.includes('single') || lowerVal.includes('pud') || 
+                        lowerVal.includes('multi') || lowerVal.includes('condo')) {
+                        lineMap['property_type'] = val;
+                        console.log('  property_type ->', val);
+                    }
+                    // Experience
+                    else if (lowerVal.includes('sold') || lowerVal.includes('kept') || 
+                             lowerVal.includes('deals') || /^\d+\s*\/\s*\d+/.test(val)) {
+                        lineMap['experience'] = val;
+                        console.log('  experience ->', val);
+                    }
+                    // Address (contains numbers and street-like words)
+                    else if (/\d/.test(val) && (lowerVal.includes(' ln') || lowerVal.includes(' lane') || 
+                             lowerVal.includes(' st') || lowerVal.includes(' street') ||
+                             lowerVal.includes(' ave') || lowerVal.includes(' avenue') ||
+                             lowerVal.includes(' rd') || lowerVal.includes(' road') ||
+                             lowerVal.includes(' dr') || lowerVal.includes(' drive') ||
+                             lowerVal.includes(' blvd') || lowerVal.includes(' boulevard') ||
+                             lowerVal.includes(' ct') || lowerVal.includes(' court') ||
+                             lowerVal.includes(' cir') || lowerVal.includes(' circle') ||
+                             lowerVal.includes(' way') || lowerVal.includes(' trail'))) {
+                        lineMap['property_address'] = val;
+                        console.log('  property_address ->', val);
+                    }
+                    // City (just a name, no numbers, reasonable length, not property type)
+                    else if (!/\d/.test(val) && val.length > 2 && val.length < 30 &&
+                             !['yes', 'no', 'single-family home', 'attached pud', 'rosanna'].includes(lowerVal)) {
+                        if (!lineMap['city']) {
+                            lineMap['city'] = val;
+                            console.log('  city ->', val);
+                        }
+                    }
+                }
+                
+                // Find state (2 uppercase letters) and zip (5 digits) from values
+                for (const val of values) {
+                    if (/^[A-Z]{2}$/.test(val)) {
+                        lineMap['state'] = val;
+                        console.log('  state ->', val);
+                    }
+                    if (/^\d{5}$/.test(val)) {
+                        lineMap['zip_code'] = val;
+                        console.log('  zip_code ->', val);
                     }
                 }
             }
             
+            console.log('=== EXTRACTED DATA ===', lineMap);
+            
             // ========== EXTRACT NUMERIC FIELDS ==========
             
             // Extract As-Is Value - try line-based first, then regex
-            if (lineMap['as-is property value'] || lineMap['as-is value'] || lineMap['property value']) {
-                const valStr = (lineMap['as-is property value'] || lineMap['as-is value'] || lineMap['property value'])
-                    .replace(/[$,\s]/g, '');
-                result.as_is_value = parseFloat(valStr) || null;
-                console.log('✓ Line-based as_is_value:', result.as_is_value);
+            if (lineMap['as_is_value']) {
+                const valStr = lineMap['as_is_value'].replace(/[$,\s]/g, '');
+                const parsedVal = parseFloat(valStr);
+                if (!isNaN(parsedVal) && parsedVal > 0) {
+                    result.as_is_value = parsedVal;
+                    console.log('✓ Line-based as_is_value:', result.as_is_value);
+                }
             }
             if (!result.as_is_value) {
                 result.as_is_value = extractValue(lowerText, [
@@ -6944,11 +7102,13 @@
             }
             
             // Extract Purchase Price - try line-based first
-            if (lineMap['purchase price'] || lineMap['price']) {
-                const valStr = (lineMap['purchase price'] || lineMap['price'])
-                    .replace(/[$,\s]/g, '');
-                result.purchase_price = parseFloat(valStr) || null;
-                console.log('✓ Line-based purchase_price:', result.purchase_price);
+            if (lineMap['purchase_price']) {
+                const valStr = lineMap['purchase_price'].replace(/[$,\s]/g, '');
+                const parsedVal = parseFloat(valStr);
+                if (!isNaN(parsedVal) && parsedVal > 0) {
+                    result.purchase_price = parsedVal;
+                    console.log('✓ Line-based purchase_price:', result.purchase_price);
+                }
             }
             if (!result.purchase_price) {
                 result.purchase_price = extractValue(lowerText, [
@@ -6962,11 +7122,13 @@
             }
             
             // Extract ARV - try line-based first
-            if (lineMap['after repair property value'] || lineMap['after repair value'] || lineMap['arv']) {
-                const valStr = (lineMap['after repair property value'] || lineMap['after repair value'] || lineMap['arv'])
-                    .replace(/[$,\s]/g, '');
-                result.arv = parseFloat(valStr) || null;
-                console.log('✓ Line-based arv:', result.arv);
+            if (lineMap['arv']) {
+                const valStr = lineMap['arv'].replace(/[$,\s]/g, '');
+                const parsedVal = parseFloat(valStr);
+                if (!isNaN(parsedVal) && parsedVal > 0) {
+                    result.arv = parsedVal;
+                    console.log('✓ Line-based arv:', result.arv);
+                }
             }
             if (!result.arv) {
                 result.arv = extractValue(lowerText, [
@@ -6981,11 +7143,13 @@
             }
             
             // Extract Rehab Budget - try line-based first
-            if (lineMap['rehab amount requested'] || lineMap['rehab budget'] || lineMap['rehab amount']) {
-                const valStr = (lineMap['rehab amount requested'] || lineMap['rehab budget'] || lineMap['rehab amount'])
-                    .replace(/[$,\s]/g, '');
-                result.rehab_budget = parseFloat(valStr) || null;
-                console.log('✓ Line-based rehab_budget:', result.rehab_budget);
+            if (lineMap['rehab_budget']) {
+                const valStr = lineMap['rehab_budget'].replace(/[$,\s]/g, '');
+                const parsedVal = parseFloat(valStr);
+                if (!isNaN(parsedVal) && parsedVal > 0) {
+                    result.rehab_budget = parsedVal;
+                    console.log('✓ Line-based rehab_budget:', result.rehab_budget);
+                }
             }
             if (!result.rehab_budget) {
                 result.rehab_budget = extractValue(lowerText, [
@@ -7000,10 +7164,13 @@
             }
             
             // Extract FICO - try line-based first, then look for 3-digit numbers
-            if (lineMap['fico'] || lineMap['credit score']) {
-                const valStr = (lineMap['fico'] || lineMap['credit score']).replace(/\D/g, '');
-                result.fico = parseInt(valStr) || null;
-                console.log('✓ Line-based fico:', result.fico);
+            if (lineMap['fico']) {
+                const valStr = lineMap['fico'].replace(/\D/g, '');
+                const parsedVal = parseInt(valStr);
+                if (!isNaN(parsedVal) && parsedVal >= 300 && parsedVal <= 850) {
+                    result.fico = parsedVal;
+                    console.log('✓ Line-based fico:', result.fico);
+                }
             }
             if (!result.fico) {
                 const ficoMatch = lowerText.match(/fico[:\s]+(\d{3})/i) ||
@@ -7017,8 +7184,8 @@
             }
             
             // Extract Experience - parse "3 sold/ 9 kept for rent" format
-            if (lineMap['# of homes flipped/exited in last 24 months'] || lineMap['experience']) {
-                const expStr = lineMap['# of homes flipped/exited in last 24 months'] || lineMap['experience'];
+            if (lineMap['experience']) {
+                const expStr = lineMap['experience'];
                 // Parse patterns like "3 sold/ 9 kept" or "5" or "12 deals"
                 const soldMatch = expStr.match(/(\d+)\s*sold/i);
                 const totalMatch = expStr.match(/(\d+)\s*(deals?|properties?|homes?|flips?)/i);
@@ -7047,10 +7214,10 @@
             }
             
             // ========== EXTRACT ZIP CODE ==========
-            if (lineMap['zip code'] || lineMap['zip']) {
-                const zipStr = (lineMap['zip code'] || lineMap['zip']).match(/\d{5}/);
-                if (zipStr) {
-                    result.zip_code = zipStr[0];
+            if (lineMap['zip_code']) {
+                const zipMatch = lineMap['zip_code'].match(/\d{5}/);
+                if (zipMatch) {
+                    result.zip_code = zipMatch[0];
                     console.log('✓ Line-based zip_code:', result.zip_code);
                 }
             }
@@ -7065,8 +7232,8 @@
             }
             
             // ========== EXTRACT PROPERTY ADDRESS ==========
-            if (lineMap['subject property address'] || lineMap['property address'] || lineMap['address']) {
-                result.property_address = lineMap['subject property address'] || lineMap['property address'] || lineMap['address'];
+            if (lineMap['property_address']) {
+                result.property_address = lineMap['property_address'];
                 console.log('✓ Line-based property_address:', result.property_address);
             }
             
@@ -7081,15 +7248,10 @@
             }
             
             // ========== EXTRACT CLOSING DATE ==========
-            if (lineMap['expected closing date'] || lineMap['closing date']) {
-                const dateStr = lineMap['expected closing date'] || lineMap['closing date'];
-                // Try to parse various date formats
-                const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/) ||
-                                 dateStr.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-                if (dateMatch) {
-                    result.expected_closing_date = dateStr;
-                    console.log('✓ Line-based closing_date:', result.expected_closing_date);
-                }
+            if (lineMap['expected_closing_date']) {
+                const dateStr = lineMap['expected_closing_date'];
+                result.expected_closing_date = dateStr;
+                console.log('✓ Line-based closing_date:', result.expected_closing_date);
             }
             
             // ========== EXTRACT LOAN TYPE ==========
@@ -7123,8 +7285,8 @@
             
             // ========== EXTRACT PROPERTY TYPE ==========
             // Try line-based first
-            if (lineMap['property type']) {
-                const pt = lineMap['property type'].toLowerCase();
+            if (lineMap['property_type']) {
+                const pt = lineMap['property_type'].toLowerCase();
                 if (pt.includes('single-family') || pt.includes('single family') || pt.includes('sfr') || pt.includes('sfh')) {
                     result.property_type = 'SFR';
                     console.log('✓ Line-based property_type: SFR');
