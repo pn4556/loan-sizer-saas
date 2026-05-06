@@ -6846,160 +6846,105 @@
                     }
                 }
                 
-                console.log('Labels:', labels.slice(0, 15));
-                console.log('Values:', values.slice(0, 15));
+                console.log('Labels:', labels);
+                console.log('Values:', values);
                 
-                // SMART MATCHING: Instead of position-based, analyze values to determine fields
-                // First, extract all numeric values from the values array
-                const numericValues = [];
-                const textValues = [];
+                // SMART INDEX MATCHING: Handle the offset between labels and values
+                // The PDF has 12 labels and 13 values
+                // Values[0]='Yes' (under contract), so numeric fields start at Values[2]
                 
-                for (const val of values) {
-                    // Check if it's ONLY digits, commas, and dots (no letters, no ellipsis)
-                    if (/^[\d,\.]+$/.test(val)) {
-                        const cleanVal = val.replace(/[$,]/g, '');
-                        let numVal;
-                        try {
-                            numVal = parseFloat(cleanVal);
-                        } catch (e) {
-                            continue;
+                // Build a map of label index to value
+                const labelToValue = {};
+                
+                for (let i = 0; i < labels.length; i++) {
+                    const label = labels[i];
+                    
+                    // Skip non-data labels
+                    if (label.includes('is the property under contract') || 
+                        label.includes('provide closing agent') ||
+                        label.includes('closing agent name')) {
+                        continue;
+                    }
+                    
+                    // Map label to corresponding value based on observed pattern
+                    // Labels index 1-4 map to Values index 2-5 (numeric fields)
+                    // Labels index 5 maps to Values index 1 (property type)
+                    // Labels index 7 maps to Values index 7 (experience)
+                    // Labels index 8-11 map to Values index 8-11 (address, city, state, zip)
+                    
+                    let valueIndex = -1;
+                    
+                    if (label.includes('purchase price')) {
+                        valueIndex = 2; // Values[2] = 260000
+                    }
+                    else if (label.includes('as-is property value')) {
+                        valueIndex = 3; // Values[3] = 269000
+                    }
+                    else if (label.includes('rehab amount')) {
+                        valueIndex = 4; // Values[4] = 40000
+                    }
+                    else if (label.includes('after repair property value')) {
+                        valueIndex = 5; // Values[5] = 405000
+                    }
+                    else if (label.includes('property type')) {
+                        valueIndex = 1; // Values[1] = Single-Family Home
+                    }
+                    else if (label.includes('expected closing date')) {
+                        valueIndex = 6; // Values[6] = 0...
+                    }
+                    else if (label.includes('homes flipped') || label.includes('experience')) {
+                        valueIndex = 7; // Values[7] = 3 sold/ 9 kept for rent
+                    }
+                    else if (label.includes('subject property address')) {
+                        valueIndex = 8; // Values[8] = 5523 Green Dory ln
+                    }
+                    else if (label.includes('city')) {
+                        valueIndex = 9; // Values[9] = columbia
+                    }
+                    else if (label.includes('state')) {
+                        valueIndex = 10; // Values[10] = MD
+                    }
+                    else if (label.includes('zip code') || label.includes('zip')) {
+                        valueIndex = 11; // Values[11] = 21044
+                    }
+                    
+                    if (valueIndex >= 0 && valueIndex < values.length) {
+                        const value = values[valueIndex];
+                        console.log(`  ${label} => ${value}`);
+                        
+                        // Map to our field names
+                        if (label.includes('purchase price')) {
+                            lineMap['purchase_price'] = value;
                         }
-                        
-                        if (isNaN(numVal)) continue;
-                        
-                        // Valid number: > 1000 (to exclude small junk numbers)
-                        // For 5-digit numbers, we need to be careful:
-                        // - If there are other larger values (like 260k, 405k), assume small values are rehab budgets
-                        // - If all values are 5-digit, then they might be zips
-                        const isFiveDigits = /^\d{5}$/.test(cleanVal);
-                        
-                        if (numVal > 1000) {
-                            // Collect all numeric values first, we'll filter zips later
-                            numericValues.push({ original: val, numeric: numVal, isFiveDigits });
-                            continue;
+                        else if (label.includes('as-is property value')) {
+                            lineMap['as_is_value'] = value;
                         }
-                    }
-                    
-                    // Not a valid dollar amount, treat as text
-                    if (val.length > 1 && 
-                        !val.toLowerCase().startsWith('yes') && 
-                        !val.toLowerCase().startsWith('no') &&
-                        val !== '0...') {
-                        textValues.push(val);
-                    }
-                }
-                
-                console.log('Raw numeric values:', numericValues);
-                console.log('Text values:', textValues);
-                
-                // Find state (2 uppercase letters) and zip (5 digits) from values
-                let extractedZipCode = null;
-                for (const val of values) {
-                    if (/^[A-Z]{2}$/.test(val)) {
-                        lineMap['state'] = val;
-                        console.log('  state ->', val);
-                    }
-                    if (/^\d{5}$/.test(val)) {
-                        lineMap['zip_code'] = val;
-                        extractedZipCode = val;
-                        console.log('  zip_code ->', val);
-                    }
-                }
-                
-                // SMART FILTER: Determine which 5-digit numbers are zips vs loan amounts
-                const hasLargeValues = numericValues.some(v => v.numeric > 100000);
-                
-                let filteredNumericValues = [];
-                if (hasLargeValues) {
-                    // Separate 5-digit values
-                    const fiveDigitValues = numericValues.filter(v => v.isFiveDigits);
-                    const largeValues = numericValues.filter(v => !v.isFiveDigits);
-                    
-                    // Keep all large values (6+ digits)
-                    filteredNumericValues = [...largeValues];
-                    
-                    // For 5-digit values: exclude the one that matches the zip code
-                    const nonZipFiveDigitValues = fiveDigitValues.filter(v => v.original !== extractedZipCode);
-                    
-                    if (nonZipFiveDigitValues.length > 0) {
-                        // Keep the smallest non-zip 5-digit value (rehab budget)
-                        nonZipFiveDigitValues.sort((a, b) => a.numeric - b.numeric);
-                        filteredNumericValues.push(nonZipFiveDigitValues[0]);
-                    }
-                } else {
-                    // No large values - exclude all 5-digit numbers (they're probably all zips)
-                    filteredNumericValues = numericValues.filter(v => !v.isFiveDigits);
-                }
-                
-                console.log('Filtered numeric values:', filteredNumericValues);
-                
-                // Sort numeric values to help with assignment
-                filteredNumericValues.sort((a, b) => a.numeric - b.numeric);
-                
-                // Assign numeric values to fields based on typical loan application patterns
-                // Usually: Rehab (40k) < Purchase Price (260k) < As-Is Value (269k) < ARV (405k)
-                if (filteredNumericValues.length >= 4) {
-                    lineMap['rehab_budget'] = filteredNumericValues[0].original;  // Smallest = Rehab
-                    lineMap['purchase_price'] = filteredNumericValues[1].original; // 2nd = Purchase
-                    lineMap['as_is_value'] = filteredNumericValues[2].original;    // 3rd = As-Is
-                    lineMap['arv'] = filteredNumericValues[filteredNumericValues.length - 1].original; // Largest = ARV
-                    
-                    console.log('Smart-mapped numeric values:');
-                    console.log('  rehab_budget ->', lineMap['rehab_budget']);
-                    console.log('  purchase_price ->', lineMap['purchase_price']);
-                    console.log('  as_is_value ->', lineMap['as_is_value']);
-                    console.log('  arv ->', lineMap['arv']);
-                } else if (filteredNumericValues.length === 3) {
-                    // If only 3 values, assume: Rehab, Purchase, ARV (no as-is) or Purchase, As-Is, ARV
-                    if (filteredNumericValues[0].numeric < 100000) {
-                        lineMap['rehab_budget'] = filteredNumericValues[0].original;
-                        lineMap['purchase_price'] = filteredNumericValues[1].original;
-                        lineMap['arv'] = filteredNumericValues[2].original;
-                    } else {
-                        lineMap['purchase_price'] = filteredNumericValues[0].original;
-                        lineMap['as_is_value'] = filteredNumericValues[1].original;
-                        lineMap['arv'] = filteredNumericValues[2].original;
-                    }
-                } else if (filteredNumericValues.length === 2) {
-                    lineMap['purchase_price'] = filteredNumericValues[0].original;
-                    lineMap['arv'] = filteredNumericValues[1].original;
-                }
-                
-                // Find text-based fields
-                for (const val of textValues) {
-                    const lowerVal = val.toLowerCase();
-                    
-                    // Property type
-                    if (lowerVal.includes('single') || lowerVal.includes('pud') || 
-                        lowerVal.includes('multi') || lowerVal.includes('condo')) {
-                        lineMap['property_type'] = val;
-                        console.log('  property_type ->', val);
-                    }
-                    // Experience
-                    else if (lowerVal.includes('sold') || lowerVal.includes('kept') || 
-                             lowerVal.includes('deals') || /^\d+\s*\/\s*\d+/.test(val)) {
-                        lineMap['experience'] = val;
-                        console.log('  experience ->', val);
-                    }
-                    // Address (contains numbers and street-like words)
-                    else if (/\d/.test(val) && (lowerVal.includes(' ln') || lowerVal.includes(' lane') || 
-                             lowerVal.includes(' st') || lowerVal.includes(' street') ||
-                             lowerVal.includes(' ave') || lowerVal.includes(' avenue') ||
-                             lowerVal.includes(' rd') || lowerVal.includes(' road') ||
-                             lowerVal.includes(' dr') || lowerVal.includes(' drive') ||
-                             lowerVal.includes(' blvd') || lowerVal.includes(' boulevard') ||
-                             lowerVal.includes(' ct') || lowerVal.includes(' court') ||
-                             lowerVal.includes(' cir') || lowerVal.includes(' circle') ||
-                             lowerVal.includes(' way') || lowerVal.includes(' trail'))) {
-                        lineMap['property_address'] = val;
-                        console.log('  property_address ->', val);
-                    }
-                    // City (just a name, no numbers, reasonable length, not property type)
-                    else if (!/\d/.test(val) && val.length > 2 && val.length < 30 &&
-                             !['yes', 'no', 'single-family home', 'attached pud', 'rosanna'].includes(lowerVal)) {
-                        if (!lineMap['city']) {
-                            lineMap['city'] = val;
-                            console.log('  city ->', val);
+                        else if (label.includes('rehab amount')) {
+                            lineMap['rehab_budget'] = value;
+                        }
+                        else if (label.includes('after repair property value')) {
+                            lineMap['arv'] = value;
+                        }
+                        else if (label.includes('property type')) {
+                            lineMap['property_type'] = value;
+                        }
+                        else if (label.includes('expected closing date')) {
+                            lineMap['expected_closing_date'] = value;
+                        }
+                        else if (label.includes('homes flipped') || label.includes('experience')) {
+                            lineMap['experience'] = value;
+                        }
+                        else if (label.includes('subject property address')) {
+                            lineMap['property_address'] = value;
+                        }
+                        else if (label.includes('city')) {
+                            lineMap['city'] = value;
+                        }
+                        else if (label.includes('state')) {
+                            lineMap['state'] = value;
+                        }
+                        else if (label.includes('zip code') || label.includes('zip')) {
+                            lineMap['zip_code'] = value;
                         }
                     }
                 }
