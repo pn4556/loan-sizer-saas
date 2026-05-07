@@ -6548,189 +6548,79 @@
             showToast(`Loaded ${scenarioKey} deal scenario. Click Compare Lenders to see results.`);
         }
 
+        // NEW SERVER-SIDE PDF PARSING WITH JOB POLLING
+        // Replace the old frontend-only parsing
+        
+        // Global state for parsing job
+        let currentParseJob = null;
+        let parseJobPollingInterval = null;
+        
+        // API base URL - change this to your backend URL
+        const PARSER_API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000/api/v1'
+            : 'https://loan-sizer-parser.onrender.com/api/v1';
+        
+        // Clear any cached compare state
+        function clearCompareState() {
+            // Clear any stored comparison results
+            localStorage.removeItem('lastComparisonResult');
+            localStorage.removeItem('lastComparisonTimestamp');
+            
+            // Reset compare results UI if exists
+            const resultsContainer = document.getElementById('mlResultsContainer');
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+            }
+            
+            // Clear any cached data in memory
+            if (window.lastComparisonData) {
+                window.lastComparisonData = null;
+            }
+        }
+        
         // Handle file upload for multi-lender comparison
         async function handleMultiLenderFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+            
+            // CRITICAL: Clear state before processing new upload
+            clearCompareState();
 
             const statusDiv = document.getElementById('mlUploadStatus');
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = '<span class="badge badge-info">Processing...</span>';
+            statusDiv.innerHTML = '<span class="badge badge-info">Uploading...</span>';
 
             try {
                 const ext = file.name.split('.').pop().toLowerCase();
-                let content = '';
                 
-                // Handle PDF files
-                if (ext === 'pdf') {
-                    statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
-                    content = await extractTextFromPDF(file);
-                    console.log('PDF content extracted:', content.substring(0, 500));
-                    if (!content || content.trim().length === 0) {
-                        throw new Error('Could not extract text from PDF - PDF may be image-based or encrypted');
-                    }
-                }
-                // Handle Excel files - still need backend
-                else if (ext === 'xlsx' || ext === 'xls') {
-                    statusDiv.innerHTML = '<span class="badge badge-warning">Excel parsing requires backend processing</span>';
-                    showToast('Excel support coming soon. Please use TXT or PDF format for now.', 5000);
+                // Handle Excel files
+                if (ext === 'xlsx' || ext === 'xls') {
+                    statusDiv.innerHTML = '<span class="badge badge-warning">Excel parsing coming soon</span>';
+                    showToast('Excel support coming soon. Please use PDF or TXT format for now.', 5000);
                     event.target.value = '';
                     setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
                     return;
                 }
-                // Handle TXT/CSV files
-                else {
-                    content = await file.text();
-                }
                 
-                const parsed = parseLoanApplicationFile(content, file.name);
-                console.log('Parsed data:', parsed);
-                
-                if (parsed && Object.keys(parsed).length > 0) {
-                    // Handle loan type detection first
-                    if (parsed.loan_type === 'bridge') {
-                        // Set bridge loan type
-                        document.querySelector('input[name="loanType"][value="bridge"]').checked = true;
-                        updateLoanTypeFields('bridge');
-                    } else if (parsed.loan_type === 'dscr') {
-                        document.querySelector('input[name="loanType"][value="dscr"]').checked = true;
-                        updateLoanTypeFields('dscr');
+                // Handle TXT/CSV files with local parsing (fast path)
+                if (ext === 'txt' || ext === 'csv') {
+                    statusDiv.innerHTML = '<span class="badge badge-info">Reading file...</span>';
+                    const content = await file.text();
+                    const parsed = parseLoanApplicationFile(content, file.name);
+                    
+                    if (parsed && Object.keys(parsed).length > 0) {
+                        populateFormWithParsedData(parsed, file.name, statusDiv);
                     } else {
-                        document.querySelector('input[name="loanType"][value="fix_flip"]').checked = true;
-                        updateLoanTypeFields('fix_flip');
+                        throw new Error('Could not extract data from file');
                     }
-                    
-                    // Fill in the form with parsed data
-                    let populatedFields = [];
-                    
-                    if (parsed.as_is_value) {
-                        document.getElementById('mlAsIsValue').value = parsed.as_is_value;
-                        populatedFields.push(`As-Is Value: $${parsed.as_is_value.toLocaleString()}`);
-                    }
-                    if (parsed.arv) {
-                        document.getElementById('mlARV').value = parsed.arv;
-                        populatedFields.push(`ARV: $${parsed.arv.toLocaleString()}`);
-                    }
-                    if (parsed.purchase_price) {
-                        document.getElementById('mlPurchasePrice').value = parsed.purchase_price;
-                        populatedFields.push(`Purchase Price: $${parsed.purchase_price.toLocaleString()}`);
-                    }
-                    if (parsed.rehab_budget) {
-                        document.getElementById('mlRehabBudget').value = parsed.rehab_budget;
-                        populatedFields.push(`Rehab Budget: $${parsed.rehab_budget.toLocaleString()}`);
-                    }
-                    if (parsed.fico) {
-                        document.getElementById('mlFICO').value = parsed.fico;
-                        populatedFields.push(`FICO: ${parsed.fico}`);
-                    }
-                    if (parsed.experience !== undefined && parsed.experience !== null) {
-                        document.getElementById('mlExperience').value = parsed.experience;
-                        populatedFields.push(`Experience: ${parsed.experience} years`);
-                    }
-                    if (parsed.loan_purpose) {
-                        document.getElementById('mlLoanPurpose').value = parsed.loan_purpose;
-                        populatedFields.push(`Purpose: ${parsed.loan_purpose}`);
-                    }
-                    if (parsed.property_type) {
-                        document.getElementById('mlPropertyType').value = parsed.property_type;
-                        populatedFields.push(`Property Type: ${parsed.property_type}`);
-                    }
-                    
-                    // Populate address fields
-                    if (parsed.property_address) {
-                        const addrField = document.getElementById('mlPropertyAddress');
-                        if (addrField) {
-                            addrField.value = parsed.property_address;
-                            populatedFields.push(`Address: ${parsed.property_address}`);
-                        }
-                    }
-                    if (parsed.city) {
-                        const cityField = document.getElementById('mlCity');
-                        if (cityField) {
-                            cityField.value = parsed.city;
-                            populatedFields.push(`City: ${parsed.city}`);
-                        }
-                    }
-                    if (parsed.state) {
-                        const stateField = document.getElementById('mlState');
-                        if (stateField) {
-                            stateField.value = parsed.state;
-                            populatedFields.push(`State: ${parsed.state}`);
-                        }
-                    }
-                    if (parsed.zip_code) {
-                        const zipField = document.getElementById('mlZipCode');
-                        if (zipField) {
-                            zipField.value = parsed.zip_code;
-                            populatedFields.push(`Zip: ${parsed.zip_code}`);
-                        }
-                    }
-                    if (parsed.expected_closing_date) {
-                        const closingField = document.getElementById('mlClosingDate');
-                        if (closingField) {
-                            // Try to format as YYYY-MM-DD for input type="date"
-                            const dateMatch = parsed.expected_closing_date.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-                            if (dateMatch) {
-                                const year = dateMatch[3];
-                                const month = dateMatch[1].padStart(2, '0');
-                                const day = dateMatch[2].padStart(2, '0');
-                                closingField.value = `${year}-${month}-${day}`;
-                            }
-                            populatedFields.push(`Closing: ${parsed.expected_closing_date}`);
-                        }
-                    }
-                    
-                    // Handle bridge-specific fields
-                    if (parsed.exit_strategy) {
-                        const exitStrategySelect = document.getElementById('mlExitStrategy');
-                        if (exitStrategySelect) {
-                            exitStrategySelect.value = parsed.exit_strategy;
-                            populatedFields.push(`Exit Strategy: ${parsed.exit_strategy}`);
-                        }
-                    }
-                    if (parsed.loan_term) {
-                        const loanTermSelect = document.getElementById('mlLoanTerm');
-                        if (loanTermSelect) {
-                            // Find closest term option
-                            const terms = [6, 12, 18, 24];
-                            const closest = terms.reduce((prev, curr) => 
-                                Math.abs(curr - parsed.loan_term) < Math.abs(prev - parsed.loan_term) ? curr : prev
-                            );
-                            loanTermSelect.value = closest.toString();
-                            populatedFields.push(`Loan Term: ${parsed.loan_term} months`);
-                        }
-                    }
-                    
-                    statusDiv.innerHTML = '<span class="badge badge-success">✓ File processed successfully!</span>';
-                    
-                    // Show detailed toast with populated fields
-                    const fieldsList = populatedFields.length > 0 
-                        ? '\n' + populatedFields.map(f => '• ' + f).join('\n')
-                        : '\n(No numeric fields found - please verify data)';
-                    
-                    const loanTypeLabel = parsed.loan_type === 'bridge' ? ' (Bridge Loan)' : '';
-                    showToast(`Loaded${loanTypeLabel} data from ${file.name}.${fieldsList}`, 8000);
-                    
-                    // Scroll to form to show populated values
-                    document.getElementById('multiLenderForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    
-                    // Auto-trigger lender comparison after a short delay to allow form to update
-                    setTimeout(() => {
-                        const form = document.getElementById('multiLenderForm');
-                        if (form) {
-                            handleMultiLenderSubmit({ preventDefault: () => {} });
-                            showToast('Auto-comparing lenders with extracted data...', 3000);
-                        }
-                    }, 1000);
-                    
-                    setTimeout(() => {
-                        statusDiv.style.display = 'none';
-                    }, 5000);
-                } else {
-                    statusDiv.innerHTML = '<span class="badge badge-warning">⚠ Could not auto-extract data</span>';
-                    showToast('Could not automatically extract loan data. Please enter values manually or try a different file format.', 6000);
-                    console.warn('No data parsed from file:', file.name);
+                    return;
                 }
+                
+                // PDF files - use server-side parsing with OCR fallback
+                if (ext === 'pdf') {
+                    await uploadAndParsePDF(file, statusDiv);
+                }
+                
             } catch (error) {
                 console.error('File upload error:', error);
                 statusDiv.innerHTML = '<span class="badge badge-danger">✕ Error: ' + error.message + '</span>';
@@ -6739,6 +6629,277 @@
             
             // Reset file input
             event.target.value = '';
+        }
+        
+        // Upload PDF to server and poll for results
+        async function uploadAndParsePDF(file, statusDiv) {
+            statusDiv.innerHTML = '<span class="badge badge-info">Uploading PDF...</span>';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Upload PDF
+            const uploadResponse = await fetch(`${PARSER_API_URL}/parse`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!uploadResponse.ok) {
+                const error = await uploadResponse.json();
+                throw new Error(error.detail || 'Upload failed');
+            }
+            
+            const { job_id, status, message } = await uploadResponse.json();
+            currentParseJob = job_id;
+            
+            console.log(`PDF parsing job started: ${job_id}`);
+            statusDiv.innerHTML = '<span class="badge badge-info">Processing PDF... (0%)</span>';
+            
+            // Poll for results
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 60; // 60 seconds max
+                
+                parseJobPollingInterval = setInterval(async () => {
+                    attempts++;
+                    
+                    try {
+                        const statusResponse = await fetch(`${PARSER_API_URL}/parse/${job_id}/status`);
+                        const jobStatus = await statusResponse.json();
+                        
+                        console.log(`Job ${job_id} status:`, jobStatus);
+                        
+                        // Update progress
+                        statusDiv.innerHTML = `<span class="badge badge-info">Processing PDF... (${jobStatus.progress}%)</span>`;
+                        
+                        if (jobStatus.status === 'completed') {
+                            clearInterval(parseJobPollingInterval);
+                            
+                            // Get full result
+                            const resultResponse = await fetch(`${PARSER_API_URL}/parse/${job_id}/result`);
+                            const result = await resultResponse.json();
+                            
+                            console.log('PDF parsing result:', result);
+                            
+                            if (result.errors && result.errors.length > 0) {
+                                console.warn('Parsing had errors:', result.errors);
+                            }
+                            
+                            // Convert to frontend format and populate
+                            const parsed = convertServerResultToFrontendFormat(result);
+                            populateFormWithParsedData(parsed, file.name, statusDiv);
+                            resolve(parsed);
+                            
+                        } else if (jobStatus.status === 'failed') {
+                            clearInterval(parseJobPollingInterval);
+                            reject(new Error(jobStatus.errors.join(', ') || 'PDF parsing failed'));
+                            
+                        } else if (attempts >= maxAttempts) {
+                            clearInterval(parseJobPollingInterval);
+                            reject(new Error('PDF parsing timed out'));
+                        }
+                        
+                    } catch (pollError) {
+                        clearInterval(parseJobPollingInterval);
+                        reject(pollError);
+                    }
+                    
+                }, 1000); // Poll every second
+            });
+        }
+        
+        // Convert server result to frontend format
+        function convertServerResultToFrontendFormat(result) {
+            const fields = result.fields || {};
+            
+            return {
+                loan_type: detectLoanTypeFromFields(fields),
+                purchase_price: fields.purchase_price,
+                as_is_value: fields.as_is_value,
+                arv: fields.arv,
+                rehab_budget: fields.rehab_budget,
+                fico: fields.fico,
+                experience: fields.experience ? parseInt(fields.experience) : undefined,
+                property_type: normalizePropertyType(fields.property_type),
+                property_address: fields.property_address,
+                city: fields.city,
+                state: fields.state,
+                zip_code: fields.zip_code,
+                // Include confidence scores
+                _confidence: {
+                    purchase_price: fields.purchase_price_confidence,
+                    as_is_value: fields.as_is_value_confidence,
+                    arv: fields.arv_confidence,
+                },
+                _meta: {
+                    ocr_used: result.ocr_used,
+                    lender_detected: result.lender_detected,
+                    parsing_time_ms: result.parsing_time_ms
+                }
+            };
+        }
+        
+        // Detect loan type from parsed fields
+        function detectLoanTypeFromFields(fields) {
+            // Bridge loan indicators
+            if (fields.loan_purpose === 'bridge' || 
+                (fields.rehab_budget && fields.arv && !fields.dscr)) {
+                return 'bridge';
+            }
+            
+            // DSCR indicators
+            if (fields.dscr || fields.noi || fields.rental_income) {
+                return 'dscr';
+            }
+            
+            // Fix & Flip
+            if (fields.rehab_budget && fields.arv) {
+                return 'fix_flip';
+            }
+            
+            return 'fix_flip'; // Default
+        }
+        
+        // Normalize property type values
+        function normalizePropertyType(rawType) {
+            if (!rawType) return 'Single Family';
+            
+            const type = rawType.toLowerCase();
+            
+            if (type.includes('single') || type.includes('sngl') || type.includes('sf')) {
+                return 'Single Family';
+            }
+            if (type.includes('multi') || type.includes('duplex') || type.includes('triplex')) {
+                return 'Multi-Family';
+            }
+            if (type.includes('condo') || type.includes('condominium')) {
+                return 'Condo';
+            }
+            if (type.includes('town') || type.includes('th')) {
+                return 'Townhouse';
+            }
+            if (type.includes('commercial')) {
+                return 'Commercial';
+            }
+            
+            return 'Single Family'; // Default
+        }
+        
+        // Populate form with parsed data
+        function populateFormWithParsedData(parsed, filename, statusDiv) {
+            // Set loan type
+            const loanType = parsed.loan_type || 'fix_flip';
+            const loanTypeRadio = document.querySelector(`input[name="loanType"][value="${loanType}"]`);
+            if (loanTypeRadio) {
+                loanTypeRadio.checked = true;
+                updateLoanTypeFields(loanType);
+            }
+            
+            // Track populated fields
+            const populatedFields = [];
+            const lowConfidenceFields = [];
+            
+            // Helper to set field value
+            const setField = (id, value, formatter = null) => {
+                const field = document.getElementById(id);
+                if (field && value !== undefined && value !== null) {
+                    field.value = formatter ? formatter(value) : value;
+                    return true;
+                }
+                return false;
+            };
+            
+            // Populate numeric fields
+            if (setField('mlAsIsValue', parsed.as_is_value)) {
+                populatedFields.push(`As-Is Value: $${Number(parsed.as_is_value).toLocaleString()}`);
+                if (parsed._confidence?.as_is_value < 0.7) {
+                    lowConfidenceFields.push('As-Is Value');
+                }
+            }
+            
+            if (setField('mlARV', parsed.arv)) {
+                populatedFields.push(`ARV: $${Number(parsed.arv).toLocaleString()}`);
+                if (parsed._confidence?.arv < 0.7) {
+                    lowConfidenceFields.push('ARV');
+                }
+            }
+            
+            if (setField('mlPurchasePrice', parsed.purchase_price)) {
+                populatedFields.push(`Purchase Price: $${Number(parsed.purchase_price).toLocaleString()}`);
+                if (parsed._confidence?.purchase_price < 0.7) {
+                    lowConfidenceFields.push('Purchase Price');
+                }
+            }
+            
+            if (setField('mlRehabBudget', parsed.rehab_budget)) {
+                populatedFields.push(`Rehab Budget: $${Number(parsed.rehab_budget).toLocaleString()}`);
+            }
+            
+            if (setField('mlFICO', parsed.fico)) {
+                populatedFields.push(`FICO: ${parsed.fico}`);
+            }
+            
+            if (setField('mlExperience', parsed.experience)) {
+                populatedFields.push(`Experience: ${parsed.experience} years`);
+            }
+            
+            if (setField('mlPropertyType', parsed.property_type)) {
+                populatedFields.push(`Property Type: ${parsed.property_type}`);
+            }
+            
+            // Address fields
+            if (setField('mlPropertyAddress', parsed.property_address)) {
+                populatedFields.push(`Address: ${parsed.property_address}`);
+            }
+            if (setField('mlCity', parsed.city)) {
+                populatedFields.push(`City: ${parsed.city}`);
+            }
+            if (setField('mlState', parsed.state)) {
+                populatedFields.push(`State: ${parsed.state}`);
+            }
+            if (setField('mlZipCode', parsed.zip_code)) {
+                populatedFields.push(`Zip: ${parsed.zip_code}`);
+            }
+            
+            // Update status
+            statusDiv.innerHTML = '<span class="badge badge-success">✓ File processed successfully!</span>';
+            
+            // Build toast message
+            let toastMessage = `Loaded data from ${filename}`;
+            if (parsed._meta?.ocr_used) {
+                toastMessage += ' (OCR processed)';
+            }
+            if (parsed._meta?.lender_detected) {
+                toastMessage += `\nDetected: ${parsed._meta.lender_detected}`;
+            }
+            
+            if (populatedFields.length > 0) {
+                toastMessage += '\n' + populatedFields.map(f => '• ' + f).join('\n');
+            } else {
+                toastMessage += '\n(No fields extracted - please verify PDF)';
+            }
+            
+            if (lowConfidenceFields.length > 0) {
+                toastMessage += `\n\n⚠️ Low confidence: ${lowConfidenceFields.join(', ')} - please verify`;
+            }
+            
+            showToast(toastMessage, 8000);
+            
+            // Scroll to form
+            const form = document.getElementById('multiLenderForm');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Auto-trigger comparison after delay
+            setTimeout(() => {
+                handleMultiLenderSubmit({ preventDefault: () => {} });
+                showToast('Auto-comparing lenders...', 3000);
+            }, 1000);
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
         }
 
         // Extract text from PDF using PDF.js
