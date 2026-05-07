@@ -40,6 +40,6 @@ services:
 
 databases:
   - name: loan-sizer-db
-    plan: starter
+    plan: basic-256mb  # Updated from deprecated 'starter'
     databaseName: loansizer
     user: loansizer
