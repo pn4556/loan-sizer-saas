@@ -4149,32 +4149,6 @@
                                 Our AI extracts the deal details and instantly compares rates from <strong>IFC</strong>, <strong>ICE/Guides</strong>, and <strong>Eastview</strong> to recommend the best 3 options for your specific scenario.
                             </p>
 
-                            <!-- File Upload Section -->
-                            <div style="background: linear-gradient(135deg, var(--surface-2), var(--surface-1)); border: 2px dashed var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); text-align: center;">
-                                <div style="color: var(--gray-400); margin-bottom: var(--space-4);">
-                                    <i data-lucide="upload-cloud" style="width: 48px; height: 48px;"></i>
-                                </div>
-                                <h4 style="color: var(--gray-200); margin-bottom: var(--space-2);">Upload Loan Application</h4>
-                                <p style="color: var(--gray-500); font-size: var(--text-sm); margin-bottom: var(--space-4);">
-                                    <strong>Supported formats:</strong> TXT, CSV, PDF<br>
-                                    <small style="color: var(--gray-600);">Excel (.xlsx) coming soon</small>
-                                </p>
-                                <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
-                                    <button class="btn btn-secondary" onclick="document.getElementById('mlFileUpload').click()">
-                                        <i data-lucide="file-up" style="width: 16px; height: 16px;"></i>
-                                        Choose File
-                                    </button>
-                                    <a href="samples/bridge-loan-sample.pdf" download class="btn btn-outline" style="background: transparent; border: 1px solid var(--primary-500); color: var(--primary-400);">
-                                        <i data-lucide="file-down" style="width: 16px; height: 16px;"></i>
-                                        Download Sample PDF
-                                    </a>
-                                    <input type="file" id="mlFileUpload" style="display: none;" accept=".csv,.txt,.xlsx,.pdf" onchange="handleMultiLenderFileUpload(event)">
-                                </div>
-                                <div id="mlUploadStatus" style="margin-top: var(--space-4); display: none;">
-                                    <span class="badge badge-info">Processing...</span>
-                                </div>
-                            </div>
-
                             <form id="multiLenderForm" onsubmit="handleMultiLenderSubmit(event)">
                                 <!-- Hidden fields that will be populated from file -->
                                 <input type="hidden" id="mlAsIsValue" value="">
