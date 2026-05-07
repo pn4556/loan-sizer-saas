@@ -22,6 +22,8 @@ from dotenv import load_dotenv
 from new_sizers_api import router as sizers_router
 from multi_lender_api import router as multi_lender_router
 from batch_api import router as batch_router
+# Import PDF parser API (mount as sub-app)
+from pdf_api import app as pdf_app
 
 load_dotenv()
 
@@ -40,6 +42,8 @@ app.add_middleware(
 app.include_router(sizers_router)
 app.include_router(multi_lender_router)
 app.include_router(batch_router)
+# Mount PDF parser API at /api/v1
+app.mount("/api/v1", pdf_app)
 
 # Initialize Claude client
 claude_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))

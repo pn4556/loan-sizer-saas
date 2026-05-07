@@ -9,6 +9,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import redis
 import hashlib
@@ -16,6 +17,15 @@ import hashlib
 from pdf_parser_service import parse_loan_application, convert_to_frontend_format
 
 app = FastAPI(title="LoanSizer PDF Parser API")
+
+# CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # In-memory job store (use Redis in production)
 job_store = {}
