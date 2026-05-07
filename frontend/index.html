@@ -6797,11 +6797,11 @@
             const lowerText = content.toLowerCase();
             
             // ========== SMART JOTFORM PDF PARSING ==========
-            // JotForm PDFs have a specific structure: headers, then form labels, then values
+            // Handle both single-column and two-column layouts
             const lines = content.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
             const lineMap = {};
             
-            // Find where the actual data starts (look for "Purchase Price" or "Is The Property Under Contract")
+            // Find where the actual data starts
             let dataStartIndex = -1;
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].toLowerCase();
@@ -6816,135 +6816,178 @@
             } else {
                 console.log('Data section starts at line:', dataStartIndex);
                 
-                // Extract labels (lines ending with :) and values (lines not ending with :)
-                // starting from the data section
-                const labels = [];
-                const values = [];
-                
-                for (let i = dataStartIndex; i < lines.length; i++) {
-                    const line = lines[i];
-                    const lowerLine = line.toLowerCase();
+                // Process lines in pairs: label line followed by value line
+                // Handle both single-column and two-column layouts
+                for (let i = dataStartIndex; i < lines.length - 1; i += 2) {
+                    const labelLine = lines[i];
+                    const valueLine = lines[i + 1] || '';
+                    const lowerLabelLine = labelLine.toLowerCase();
                     
                     // Skip descriptive text and headers
-                    if (lowerLine.startsWith('please ') || 
-                        lowerLine === 'bridge loan application' ||
-                        lowerLine === 'loan details' ||
-                        lowerLine.includes('closing agent')) {
+                    if (lowerLabelLine.startsWith('please ') || 
+                        lowerLabelLine === 'bridge loan application' ||
+                        lowerLabelLine === 'loan details' ||
+                        lowerLabelLine.includes('provide closing agent') ||
+                        lowerLabelLine.includes('closing agent name') ||
+                        lowerLabelLine.includes('entity information') ||
+                        lowerLabelLine.includes('guarantor')) {
+                        // Don't increment by 2, just skip this line
+                        i -= 1;
                         continue;
                     }
                     
-                    // Handle special case: "State" without colon
-                    if (lowerLine === 'state' && i + 1 < lines.length) {
-                        labels.push('state');
-                        continue;
-                    }
-                    
-                    if (line.endsWith(':')) {
-                        labels.push(line.slice(0, -1).toLowerCase().trim());
-                    } else if (line.length > 0) {
-                        values.push(line);
-                    }
-                }
-                
-                console.log('Labels:', labels);
-                console.log('Values:', values);
-                
-                // SMART INDEX MATCHING: Handle the offset between labels and values
-                // The PDF has 12 labels and 13 values
-                // Values[0]='Yes' (under contract), so numeric fields start at Values[2]
-                
-                // Build a map of label index to value
-                const labelToValue = {};
-                
-                for (let i = 0; i < labels.length; i++) {
-                    const label = labels[i];
-                    
-                    // Skip non-data labels
-                    if (label.includes('is the property under contract') || 
-                        label.includes('provide closing agent') ||
-                        label.includes('closing agent name')) {
-                        continue;
-                    }
-                    
-                    // Map label to corresponding value based on observed pattern
-                    // Labels index 1-4 map to Values index 2-5 (numeric fields)
-                    // Labels index 5 maps to Values index 1 (property type)
-                    // Labels index 7 maps to Values index 7 (experience)
-                    // Labels index 8-11 map to Values index 8-11 (address, city, state, zip)
-                    
-                    let valueIndex = -1;
-                    
-                    if (label.includes('purchase price')) {
-                        valueIndex = 2; // Values[2] = 260000
-                    }
-                    else if (label.includes('as-is property value')) {
-                        valueIndex = 3; // Values[3] = 269000
-                    }
-                    else if (label.includes('rehab amount')) {
-                        valueIndex = 4; // Values[4] = 40000
-                    }
-                    else if (label.includes('after repair property value')) {
-                        valueIndex = 5; // Values[5] = 405000
-                    }
-                    else if (label.includes('property type')) {
-                        valueIndex = 1; // Values[1] = Single-Family Home
-                    }
-                    else if (label.includes('expected closing date')) {
-                        valueIndex = 6; // Values[6] = 0...
-                    }
-                    else if (label.includes('homes flipped') || label.includes('experience')) {
-                        valueIndex = 7; // Values[7] = 3 sold/ 9 kept for rent
-                    }
-                    else if (label.includes('subject property address')) {
-                        valueIndex = 8; // Values[8] = 5523 Green Dory ln
-                    }
-                    else if (label.includes('city')) {
-                        valueIndex = 9; // Values[9] = columbia
-                    }
-                    else if (label.includes('state')) {
-                        valueIndex = 10; // Values[10] = MD
-                    }
-                    else if (label.includes('zip code') || label.includes('zip')) {
-                        valueIndex = 11; // Values[11] = 21044
-                    }
-                    
-                    if (valueIndex >= 0 && valueIndex < values.length) {
-                        const value = values[valueIndex];
-                        console.log(`  ${label} => ${value}`);
+                    // Check if this is a two-column label line (contains multiple colons)
+                    // e.g., "Is The Property Under Contract: Purchase Price:"
+                    const colonMatches = labelLine.match(/:/g);
+                    if (colonMatches && colonMatches.length >= 2) {
+                        // Two-column layout - split the labels and values
+                        const labelParts = labelLine.split(':').map(p => p.trim()).filter(p => p);
                         
-                        // Map to our field names
+                        // Split value line by looking for patterns
+                        // Values could be: "Yes No 260000" or "269000 40000" or "405000 Single-Family"
+                        // Strategy: Look for the last numeric value as the boundary
+                        const valueMatches = valueLine.match(/(\d[\d,]*|\b(?:Yes|No)\b|[A-Za-z][A-Za-z\s]*)/gi);
+                        
+                        if (labelParts.length >= 2) {
+                            // Map first label to first value(s), second label to remaining value(s)
+                            // For "Is The Property Under Contract: Purchase Price:" with "Yes No 260000"
+                            // First label gets "Yes No", second gets "260000"
+                            
+                            if (labelParts[0].toLowerCase().includes('under contract')) {
+                                // Extract Yes/No from value line
+                                const contractMatch = valueLine.match(/\b(yes|no)\b/i);
+                                lineMap['under_contract'] = contractMatch ? contractMatch[1] : '';
+                            }
+                            
+                            if (labelParts[1].toLowerCase().includes('purchase price')) {
+                                const priceMatch = valueLine.match(/(\d[\d,]+)/);
+                                if (priceMatch) lineMap['purchase_price'] = priceMatch[1].replace(/,/g, '');
+                            }
+                        }
+                        
+                        if (labelParts.length >= 2) {
+                            // Handle "As-Is Property Value: Rehab Amount Requested:"
+                            if (labelParts[0].toLowerCase().includes('as-is') || labelParts[0].toLowerCase().includes('property value')) {
+                                // First number in value line is As-Is value
+                                const numMatches = valueLine.match(/(\d[\d,]+)/g);
+                                if (numMatches && numMatches[0]) {
+                                    lineMap['as_is_value'] = numMatches[0].replace(/,/g, '');
+                                }
+                            }
+                            
+                            if (labelParts[1].toLowerCase().includes('rehab')) {
+                                const numMatches = valueLine.match(/(\d[\d,]+)/g);
+                                if (numMatches && numMatches[1]) {
+                                    lineMap['rehab_budget'] = numMatches[1].replace(/,/g, '');
+                                }
+                            }
+                        }
+                        
+                        if (labelParts.length >= 2) {
+                            // Handle "After Repair Property Value: Property Type:"
+                            if (labelParts[0].toLowerCase().includes('after repair') || labelParts[0].toLowerCase().includes('arv')) {
+                                const numMatches = valueLine.match(/(\d[\d,]+)/g);
+                                if (numMatches && numMatches[0]) {
+                                    lineMap['arv'] = numMatches[0].replace(/,/g, '');
+                                }
+                            }
+                            
+                            if (labelParts[1].toLowerCase().includes('property type')) {
+                                // Extract text after the number
+                                const typeMatch = valueLine.match(/\d+\s+(.+)$/);
+                                if (typeMatch) {
+                                    lineMap['property_type'] = typeMatch[1].trim();
+                                }
+                            }
+                        }
+                        
+                        if (labelParts.length >= 2) {
+                            // Handle "Expected Closing Date: # of homes flipped:"
+                            if (labelParts[0].toLowerCase().includes('closing date')) {
+                                // Date is first part before any number
+                                lineMap['expected_closing_date'] = valueLine.split(/\d/)[0].trim();
+                            }
+                            
+                            // Experience might be on the next line (check for "sold" pattern)
+                            if (labelParts[1].toLowerCase().includes('flipped') || labelParts[1].toLowerCase().includes('experience')) {
+                                // First try to find experience in current value line
+                                let expMatch = valueLine.match(/(\d+)\s+sold/i) || valueLine.match(/(\d{1,2})\s+kept/i);
+                                if (expMatch) {
+                                    lineMap['experience'] = expMatch[1];
+                                } else if (i + 2 < lines.length) {
+                                    // Look ahead to next line for "X sold/Y kept" pattern
+                                    const nextLine = lines[i + 2];
+                                    expMatch = nextLine.match(/(\d+)\s+sold/i) || nextLine.match(/(\d{1,2})/);
+                                    if (expMatch) {
+                                        lineMap['experience'] = expMatch[1];
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (labelParts.length >= 3) {
+                            // Handle "City: State Zip Code:" three-column layout
+                            if (labelParts[0].toLowerCase() === 'city' && 
+                                labelParts[1].toLowerCase() === 'state' && 
+                                labelParts[2].toLowerCase().includes('zip')) {
+                                // Parse "columbia MD 21044" pattern
+                                const parts = valueLine.trim().split(/\s+/);
+                                if (parts.length >= 3) {
+                                    lineMap['city'] = parts[0];
+                                    lineMap['state'] = parts[1];
+                                    lineMap['zip_code'] = parts[2];
+                                }
+                            }
+                        }
+                    } else if (labelLine.endsWith(':')) {
+                        // Single-column layout
+                        const label = labelLine.slice(0, -1).toLowerCase().trim();
+                        const value = valueLine;
+                        
                         if (label.includes('purchase price')) {
-                            lineMap['purchase_price'] = value;
+                            const numMatch = value.match(/(\d[\d,]+)/);
+                            if (numMatch) lineMap['purchase_price'] = numMatch[1].replace(/,/g, '');
                         }
-                        else if (label.includes('as-is property value')) {
-                            lineMap['as_is_value'] = value;
+                        else if (label.includes('as-is property value') || (label.includes('as-is') && label.includes('value'))) {
+                            const numMatch = value.match(/(\d[\d,]+)/);
+                            if (numMatch) lineMap['as_is_value'] = numMatch[1].replace(/,/g, '');
                         }
-                        else if (label.includes('rehab amount')) {
-                            lineMap['rehab_budget'] = value;
+                        else if (label.includes('rehab amount') || label.includes('rehab budget')) {
+                            const numMatch = value.match(/(\d[\d,]+)/);
+                            if (numMatch) lineMap['rehab_budget'] = numMatch[1].replace(/,/g, '');
                         }
-                        else if (label.includes('after repair property value')) {
-                            lineMap['arv'] = value;
+                        else if (label.includes('after repair property value') || label.includes('arv')) {
+                            const numMatch = value.match(/(\d[\d,]+)/);
+                            if (numMatch) lineMap['arv'] = numMatch[1].replace(/,/g, '');
                         }
                         else if (label.includes('property type')) {
                             lineMap['property_type'] = value;
                         }
-                        else if (label.includes('expected closing date')) {
-                            lineMap['expected_closing_date'] = value;
-                        }
-                        else if (label.includes('homes flipped') || label.includes('experience')) {
-                            lineMap['experience'] = value;
-                        }
                         else if (label.includes('subject property address')) {
                             lineMap['property_address'] = value;
                         }
-                        else if (label.includes('city')) {
+                        else if (label === 'city') {
                             lineMap['city'] = value;
                         }
-                        else if (label.includes('state')) {
+                        else if (label === 'state') {
                             lineMap['state'] = value;
                         }
-                        else if (label.includes('zip code') || label.includes('zip')) {
-                            lineMap['zip_code'] = value;
+                        else if (label.includes('zip code') || label === 'zip') {
+                            const zipMatch = value.match(/(\d{5}(-\d{4})?)/);
+                            if (zipMatch) lineMap['zip_code'] = zipMatch[1];
+                        }
+                        
+                        // Check if next line is address-related (doesn't end with : and follows address label)
+                        if (label.includes('subject property address') && i + 2 < lines.length) {
+                            const nextLine = lines[i + 2];
+                            // If next line doesn't look like a label (no colon or is a city/state/zip pattern)
+                            if (nextLine && !nextLine.match(/^(city|state|zip|closing|entity):/i)) {
+                                // Check if it might be an experience line
+                                const expMatch = nextLine.match(/(\d+)\s+sold/i);
+                                if (expMatch && !lineMap['experience']) {
+                                    lineMap['experience'] = expMatch[1];
+                                }
+                            }
                         }
                     }
                 }
