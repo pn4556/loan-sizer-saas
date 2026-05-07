@@ -6819,9 +6819,18 @@
                 // Process lines in pairs: label line followed by value line
                 // Handle both single-column and two-column layouts
                 for (let i = dataStartIndex; i < lines.length - 1; i += 2) {
-                    const labelLine = lines[i];
-                    const valueLine = lines[i + 1] || '';
+                    let labelLine = lines[i];
+                    let valueLine = lines[i + 1] || '';
                     const lowerLabelLine = labelLine.toLowerCase();
+                    
+                    // Skip lines that are clearly values (not labels) - like "3 sold/ 9 kept"
+                    // These happen when a value spans multiple lines in the PDF
+                    if (!labelLine.endsWith(':') && labelLine.match(/^\d+\s+sold/i)) {
+                        // This is an experience value that should have been captured
+                        // Skip it and move to the next line which should be a label
+                        i -= 1;  // Adjust so we process the next line as a label
+                        continue;
+                    }
                     
                     // Skip descriptive text and headers
                     if (lowerLabelLine.startsWith('please ') || 
@@ -6899,15 +6908,22 @@
                                 const typeMatch = valueLine.match(/\d+\s+(.+)$/);
                                 if (typeMatch) {
                                     let propType = typeMatch[1].trim();
-                                    // Clean up garbled text - if it looks corrupted, use defaults
-                                    if (propType.length < 3 || /[^\w\s\-]/.test(propType.replace(/\s/g, ''))) {
-                                        // Text looks corrupted, try to infer from common patterns
-                                        if (valueLine.toLowerCase().includes('single') || 
-                                            valueLine.toLowerCase().includes('family')) {
-                                            propType = 'Single Family';
-                                        } else if (valueLine.toLowerCase().includes('multi')) {
+                                    // Clean up garbled text - check for common corruption patterns
+                                    const hasWeirdChars = /[A-Z][a-z]*[A-Z]/.test(propType); // SiAntgtaleca pattern
+                                    const looksLikeSingleFamily = (
+                                        propType.toLowerCase().includes('single') || 
+                                        propType.toLowerCase().includes('sngl') ||
+                                        propType.toLowerCase().includes('fam') ||
+                                        (propType.toLowerCase().includes('s') && propType.toLowerCase().includes('f'))
+                                    );
+                                    const looksLikeMultiFamily = propType.toLowerCase().includes('multi');
+                                    const looksLikeCondo = propType.toLowerCase().includes('condo');
+                                    
+                                    if (hasWeirdChars || propType.length > 20) {
+                                        // Text looks corrupted, use detected type or default
+                                        if (looksLikeMultiFamily) {
                                             propType = 'Multi-Family';
-                                        } else if (valueLine.toLowerCase().includes('condo')) {
+                                        } else if (looksLikeCondo) {
                                             propType = 'Condo';
                                         } else {
                                             propType = 'Single Family'; // Default
@@ -6960,17 +6976,34 @@
                             }
                         }
                         
-                        if (labelParts.length >= 3) {
-                            // Handle "City: State Zip Code:" three-column layout
-                            if (labelParts[0].toLowerCase() === 'city' && 
-                                labelParts[1].toLowerCase() === 'state' && 
-                                labelParts[2].toLowerCase().includes('zip')) {
+                        // Handle "City: State Zip Code:" (2 colons) or "City: State: Zip:" (3 colons)
+                        if (labelParts.length >= 2) {
+                            const isCityLabel = labelParts[0].toLowerCase() === 'city';
+                            // Handle both "State" and "State Zip Code" patterns
+                            const isStateLabel = labelParts[1].toLowerCase() === 'state' || 
+                                                 labelParts[1].toLowerCase().startsWith('state ');
+                            const isZipLabel = labelParts[labelParts.length - 1].toLowerCase().includes('zip');
+                            
+                            if (isCityLabel && isStateLabel && isZipLabel) {
                                 // Parse "columbia MD 21044" pattern
                                 const parts = valueLine.trim().split(/\s+/);
                                 if (parts.length >= 3) {
                                     lineMap['city'] = parts[0];
                                     lineMap['state'] = parts[1];
                                     lineMap['zip_code'] = parts[2];
+                                } else if (parts.length === 2) {
+                                    // Maybe format is "Columbia, MD 21044"
+                                    const combined = valueLine.trim();
+                                    const zipMatch = combined.match(/(\d{5}(-\d{4})?)$/);
+                                    if (zipMatch) {
+                                        lineMap['zip_code'] = zipMatch[1];
+                                        const beforeZip = combined.substring(0, combined.indexOf(zipMatch[1])).trim();
+                                        const stateMatch = beforeZip.match(/\b([A-Z]{2})\b/);
+                                        if (stateMatch) {
+                                            lineMap['state'] = stateMatch[1];
+                                            lineMap['city'] = beforeZip.substring(0, beforeZip.indexOf(stateMatch[1])).trim().replace(/,$/, '');
+                                        }
+                                    }
                                 }
                             }
                         }
