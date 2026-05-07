@@ -4137,25 +4137,16 @@
                                 <span class="badge badge-primary" style="margin-left: var(--space-2);">AI-Powered</span>
                             </div>
                             <div style="display: flex; gap: var(--space-3);">
-                                <select id="mlDemoSelect" class="form-select" style="width: auto; min-width: 220px;" onchange="loadMultiLenderDemo(this.value)">
-                                    <option value="">Load Demo Scenario...</option>
-                                    <option value="strong">Strong Deal (FICO 740, 5yr)</option>
-                                    <option value="moderate">Moderate Deal (FICO 680, 2yr)</option>
-                                    <option value="challenging">Challenging Deal (FICO 620, 0yr)</option>
-                                    <option value="luxury">Luxury Flip (FICO 780, 10yr)</option>
-                                    <option value="first_time">First-Time Investor (FICO 700, 0yr)</option>
-                                    <option value="bridge">Bridge Loan (FICO 720, 3yr)</option>
-                                </select>
                                 <button class="btn btn-secondary btn-sm" onclick="resetMultiLenderForm()">
                                     <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
-                                    Reset
+                                    New Analysis
                                 </button>
                             </div>
                         </div>
                         <div class="card-body">
                             <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
-                                <strong>AI-Powered Lender Matching:</strong> Compare pricing from <strong>IFC</strong>, <strong>ICE/Guides</strong>, and <strong>Eastview</strong> with intelligent recommendations. 
-                                Upload loan applications or enter details manually for instant analysis.
+                                <strong>AI-Powered Lender Matching:</strong> Upload a loan application PDF, CSV, or TXT file. 
+                                Our AI extracts the deal details and instantly compares rates from <strong>IFC</strong>, <strong>ICE/Guides</strong>, and <strong>Eastview</strong> to recommend the best 3 options for your specific scenario.
                             </p>
 
                             <!-- File Upload Section -->
@@ -4185,159 +4176,59 @@
                             </div>
 
                             <form id="multiLenderForm" onsubmit="handleMultiLenderSubmit(event)">
-                                <!-- Loan Type Selector -->
-                                <div style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                                    <label class="form-label" style="font-size: var(--text-base); font-weight: var(--font-semibold); color: var(--gray-200); margin-bottom: var(--space-3); display: block;">
-                                        <i data-lucide="home" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2); color: var(--primary-400);"></i>
-                                        Select Loan Type
-                                    </label>
-                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3);">
-                                        <label class="loan-type-option" style="cursor: pointer;">
-                                            <input type="radio" name="loanType" value="fix_flip" checked onchange="updateLoanTypeFields(this.value)" style="display: none;">
-                                            <div id="loanType-fixflip" class="loan-type-card" style="border: 2px solid var(--primary-500); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
-                                                <i data-lucide="hammer" style="width: 32px; height: 32px; color: var(--primary-400); margin-bottom: var(--space-2);"></i>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Fix & Flip</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Reno + Resale</div>
-                                            </div>
-                                        </label>
-                                        <label class="loan-type-option" style="cursor: pointer;">
-                                            <input type="radio" name="loanType" value="bridge" onchange="updateLoanTypeFields(this.value)" style="display: none;">
-                                            <div id="loanType-bridge" class="loan-type-card" style="border: 2px solid var(--surface-3); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
-                                                <i data-lucide="bridge" style="width: 32px; height: 32px; color: var(--warning-400); margin-bottom: var(--space-2);"></i>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">Bridge</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Short-term</div>
-                                            </div>
-                                        </label>
-                                        <label class="loan-type-option" style="cursor: pointer;">
-                                            <input type="radio" name="loanType" value="dscr" onchange="updateLoanTypeFields(this.value)" style="display: none;">
-                                            <div id="loanType-dscr" class="loan-type-card" style="border: 2px solid var(--surface-3); background: var(--surface-1); padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; transition: all 0.2s;">
-                                                <i data-lucide="building" style="width: 32px; height: 32px; color: var(--success-400); margin-bottom: var(--space-2);"></i>
-                                                <div style="font-weight: var(--font-semibold); color: var(--gray-100);">DSCR</div>
-                                                <div style="font-size: var(--text-xs); color: var(--gray-500);">Rental Income</div>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <style>
-                                        .loan-type-option input:checked + .loan-type-card {
-                                            border-color: var(--primary-500) !important;
-                                            background: linear-gradient(135deg, var(--primary-900), var(--surface-1)) !important;
-                                        }
-                                        .loan-type-card:hover {
-                                            border-color: var(--primary-400) !important;
-                                        }
-                                    </style>
-                                </div>
+                                <!-- Hidden fields that will be populated from file -->
+                                <input type="hidden" id="mlAsIsValue" value="">
+                                <input type="hidden" id="mlARV" value="">
+                                <input type="hidden" id="mlPurchasePrice" value="">
+                                <input type="hidden" id="mlRehabBudget" value="">
+                                <input type="hidden" id="mlFICO" value="">
+                                <input type="hidden" id="mlExperience" value="">
+                                <input type="hidden" id="mlPropertyType" value="">
+                                <input type="hidden" id="mlLoanPurpose" value="purchase">
+                                <input type="hidden" name="loanType" value="fix_flip">
 
-                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
-                                    <div class="form-group">
-                                        <label class="form-label">As-Is Value <span style="color: var(--danger-500);">*</span></label>
-                                        <div class="input-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" class="form-input" id="mlAsIsValue" placeholder="400000" required>
-                                        </div>
+                                <!-- File Upload Section - Only Input Method -->
+                                <div style="background: linear-gradient(135deg, var(--surface-2), var(--surface-1)); border: 2px dashed var(--primary-500); border-radius: var(--radius-lg); padding: var(--space-8); text-align: center;">
+                                    <div style="color: var(--primary-400); margin-bottom: var(--space-4);">
+                                        <i data-lucide="file-text" style="width: 64px; height: 64px;"></i>
                                     </div>
-                                    <div class="form-group" id="arvField">
-                                        <label class="form-label">ARV <span style="color: var(--danger-500);">*</span></label>
-                                        <div class="input-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" class="form-input" id="mlARV" placeholder="650000" required>
-                                        </div>
+                                    <h3 style="color: var(--gray-100); margin-bottom: var(--space-2);">Upload Loan Application</h3>
+                                    <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-6); max-width: 500px; margin-left: auto; margin-right: auto;">
+                                        Our AI will analyze your loan application file and recommend the <strong>top 3 lenders</strong> with the best rates and terms for this specific deal.
+                                    </p>
+                                    <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-bottom: var(--space-4);">
+                                        <button type="button" class="btn btn-primary" style="padding: var(--space-4) var(--space-6); font-size: var(--text-base);" onclick="document.getElementById('mlFileUpload').click()">
+                                            <i data-lucide="upload" style="width: 20px; height: 20px;"></i>
+                                            Choose File to Analyze
+                                        </button>
+                                        <a href="samples/bridge-loan-sample.pdf" download class="btn btn-outline" style="background: transparent; border: 1px solid var(--surface-3); color: var(--gray-400);">
+                                            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                            Sample PDF
+                                        </a>
+                                        <input type="file" id="mlFileUpload" style="display: none;" accept=".csv,.txt,.xlsx,.pdf" onchange="handleMultiLenderFileUpload(event)">
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Purchase Price <span style="color: var(--danger-500);">*</span></label>
-                                        <div class="input-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" class="form-input" id="mlPurchasePrice" placeholder="350000" required>
-                                        </div>
+                                    <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap; font-size: var(--text-xs); color: var(--gray-500);">
+                                        <span><i data-lucide="check-circle" style="width: 12px; height: 12px; display: inline; color: var(--success-500);"></i> PDF</span>
+                                        <span><i data-lucide="check-circle" style="width: 12px; height: 12px; display: inline; color: var(--success-500);"></i> TXT</span>
+                                        <span><i data-lucide="check-circle" style="width: 12px; height: 12px; display: inline; color: var(--success-500);"></i> CSV</span>
                                     </div>
-                                    <div class="form-group" id="rehabField">
-                                        <label class="form-label">Rehab Budget <span style="color: var(--danger-500);">*</span></label>
-                                        <div class="input-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" class="form-input" id="mlRehabBudget" placeholder="80000" required>
-                                        </div>
+                                    <div id="mlUploadStatus" style="margin-top: var(--space-4); display: none;">
+                                        <span class="badge badge-info">Processing...</span>
                                     </div>
                                 </div>
 
-                                <!-- Bridge Loan Specific Fields -->
-                                <div id="bridgeLoanFields" style="display: none; background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), transparent); border: 1px solid var(--warning-700); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                                    <h4 style="color: var(--warning-400); margin-bottom: var(--space-4); font-size: var(--text-base);">
-                                        <i data-lucide="bridge" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2);"></i>
-                                        Bridge Loan Details
-                                    </h4>
-                                    <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
-                                        <div class="form-group">
-                                            <label class="form-label">Exit Strategy <span style="color: var(--danger-500);">*</span></label>
-                                            <select class="form-select" id="mlExitStrategy">
-                                                <option value="refinance">Refinance</option>
-                                                <option value="sale">Property Sale</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Loan Term (Months)</label>
-                                            <select class="form-select" id="mlLoanTerm">
-                                                <option value="6">6 Months</option>
-                                                <option value="12" selected>12 Months</option>
-                                                <option value="18">18 Months</option>
-                                                <option value="24">24 Months</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Liquidity ($)</label>
-                                            <div class="input-prefix">
-                                                <span class="prefix">$</span>
-                                                <input type="number" class="form-input" id="mlLiquidity" placeholder="50000">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Property Type</label>
-                                            <select class="form-select" id="mlBridgePropertyType">
-                                                <option value="single_family">Single Family</option>
-                                                <option value="multi_family">2-4 Units</option>
-                                                <option value="commercial">Commercial</option>
-                                                <option value="land">Land</option>
-                                            </select>
+                                <!-- Loading State -->
+                                <div id="mlAnalyzingState" style="display: none; text-align: center; padding: var(--space-8);">
+                                    <div style="color: var(--primary-400); margin-bottom: var(--space-4);">
+                                        <i data-lucide="brain-circuit" style="width: 48px; height: 48px; animation: pulse 2s infinite;"></i>
+                                    </div>
+                                    <h4 style="color: var(--gray-200); margin-bottom: var(--space-2);">AI Analyzing Your Deal...</h4>
+                                    <p style="color: var(--gray-500); font-size: var(--text-sm);">Comparing rates from IFC, ICE/Guides, and Eastview</p>
+                                    <div style="max-width: 300px; margin: var(--space-4) auto;">
+                                        <div style="background: var(--surface-2); height: 4px; border-radius: var(--radius-full); overflow: hidden;">
+                                            <div id="mlProgressBar" style="background: linear-gradient(90deg, var(--primary-500), var(--primary-400)); height: 100%; width: 0%; transition: width 0.5s;"></div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-6);">
-                                    <div class="form-group" id="ficoField">
-                                        <label class="form-label">FICO Score</label>
-                                        <input type="number" class="form-input" id="mlFICO" placeholder="740" min="300" max="850">
-                                        <small style="color: var(--gray-500); font-size: var(--text-xs);">Optional for Bridge</small>
-                                    </div>
-                                    <div class="form-group" id="experienceField">
-                                        <label class="form-label">Experience (Years)</label>
-                                        <input type="number" class="form-input" id="mlExperience" placeholder="5" min="0">
-                                        <small style="color: var(--gray-500); font-size: var(--text-xs);">Optional for Bridge</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Loan Purpose</label>
-                                        <select class="form-select" id="mlLoanPurpose" onchange="handlePurposeChange(this.value)">
-                                            <option value="purchase">Purchase</option>
-                                            <option value="refinance">Refinance</option>
-                                            <option value="cash_out">Cash Out</option>
-                                            <option value="bridge">Bridge</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" id="propertyTypeField">
-                                        <label class="form-label">Property Type</label>
-                                        <select class="form-select" id="mlPropertyType">
-                                            <option value="SFR">Single Family</option>
-                                            <option value="Multi">2-4 Units</option>
-                                            <option value="Commercial">Commercial</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div style="display: flex; justify-content: flex-end; gap: var(--space-4);">
-                                    <button type="button" class="btn btn-secondary" onclick="resetMultiLenderForm()">Reset</button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
-                                        Analyze with AI
-                                    </button>
                                 </div>
                             </form>
 
@@ -6785,7 +6676,7 @@
             return 'Single Family'; // Default
         }
         
-        // Populate form with parsed data
+        // Populate form with parsed data and trigger analysis
         function populateFormWithParsedData(parsed, filename, statusDiv) {
             // Set loan type
             const loanType = parsed.loan_type || 'fix_flip';
@@ -6797,7 +6688,7 @@
             
             // Track populated fields
             const populatedFields = [];
-            const lowConfidenceFields = [];
+            const missingFields = [];
             
             // Helper to set field value
             const setField = (id, value, formatter = null) => {
@@ -6809,30 +6700,29 @@
                 return false;
             };
             
-            // Populate numeric fields
+            // Populate numeric fields (now hidden)
             if (setField('mlAsIsValue', parsed.as_is_value)) {
                 populatedFields.push(`As-Is Value: $${Number(parsed.as_is_value).toLocaleString()}`);
-                if (parsed._confidence?.as_is_value < 0.7) {
-                    lowConfidenceFields.push('As-Is Value');
-                }
+            } else {
+                missingFields.push('As-Is Value');
             }
             
             if (setField('mlARV', parsed.arv)) {
                 populatedFields.push(`ARV: $${Number(parsed.arv).toLocaleString()}`);
-                if (parsed._confidence?.arv < 0.7) {
-                    lowConfidenceFields.push('ARV');
-                }
+            } else {
+                missingFields.push('ARV');
             }
             
             if (setField('mlPurchasePrice', parsed.purchase_price)) {
                 populatedFields.push(`Purchase Price: $${Number(parsed.purchase_price).toLocaleString()}`);
-                if (parsed._confidence?.purchase_price < 0.7) {
-                    lowConfidenceFields.push('Purchase Price');
-                }
+            } else {
+                missingFields.push('Purchase Price');
             }
             
             if (setField('mlRehabBudget', parsed.rehab_budget)) {
                 populatedFields.push(`Rehab Budget: $${Number(parsed.rehab_budget).toLocaleString()}`);
+            } else {
+                missingFields.push('Rehab Budget');
             }
             
             if (setField('mlFICO', parsed.fico)) {
@@ -6861,45 +6751,38 @@
                 populatedFields.push(`Zip: ${parsed.zip_code}`);
             }
             
-            // Update status
-            statusDiv.innerHTML = '<span class="badge badge-success">✓ File processed successfully!</span>';
-            
-            // Build toast message
-            let toastMessage = `Loaded data from ${filename}`;
-            if (parsed._meta?.ocr_used) {
-                toastMessage += ' (OCR processed)';
-            }
-            if (parsed._meta?.lender_detected) {
-                toastMessage += `\nDetected: ${parsed._meta.lender_detected}`;
-            }
-            
+            // Show summary of extracted data
             if (populatedFields.length > 0) {
-                toastMessage += '\n' + populatedFields.map(f => '• ' + f).join('\n');
-            } else {
-                toastMessage += '\n(No fields extracted - please verify PDF)';
+                showToast(`Extracted from ${filename}:\n${populatedFields.map(f => '✓ ' + f).join('\n')}`, 5000);
             }
             
-            if (lowConfidenceFields.length > 0) {
-                toastMessage += `\n\n⚠️ Low confidence: ${lowConfidenceFields.join(', ')} - please verify`;
+            // Check if we have minimum required fields
+            const hasPurchasePrice = !!parsed.purchase_price;
+            const hasAsIsValue = !!parsed.as_is_value;
+            
+            if (!hasPurchasePrice || !hasAsIsValue) {
+                showToast(`⚠️ Missing critical fields: ${missingFields.join(', ')}\nPlease check the file format.`, 5000);
+                statusDiv.innerHTML = '<span class="badge badge-warning">⚠️ Missing required fields</span>';
+                return;
             }
             
-            showToast(toastMessage, 8000);
+            // Hide upload section, show analyzing state
+            document.getElementById('mlUploadStatus').style.display = 'none';
+            document.querySelector('#multiLenderForm > div:first-of-type').style.display = 'none';
+            document.getElementById('mlAnalyzingState').style.display = 'block';
             
-            // Scroll to form
-            const form = document.getElementById('multiLenderForm');
-            if (form) {
-                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Animate progress bar
+            const progressBar = document.getElementById('mlProgressBar');
+            if (progressBar) {
+                setTimeout(() => progressBar.style.width = '30%', 100);
+                setTimeout(() => progressBar.style.width = '60%', 800);
+                setTimeout(() => progressBar.style.width = '90%', 1500);
             }
             
-            // Auto-trigger comparison after delay
+            // Auto-trigger comparison after short delay
             setTimeout(() => {
                 handleMultiLenderSubmit({ preventDefault: () => {} });
-                showToast('Auto-comparing lenders...', 3000);
-            }, 1000);
-            
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 5000);
+            }, 500);
         }
 
         // Extract text from PDF using PDF.js
@@ -8074,6 +7957,8 @@
             const aiBannerDiv = document.getElementById('aiRecommendationBanner');
             const simpleRecDiv = document.getElementById('simpleRecommendation');
             
+            // Hide analyzing state, show results
+            document.getElementById('mlAnalyzingState').style.display = 'none';
             resultsDiv.style.display = 'block';
             
             // Get form data for display
@@ -9467,9 +9352,18 @@ ltv_ratio: ${ltv}
             document.getElementById('multiLenderResults').style.display = 'none';
             lastMultiLenderResults = null;
             
-            // Reset to Fix & Flip as default
-            document.querySelector('input[name="loanType"][value="fix_flip"]').checked = true;
-            updateLoanTypeFields('fix_flip');
+            // Show upload area, hide analyzing state
+            document.getElementById('mlAnalyzingState').style.display = 'none';
+            document.querySelector('#multiLenderForm > div:first-of-type').style.display = 'block';
+            
+            // Reset hidden fields
+            document.getElementById('mlAsIsValue').value = '';
+            document.getElementById('mlARV').value = '';
+            document.getElementById('mlPurchasePrice').value = '';
+            document.getElementById('mlRehabBudget').value = '';
+            document.getElementById('mlFICO').value = '';
+            document.getElementById('mlExperience').value = '';
+            document.getElementById('mlPropertyType').value = '';
             
             // Reset card styles
             ['ifcCard', 'iceCard', 'eastviewCard'].forEach(id => {
