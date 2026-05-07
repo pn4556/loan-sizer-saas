@@ -6867,10 +6867,12 @@
                         
                         if (labelParts.length >= 2) {
                             // Handle "As-Is Property Value: Rehab Amount Requested:"
-                            if (labelParts[0].toLowerCase().includes('as-is') || labelParts[0].toLowerCase().includes('property value')) {
-                                // First number in value line is As-Is value
+                            // Only extract if not already set (to prevent ARV line from overwriting)
+                            if ((labelParts[0].toLowerCase().includes('as-is') || 
+                                 (labelParts[0].toLowerCase().includes('property value') && 
+                                  !labelParts[0].toLowerCase().includes('after')))) {
                                 const numMatches = valueLine.match(/(\d[\d,]+)/g);
-                                if (numMatches && numMatches[0]) {
+                                if (numMatches && numMatches[0] && !lineMap['as_is_value']) {
                                     lineMap['as_is_value'] = numMatches[0].replace(/,/g, '');
                                 }
                             }
@@ -6896,7 +6898,22 @@
                                 // Extract text after the number
                                 const typeMatch = valueLine.match(/\d+\s+(.+)$/);
                                 if (typeMatch) {
-                                    lineMap['property_type'] = typeMatch[1].trim();
+                                    let propType = typeMatch[1].trim();
+                                    // Clean up garbled text - if it looks corrupted, use defaults
+                                    if (propType.length < 3 || /[^\w\s\-]/.test(propType.replace(/\s/g, ''))) {
+                                        // Text looks corrupted, try to infer from common patterns
+                                        if (valueLine.toLowerCase().includes('single') || 
+                                            valueLine.toLowerCase().includes('family')) {
+                                            propType = 'Single Family';
+                                        } else if (valueLine.toLowerCase().includes('multi')) {
+                                            propType = 'Multi-Family';
+                                        } else if (valueLine.toLowerCase().includes('condo')) {
+                                            propType = 'Condo';
+                                        } else {
+                                            propType = 'Single Family'; // Default
+                                        }
+                                    }
+                                    lineMap['property_type'] = propType;
                                 }
                             }
                         }
@@ -6905,22 +6922,40 @@
                             // Handle "Expected Closing Date: # of homes flipped:"
                             if (labelParts[0].toLowerCase().includes('closing date')) {
                                 // Date is first part before any number
-                                lineMap['expected_closing_date'] = valueLine.split(/\d/)[0].trim();
+                                const dateParts = valueLine.split(/\d/);
+                                if (dateParts && dateParts[0]) {
+                                    lineMap['expected_closing_date'] = dateParts[0].trim();
+                                }
                             }
                             
                             // Experience might be on the next line (check for "sold" pattern)
                             if (labelParts[1].toLowerCase().includes('flipped') || labelParts[1].toLowerCase().includes('experience')) {
                                 // First try to find experience in current value line
                                 let expMatch = valueLine.match(/(\d+)\s+sold/i) || valueLine.match(/(\d{1,2})\s+kept/i);
+                                
+                                // If not found, look ahead to next lines for "X sold/Y kept" pattern
+                                if (!expMatch && i + 2 < lines.length) {
+                                    const nextLine = lines[i + 2];
+                                    expMatch = nextLine.match(/(\d+)\s+sold/i) || nextLine.match(/(\d{1,2})\s+kept/i);
+                                }
+                                // Also check two lines ahead
+                                if (!expMatch && i + 3 < lines.length) {
+                                    const nextLine2 = lines[i + 3];
+                                    expMatch = nextLine2.match(/(\d+)\s+sold/i) || nextLine2.match(/(\d{1,2})\s+kept/i);
+                                }
+                                
+                                // Last resort: just find any reasonable number
+                                if (!expMatch && i + 2 < lines.length) {
+                                    const nextLine = lines[i + 2];
+                                    // Check if it's a simple number (not a date like 08/26/2026)
+                                    const numMatch = nextLine.match(/^(\d{1,2})\s/);
+                                    if (numMatch) {
+                                        expMatch = numMatch;
+                                    }
+                                }
+                                
                                 if (expMatch) {
                                     lineMap['experience'] = expMatch[1];
-                                } else if (i + 2 < lines.length) {
-                                    // Look ahead to next line for "X sold/Y kept" pattern
-                                    const nextLine = lines[i + 2];
-                                    expMatch = nextLine.match(/(\d+)\s+sold/i) || nextLine.match(/(\d{1,2})/);
-                                    if (expMatch) {
-                                        lineMap['experience'] = expMatch[1];
-                                    }
                                 }
                             }
                         }
