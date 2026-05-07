@@ -6986,22 +6986,25 @@
                             
                             if (isCityLabel && isStateLabel && isZipLabel) {
                                 // Parse "columbia MD 21044" pattern
+                                // Only set if not already found (to prefer property address over entity address)
                                 const parts = valueLine.trim().split(/\s+/);
                                 if (parts.length >= 3) {
-                                    lineMap['city'] = parts[0];
-                                    lineMap['state'] = parts[1];
-                                    lineMap['zip_code'] = parts[2];
+                                    if (!lineMap['city']) lineMap['city'] = parts[0];
+                                    if (!lineMap['state']) lineMap['state'] = parts[1];
+                                    if (!lineMap['zip_code']) lineMap['zip_code'] = parts[2];
                                 } else if (parts.length === 2) {
                                     // Maybe format is "Columbia, MD 21044"
                                     const combined = valueLine.trim();
                                     const zipMatch = combined.match(/(\d{5}(-\d{4})?)$/);
-                                    if (zipMatch) {
+                                    if (zipMatch && !lineMap['zip_code']) {
                                         lineMap['zip_code'] = zipMatch[1];
                                         const beforeZip = combined.substring(0, combined.indexOf(zipMatch[1])).trim();
                                         const stateMatch = beforeZip.match(/\b([A-Z]{2})\b/);
-                                        if (stateMatch) {
+                                        if (stateMatch && !lineMap['state']) {
                                             lineMap['state'] = stateMatch[1];
-                                            lineMap['city'] = beforeZip.substring(0, beforeZip.indexOf(stateMatch[1])).trim().replace(/,$/, '');
+                                            if (!lineMap['city']) {
+                                                lineMap['city'] = beforeZip.substring(0, beforeZip.indexOf(stateMatch[1])).trim().replace(/,$/, '');
+                                            }
                                         }
                                     }
                                 }
