@@ -58,45 +58,58 @@ LENDER_TEMPLATES = {
         "patterns": {
             "purchase_price": [
                 r'Purchase Price[:\s]+\$?([\d,]+)',
-                r'Purchase Price.*?([\d,]{5,})',
+                r'Purchase Price[:\s]*\n+\$?(\d[\d,]*)',
+                r'Purchase Price.*?\n+.*?(\d{5,})',
+                r'Purchase Price[:\s]*\n+Yes\s+\w+[\s\w]*\n+(\d{5,})',
             ],
             "as_is_value": [
                 r'As-Is Property Value[:\s]+\$?([\d,]+)',
                 r'As-Is Value[:\s]+\$?([\d,]+)',
+                r'As-Is Property Value[:\s]*\n+\$?(\d[\d,]*)',
                 r'Current Value[:\s]+\$?([\d,]+)',
+                r'Yes\s+\w+[\s\w]*\n+(\d{5,})\n+(\d{5,})\n+(\d{4,})',
             ],
             "arv": [
                 r'After Repair Property Value[:\s]+\$?([\d,]+)',
                 r'ARV[:\s]+\$?([\d,]+)',
+                r'After Repair Property Value[:\s]*\n+\$?(\d[\d,]*)',
                 r'After Renovation Value[:\s]+\$?([\d,]+)',
             ],
             "rehab_budget": [
                 r'Rehab Amount Requested[:\s]+\$?([\d,]+)',
                 r'Rehab Budget[:\s]+\$?([\d,]+)',
+                r'Rehab Amount Requested[:\s]*\n+\$?(\d[\d,]*)',
                 r'Renovation Budget[:\s]+\$?([\d,]+)',
             ],
             "property_type": [
                 r'Property Type[:\s]+([A-Za-z\-]+(?:\s+[A-Za-z]+)?)',
+                r'Property Type[:\s]*\n+(Yes\s+)?([A-Za-z\-]+(?:\s+[A-Za-z]+)?)',
             ],
             "experience": [
                 r'(\d+)\s+sold',
                 r'(\d+)\s+deals',
                 r'(\d+)\s+flips',
                 r'Experience[:\s]+(\d+)',
+                r'# of homes.*?\n+(\d+)\s+sold',
+                r'flipped/exited.*?\n+(\d+)\s+sold',
             ],
             "property_address": [
                 r'Subject Property Address[:\s]+(.+?)(?:\n|City:)',
                 r'Property Address[:\s]+(.+?)(?:\n|City:)',
+                r'Subject Property Address[:\s]*\n+([\w\s\d]+?)(?:\n|City:)',
             ],
             "city": [
                 r'City[:\s]+([A-Za-z\s]+?)(?:\s+State|,)',
+                r'City[:\s]*\n+([A-Za-z\s]+?)(?:\s+State|State|Zip)',
             ],
             "state": [
                 r'State[:\s]+([A-Z]{2})',
+                r'State[:\s]*\n+([A-Z]{2})',
             ],
             "zip_code": [
                 r'Zip Code[:\s]+(\d{5}(?:-\d{4})?)',
                 r'Zip[:\s]+(\d{5})',
+                r'Zip Code[:\s]*\n+(\d{5})',
             ],
             "fico": [
                 r'FICO[:\s]+(\d{3})',
@@ -332,7 +345,9 @@ def extract_field(text: str, field_name: str, patterns: List[str]) -> FieldExtra
             
             # Calculate confidence based on match quality
             confidence = 0.9  # High confidence for exact regex match
-            if len(clean_value) < 2:
+            # Check value length (handle both string and numeric values)
+            value_str = str(clean_value)
+            if len(value_str) < 2:
                 confidence = 0.5
             
             return FieldExtraction(
@@ -348,6 +363,89 @@ def extract_field(text: str, field_name: str, patterns: List[str]) -> FieldExtra
         confidence=0.0,
         pattern_used=""
     )
+
+
+def parse_jotform_lines(text: str) -> Dict[str, FieldExtraction]:
+    """
+    Parse JotForm Bridge Loan Application with two-column layout.
+    Handles the specific structure where labels are in left column and values in right column.
+    """
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    fields = {}
+    
+    # Helper to create FieldExtraction
+    def make_extraction(value, raw_text="", confidence=0.9):
+        return FieldExtraction(
+            value=value,
+            raw_text=raw_text or str(value),
+            confidence=confidence,
+            pattern_used="jotform_line_parser"
+        )
+    
+    # Find the 'Yes' marker which starts the values section in left column
+    yes_idx = None
+    for i, line in enumerate(lines):
+        if line == 'Yes':
+            yes_idx = i
+            break
+    
+    if yes_idx:
+        # Property type is the line after Yes
+        if yes_idx + 1 < len(lines):
+            fields['property_type'] = make_extraction(lines[yes_idx + 1])
+        
+        # Numeric values start at yes_idx + 2
+        value_start = yes_idx + 2
+        numeric_values = []
+        for i in range(value_start, min(value_start + 10, len(lines))):
+            clean = lines[i].replace(',', '').replace('$', '')
+            if re.match(r'^\d+$', clean) and len(clean) >= 4:  # Only large numbers
+                numeric_values.append(int(clean))
+        
+        # Map values to fields (in order: Purchase Price, As-Is Value, Rehab, ARV)
+        if len(numeric_values) >= 4:
+            fields['purchase_price'] = make_extraction(numeric_values[0])
+            fields['as_is_value'] = make_extraction(numeric_values[1])
+            fields['rehab_budget'] = make_extraction(numeric_values[2])
+            fields['arv'] = make_extraction(numeric_values[3])
+    
+    # Extract experience from lines containing "sold"
+    for line in lines:
+        match = re.search(r'(\d+)\s+sold[/\s]+(\d+)\s+kept', line)
+        if match:
+            fields['experience'] = make_extraction(int(match.group(1)), line)
+            break
+        match = re.search(r'(\d+)\s+sold', line)
+        if match:
+            fields['experience'] = make_extraction(int(match.group(1)), line)
+            break
+    
+    # Extract address, city, state, zip from the address section
+    # The address values appear in the right column: street, city, state, zip
+    for i, line in enumerate(lines):
+        # Look for street address pattern (number followed by words)
+        if re.match(r'^\d+\s+[A-Za-z]+(?:\s+[A-Za-z]+)*$', line):
+            # Check if next lines are city, state, zip
+            if i + 3 < len(lines):
+                possible_city = lines[i + 1]
+                possible_state = lines[i + 2]
+                possible_zip = lines[i + 3]
+                
+                # Validate city (letters only, reasonable length)
+                is_city = re.match(r'^[A-Za-z\s]+$', possible_city) and 2 < len(possible_city) < 30
+                # Validate state (2 uppercase letters)
+                is_state = re.match(r'^[A-Z]{2}$', possible_state)
+                # Validate zip (5 digits)
+                is_zip = re.match(r'^\d{5}$', possible_zip)
+                
+                if is_city and is_state and is_zip:
+                    fields['property_address'] = make_extraction(line, line)
+                    fields['city'] = make_extraction(possible_city, possible_city)
+                    fields['state'] = make_extraction(possible_state, possible_state)
+                    fields['zip_code'] = make_extraction(possible_zip, possible_zip)
+                    break
+    
+    return fields
 
 
 def parse_loan_application(pdf_path: str, filename: str) -> ParsedLoanApplication:
@@ -390,20 +488,24 @@ def parse_loan_application(pdf_path: str, filename: str) -> ParsedLoanApplicatio
         lender = detect_lender(normalized_text)
         logger.info(f"Detected lender: {lender}")
         
-        # Select template
-        if lender and lender in LENDER_TEMPLATES:
-            template = LENDER_TEMPLATES[lender]
+        # Special handling for JotForm (two-column layout)
+        if lender == "jotform":
+            fields = parse_jotform_lines(text)
         else:
-            template = LENDER_TEMPLATES["generic"]
-        
-        # Extract all fields
-        fields = {}
-        for field_name, patterns in template["patterns"].items():
-            extraction = extract_field(normalized_text, field_name, patterns)
-            fields[field_name] = extraction
+            # Select template
+            if lender and lender in LENDER_TEMPLATES:
+                template = LENDER_TEMPLATES[lender]
+            else:
+                template = LENDER_TEMPLATES["generic"]
             
-            if extraction.value:
-                logger.info(f"Extracted {field_name}: {extraction.value} (confidence: {extraction.confidence:.2f})")
+            # Extract all fields using regex patterns
+            fields = {}
+            for field_name, patterns in template["patterns"].items():
+                extraction = extract_field(normalized_text, field_name, patterns)
+                fields[field_name] = extraction
+                
+                if extraction.value:
+                    logger.info(f"Extracted {field_name}: {extraction.value} (confidence: {extraction.confidence:.2f})")
         
         # Calculate parsing time
         parsing_time = int((datetime.now() - start_time).total_seconds() * 1000)
