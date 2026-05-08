@@ -1015,6 +1015,34 @@ async def health_check():
 
 # ==================== INITIALIZATION ====================
 
+# Public demo endpoint - no auth required
+@app.post("/demo/parse-pdf")
+async def demo_parse_pdf(file: UploadFile = File(...)):
+    """Demo endpoint for parsing PDF without authentication"""
+    
+    # Validate file
+    if file.content_type != "application/pdf":
+        raise HTTPException(400, "Only PDF files allowed")
+    
+    # Read PDF content
+    content = await file.read()
+    
+    # Parse PDF
+    parser = PDFLoanParser()
+    pdf_result = parser.parse_pdf(content)
+    
+    if not pdf_result.success:
+        raise HTTPException(400, f"Could not parse PDF: {pdf_result.error_message}")
+    
+    # Return extracted fields
+    return {
+        "success": True,
+        "fields": pdf_result.fields,
+        "confidence": pdf_result.confidence,
+        "filename": file.filename
+    }
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize on startup"""
