@@ -6423,7 +6423,7 @@
         // API base URL - change this to your backend URL
         const PARSER_API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:8000/api/v1'
-            : 'https://loan-sizer-saas.onrender.com/api/v1';
+            : 'https://loan-sizer-api.onrender.com/api/v1';
         
         // Clear any cached compare state
         function clearCompareState() {
@@ -6503,19 +6503,23 @@
             const formData = new FormData();
             formData.append('file', file);
             
-            // Upload PDF to demo endpoint (no auth required)
+            // Upload PDF to demo endpoint (no auth required, synchronous)
             const uploadResponse = await fetch(`${PARSER_API_URL}/demo/parse-pdf`, {
                 method: 'POST',
                 body: formData
             });
             
             if (!uploadResponse.ok) {
-                const errorText = await uploadResponse.text();
-                throw new Error(errorText || 'Upload failed');
+                const errorData = await uploadResponse.json().catch(() => ({}));
+                throw new Error(errorData.detail || errorData.error || 'Upload failed');
             }
             
             const result = await uploadResponse.json();
             console.log('PDF parsing result:', result);
+            
+            if (!result.success) {
+                throw new Error(result.error || 'PDF parsing failed');
+            }
             
             // Convert to frontend format and populate
             const parsed = convertServerResultToFrontendFormat(result);
@@ -6524,9 +6528,50 @@
             return parsed;
         }
         
+        // Poll for PDF parse result
+        async function pollForParseResult(jobId, statusDiv) {
+            const maxAttempts = 30; // 30 seconds max
+            const interval = 1000; // 1 second between polls
+            
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                try {
+                    const response = await fetch(`${PARSER_API_URL}/parse/${jobId}/status`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to get parse status');
+                    }
+                    
+                    const status = await response.json();
+                    
+                    if (status.status === 'completed') {
+                        // Get full result
+                        const resultResponse = await fetch(`${PARSER_API_URL}/parse/${jobId}/result`);
+                        if (!resultResponse.ok) {
+                            throw new Error('Failed to get parse result');
+                        }
+                        return await resultResponse.json();
+                    } else if (status.status === 'failed') {
+                        throw new Error('PDF parsing failed: ' + (status.errors?.[0] || 'Unknown error'));
+                    }
+                    
+                    // Update progress
+                    statusDiv.innerHTML = `<span class="badge badge-info">Processing PDF... ${status.progress}%</span>`;
+                    
+                    // Wait before next poll
+                    await new Promise(resolve => setTimeout(resolve, interval));
+                    
+                } catch (error) {
+                    throw new Error('Polling error: ' + error.message);
+                }
+            }
+            
+            throw new Error('PDF parsing timed out after 30 seconds');
+        }
+        
         // Convert server result to frontend format
         function convertServerResultToFrontendFormat(result) {
-            const fields = result.fields || {};
+            // Handle both demo endpoint format and direct format
+            const fields = result.fields || result;
             
             return {
                 loan_type: detectLoanTypeFromFields(fields),
@@ -6548,9 +6593,9 @@
                     arv: fields.arv_confidence,
                 },
                 _meta: {
-                    ocr_used: result.ocr_used,
-                    lender_detected: result.lender_detected,
-                    parsing_time_ms: result.parsing_time_ms
+                    ocr_used: result.ocr_used || fields.ocr_used,
+                    lender_detected: result.lender_detected || fields.lender_detected,
+                    parsing_time_ms: result.parsing_time_ms || fields.parsing_time_ms
                 }
             };
         }

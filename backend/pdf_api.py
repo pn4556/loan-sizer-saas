@@ -274,6 +274,61 @@ async def health_check():
     }
 
 
+@app.post("/demo/parse-pdf")
+async def demo_parse_pdf(file: UploadFile = File(...)):
+    """
+    Synchronous demo endpoint for parsing PDF without authentication
+    Returns results immediately (no polling required)
+    """
+    from fastapi.responses import JSONResponse
+    import tempfile
+    
+    # Validate file type
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    
+    try:
+        # Read file content
+        content = await file.read()
+        
+        # Save to temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+        
+        try:
+            # Parse synchronously
+            result = parse_loan_application(tmp_path, file.filename)
+            
+            if result.status == "completed":
+                # Convert to frontend format
+                frontend_data = convert_to_frontend_format(result)
+                return JSONResponse(content={
+                    "success": True,
+                    "fields": frontend_data,
+                    "filename": file.filename,
+                    "ocr_used": result.fields.get("ocr_used", False),
+                    "lender_detected": result.fields.get("lender_detected"),
+                    "parsing_time_ms": result.fields.get("parsing_time_ms", 0)
+                })
+            else:
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "success": False,
+                        "error": "Failed to parse PDF",
+                        "errors": result.errors
+                    }
+                )
+        finally:
+            # Cleanup temp file
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+                
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
