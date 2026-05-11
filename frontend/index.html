@@ -6496,36 +6496,26 @@
             event.target.value = '';
         }
         
-        // Upload PDF to server - synchronous processing
+        // Upload PDF to server - NOW USES CLIENT-SIDE PARSING
         async function uploadAndParsePDF(file, statusDiv) {
-            statusDiv.innerHTML = '<span class="badge badge-info">Uploading PDF...</span>';
+            statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
             
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            // Upload PDF to demo endpoint (no auth required, synchronous)
-            const uploadResponse = await fetch(`${PARSER_API_URL}/demo/parse-pdf`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!uploadResponse.ok) {
-                const errorData = await uploadResponse.json().catch(() => ({}));
-                throw new Error(errorData.detail || errorData.error || 'Upload failed');
+            try {
+                // Use client-side PDF parsing (no backend needed)
+                const result = await parsePDFFile(file);
+                
+                if (result.success && result.data) {
+                    statusDiv.innerHTML = `<span class="badge badge-success">✓ Parsed (${result.confidence}% confidence)</span>`;
+                    populateFormWithParsedData(result.data, file.name, statusDiv);
+                } else {
+                    throw new Error(result.error || 'Could not extract data from PDF');
+                }
+            } catch (error) {
+                console.error('PDF parsing error:', error);
+                statusDiv.innerHTML = '<span class="badge badge-warning">PDF parsing failed - try manual entry</span>';
+                showToast('PDF parsing error: ' + error.message, 5000);
             }
-            
-            const result = await uploadResponse.json();
-            console.log('PDF parsing result:', result);
-            
-            if (!result.success) {
-                throw new Error(result.error || 'PDF parsing failed');
-            }
-            
-            // Convert to frontend format and populate
-            const parsed = convertServerResultToFrontendFormat(result);
-            populateFormWithParsedData(parsed, file.name, statusDiv);
-            
-            return parsed;
+        }
         }
         
         // Poll for PDF parse result
@@ -11301,5 +11291,8 @@ Contact your loan officer to discuss next steps.
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Client-side PDF Parser -->
+    <script src="pdf-client-parser.js"></script>
 </body>
 </html>
