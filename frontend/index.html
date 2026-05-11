@@ -10931,6 +10931,11 @@ ltv_ratio: ${ltv}
             };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             localStorage.setItem('isLoggedIn', 'true');
+            
+            // Show main app (THIS WAS MISSING!)
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
             showToast('Welcome to LoanSizer Pro Demo!', 'success');
             updateUIForLoggedInUser();
         }
