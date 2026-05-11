@@ -11530,6 +11530,296 @@ Contact your loan officer to discuss next steps.
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
     
+    <!-- Multi-Application Batch Processing Functions -->
+    <script>
+        // Store batch results
+        let currentBatchResults = [];
+        
+        // Handle batch file selection
+        async function handleBatchFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            
+            const statusDiv = document.getElementById('batchUploadStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '<span class="badge badge-info">Processing ' + files.length + ' files...</span>';
+            }
+            
+            const results = [];
+            
+            for (const file of files) {
+                try {
+                    const content = await file.text();
+                    const lines = content.split('\n');
+                    
+                    // Parse CSV/TXT format
+                    for (const line of lines) {
+                        if (line.trim() && !line.startsWith('#') && !line.startsWith('Name')) {
+                            const parsed = parseBatchLine(line);
+                            if (parsed) {
+                                const result = await analyzeLoanForBatch(parsed);
+                                results.push(result);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error processing file:', file.name, error);
+                }
+            }
+            
+            currentBatchResults = results;
+            displayBatchResults(results);
+            
+            // Save to Applications Processed
+            saveBatchToApplications(results);
+            
+            if (statusDiv) {
+                statusDiv.innerHTML = '<span class="badge badge-success">✓ Processed ' + results.length + ' applications</span>';
+            }
+            
+            showToast('Processed ' + results.length + ' applications', 3000);
+        }
+        
+        // Parse a line from batch file
+        function parseBatchLine(line) {
+            // Try CSV format
+            const csvParts = line.split(',');
+            if (csvParts.length >= 5) {
+                return {
+                    applicantName: csvParts[0].trim(),
+                    loanType: csvParts[1].trim(),
+                    loanAmount: parseFloat(csvParts[2].replace(/[$,]/g, '')) || 300000,
+                    fico: parseInt(csvParts[3]) || 680,
+                    propertyAddress: csvParts[4].trim() || 'Unknown Address',
+                    city: csvParts[5]?.trim() || 'Unknown City'
+                };
+            }
+            return null;
+        }
+        
+        // Analyze a single loan for batch processing
+        async function analyzeLoanForBatch(data) {
+            const loanType = detectLoanType(data.loanType);
+            
+            // Mock analysis result
+            const result = {
+                applicantName: data.applicantName,
+                loanType: data.loanType,
+                loanAmount: data.loanAmount,
+                fico: data.fico,
+                propertyAddress: data.propertyAddress,
+                city: data.city,
+                maxLoanAmount: Math.round(data.loanAmount * (data.fico > 700 ? 0.85 : 0.75)),
+                recommendedLenders: [],
+                result: 'PASS',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Determine result based on FICO
+            if (data.fico >= 720) {
+                result.result = 'PASS';
+                result.recommendedLenders = ['ICE / Guides', 'IFC'];
+            } else if (data.fico >= 660) {
+                result.result = 'CONDITIONAL';
+                result.recommendedLenders = ['Eastview', 'IFC'];
+            } else {
+                result.result = 'FAIL';
+                result.recommendedLenders = ['Bridge Capital'];
+            }
+            
+            return result;
+        }
+        
+        // Detect loan type
+        function detectLoanType(typeStr) {
+            const type = typeStr.toLowerCase();
+            if (type.includes('dscr')) return 'dscr';
+            if (type.includes('bridge')) return 'bridge';
+            if (type.includes('fix') || type.includes('flip') || type.includes('rtl')) return 'fix_flip';
+            return 'fix_flip';
+        }
+        
+        // Generate batch demo applications
+        async function generateBatchApplications() {
+            const count = parseInt(document.getElementById('batchSizeSlider')?.value || 10);
+            const mix = document.getElementById('batchLoanTypeMix')?.value || 'mixed';
+            
+            const statusDiv = document.getElementById('batchUploadStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '<span class="badge badge-info">Generating ' + count + ' applications...</span>';
+            }
+            
+            const firstNames = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Emily', 'Robert', 'Lisa', 'William', 'Jennifer', 'James', 'Mary', 'Richard', 'Patricia', 'Thomas', 'Linda', 'Charles', 'Elizabeth'];
+            const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson'];
+            const cities = ['Los Angeles', 'San Diego', 'San Francisco', 'Sacramento', 'Oakland', 'San Jose', 'Fresno', 'Bakersfield', 'Long Beach', 'Riverside', 'New York', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia'];
+            
+            const loanTypes = mix === 'mixed' 
+                ? ['DSCR Conventional', 'Fix & Flip', 'Bridge Loan', 'DSCR 5+ Unit', 'Ground Up Construction']
+                : mix === 'dscr' 
+                    ? ['DSCR Conventional', 'DSCR 5+ Unit', 'DSCR Mixed Use']
+                    : mix === 'bridge'
+                        ? ['Bridge Loan', 'Bridge - Light Rehab']
+                        : ['Fix & Flip', 'Fix & Flip - Light Rehab', 'RTL'];
+            
+            const results = [];
+            
+            for (let i = 0; i < count; i++) {
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                const city = cities[Math.floor(Math.random() * cities.length)];
+                const loanType = loanTypes[Math.floor(Math.random() * loanTypes.length)];
+                const loanAmount = Math.floor(Math.random() * 1500000) + 250000;
+                const fico = Math.floor(Math.random() * 200) + 580;
+                
+                const data = {
+                    applicantName: firstName + ' ' + lastName,
+                    loanType: loanType,
+                    loanAmount: loanAmount,
+                    fico: fico,
+                    propertyAddress: (Math.floor(Math.random() * 9000) + 1000) + ' Main St',
+                    city: city
+                };
+                
+                const result = await analyzeLoanForBatch(data);
+                results.push(result);
+            }
+            
+            currentBatchResults = results;
+            displayBatchResults(results);
+            saveBatchToApplications(results);
+            
+            if (statusDiv) {
+                statusDiv.innerHTML = '<span class="badge badge-success">✓ Generated ' + count + ' applications</span>';
+            }
+            
+            showToast('Generated and analyzed ' + count + ' applications', 3000);
+        }
+        
+        // Display batch results
+        function displayBatchResults(results) {
+            const section = document.getElementById('batchResultsSection');
+            if (section) section.style.display = 'block';
+            
+            // Update stats
+            const approved = results.filter(r => r.result === 'PASS');
+            const conditional = results.filter(r => r.result === 'CONDITIONAL');
+            const declined = results.filter(r => r.result === 'FAIL');
+            
+            const approvedEl = document.getElementById('batchApprovedCount');
+            const conditionalEl = document.getElementById('batchConditionalCount');
+            const declinedEl = document.getElementById('batchDeclinedCount');
+            const totalEl = document.getElementById('batchTotalCount');
+            
+            if (approvedEl) approvedEl.textContent = approved.length;
+            if (conditionalEl) conditionalEl.textContent = conditional.length;
+            if (declinedEl) declinedEl.textContent = declined.length;
+            if (totalEl) totalEl.textContent = results.length;
+            
+            // Update table
+            const tbody = document.getElementById('batchResultsTableBody');
+            if (tbody) {
+                tbody.innerHTML = results.map(r => {
+                    const statusBadge = r.result === 'PASS' 
+                        ? '<span class="badge badge-success">Approved</span>'
+                        : r.result === 'CONDITIONAL'
+                            ? '<span class="badge badge-warning">Conditional</span>'
+                            : '<span class="badge badge-danger">Declined</span>';
+                    
+                    return '<tr style="border-bottom: 1px solid var(--surface-3);">' +
+                        '<td style="padding: var(--space-3); color: var(--gray-200);">' + r.applicantName + '</td>' +
+                        '<td style="padding: var(--space-3);"><span class="badge badge-light">' + r.loanType + '</span></td>' +
+                        '<td style="padding: var(--space-3); text-align: right; color: var(--gray-200);">$' + r.loanAmount.toLocaleString() + '</td>' +
+                        '<td style="padding: var(--space-3); text-align: center; color: ' + (r.fico >= 700 ? 'var(--success-400)' : r.fico >= 660 ? 'var(--warning-400)' : 'var(--danger-400)') + ';">' + r.fico + '</td>' +
+                        '<td style="padding: var(--space-3); text-align: center;">' + statusBadge + '</td>' +
+                        '<td style="padding: var(--space-3); text-align: center; color: var(--gray-400); font-size: var(--text-sm);">' + r.recommendedLenders.slice(0, 2).join(', ') + '</td>' +
+                        '</tr>';
+                }).join('');
+            }
+        }
+        
+        // Save batch results to Applications Processed
+        function saveBatchToApplications(results) {
+            const existing = JSON.parse(localStorage.getItem('processedApplications') || '[]');
+            
+            const newApps = results.map(r => ({
+                id: 'APP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                applicantName: r.applicantName,
+                loanType: r.loanType,
+                loanAmount: r.loanAmount,
+                status: r.result === 'PASS' ? 'Approved' : r.result === 'CONDITIONAL' ? 'Conditional' : 'Declined',
+                fico: r.fico,
+                date: new Date().toISOString(),
+                lender: r.recommendedLenders[0] || 'N/A'
+            }));
+            
+            const combined = [...newApps, ...existing];
+            localStorage.setItem('processedApplications', JSON.stringify(combined));
+        }
+        
+        // Export batch results
+        function exportBatchResults() {
+            if (currentBatchResults.length === 0) {
+                showToast('No results to export', 3000);
+                return;
+            }
+            
+            const csv = [
+                ['Applicant', 'Loan Type', 'Amount', 'FICO', 'Status', 'Best Lender'].join(','),
+                ...currentBatchResults.map(r => [
+                    r.applicantName,
+                    r.loanType,
+                    r.loanAmount,
+                    r.fico,
+                    r.result,
+                    r.recommendedLenders[0] || 'N/A'
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'loan-analysis-results-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Results exported to CSV', 3000);
+        }
+        
+        // Clear batch results
+        function clearBatchResults() {
+            currentBatchResults = [];
+            const section = document.getElementById('batchResultsSection');
+            if (section) section.style.display = 'none';
+            
+            const approvedEl = document.getElementById('batchApprovedCount');
+            const conditionalEl = document.getElementById('batchConditionalCount');
+            const declinedEl = document.getElementById('batchDeclinedCount');
+            const totalEl = document.getElementById('batchTotalCount');
+            
+            if (approvedEl) approvedEl.textContent = '0';
+            if (conditionalEl) conditionalEl.textContent = '0';
+            if (declinedEl) declinedEl.textContent = '0';
+            if (totalEl) totalEl.textContent = '0';
+            
+            const tbody = document.getElementById('batchResultsTableBody');
+            if (tbody) tbody.innerHTML = '';
+            
+            showToast('Results cleared', 2000);
+        }
+        
+        // Handle file drop
+        function handleBatchFileDrop(event) {
+            event.preventDefault();
+            const files = Array.from(event.dataTransfer?.files || []);
+            if (files.length > 0) {
+                handleBatchFileSelect({ target: { files: files } });
+            }
+        }
+    </script>
+    
     <!-- Client-side PDF Parser - Load before other scripts -->
     <script src="pdf-client-parser.js?v=2"></script>
     
