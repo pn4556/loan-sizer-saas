@@ -10606,7 +10606,19 @@ ltv_ratio: ${ltv}
         // ==========================================
         // APPLICATIONS PROCESSED - MULTI-LENDER DATA
         // ==========================================
-        let processedApplications = JSON.parse(localStorage.getItem('loanSizer_processedApps') || '[]');
+        let processedApplications = [];
+        try {
+            const stored = localStorage.getItem('loanSizer_processedApps');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    processedApplications = parsed;
+                }
+            }
+        } catch (e) {
+            console.error('Error loading processed apps:', e);
+            processedApplications = [];
+        }
         let currentUser = {username: 'edward', role: 'admin'};
         try {
             const stored = localStorage.getItem('loanSizer_currentUser');
