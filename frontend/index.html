@@ -7296,15 +7296,23 @@
                                  (labelParts[0].toLowerCase().includes('property value') && 
                                   !labelParts[0].toLowerCase().includes('after')))) {
                                 const numMatches = valueLine.match(/(\d[\d,]+)/g);
+                                console.log('As-Is extraction - label:', labelParts[0], 'valueLine:', valueLine, 'matches:', numMatches);
                                 if (numMatches && numMatches[0] && !lineMap['as_is_value']) {
                                     lineMap['as_is_value'] = numMatches[0].replace(/,/g, '');
+                                    console.log('✓ Set as_is_value from line parsing:', lineMap['as_is_value']);
                                 }
                             }
                             
                             if (labelParts[1].toLowerCase().includes('rehab')) {
                                 const numMatches = valueLine.match(/(\d[\d,]+)/g);
+                                console.log('Rehab extraction - label:', labelParts[1], 'valueLine:', valueLine, 'matches:', numMatches);
                                 if (numMatches && numMatches[1]) {
                                     lineMap['rehab_budget'] = numMatches[1].replace(/,/g, '');
+                                    console.log('✓ Set rehab_budget from line parsing:', lineMap['rehab_budget']);
+                                } else if (numMatches && numMatches[0] && !lineMap['rehab_budget']) {
+                                    // Fallback: if only one number and we haven't set rehab yet
+                                    lineMap['rehab_budget'] = numMatches[0].replace(/,/g, '');
+                                    console.log('✓ Set rehab_budget from fallback:', lineMap['rehab_budget']);
                                 }
                             }
                         }
@@ -7848,10 +7856,18 @@
 
         // Render lender cards based on filtered results
         function renderLenderCards(results) {
+            console.log('renderLenderCards called with', results ? results.length : 0, 'results');
+            if (!results || results.length === 0) {
+                console.error('No results provided to renderLenderCards');
+                return;
+            }
+            
             // Hide all cards first (with null checks)
             const ifcCard = document.getElementById('ifcCard');
             const iceCard = document.getElementById('iceCard');
             const eastviewCard = document.getElementById('eastviewCard');
+            
+            console.log('Card elements found:', { ifcCard: !!ifcCard, iceCard: !!iceCard, eastviewCard: !!eastviewCard });
             
             if (ifcCard) {
                 ifcCard.style.display = 'none';
@@ -7952,10 +7968,18 @@
                                     ${confidenceBadge}
                                 </div>
                             `;
+                            console.log('✓ Populated card content for', result.lender);
+                        } else {
+                            console.error('✗ Content div not found for', cardId);
                         }
+                    } else {
+                        console.error('✗ Card element not found for', cardId);
                     }
+                } else {
+                    console.warn('No card mapping for lender:', result.lender);
                 }
             });
+            console.log('renderLenderCards completed for', results.length, 'lenders');
         }
 
         async function handleMultiLenderSubmit(event) {
@@ -8562,7 +8586,10 @@
             
             // Render lender comparison cards
             if (result && result.results) {
+                console.log('Calling renderLenderCards with', result.results.length, 'results:', result.results);
                 renderLenderCards(result.results);
+            } else {
+                console.error('No results to render:', result);
             }
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
