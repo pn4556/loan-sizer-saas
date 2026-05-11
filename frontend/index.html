@@ -6930,6 +6930,16 @@
         
         // Populate form with parsed data and trigger analysis
         function populateFormWithParsedData(parsed, filename, statusDiv) {
+            // Validate parsed data
+            if (!parsed || typeof parsed !== 'object') {
+                console.error('Invalid parsed data:', parsed);
+                showToast('❌ Could not extract data from file. Please try again or enter manually.', 5000);
+                if (statusDiv) {
+                    statusDiv.innerHTML = '<span class="badge badge-danger">❌ Extraction failed</span>';
+                }
+                return;
+            }
+            
             // Store parsed data for later submission
             window.lastParsedData = parsed;
             
