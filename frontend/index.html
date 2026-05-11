@@ -7037,10 +7037,24 @@
             
             // SHOW verification section (instead of auto-submitting)
             const verificationSection = document.getElementById('mlVerificationSection');
+            console.log('Verification section element:', verificationSection);
+            
+            // Ensure parent section is visible
+            const parentSection = document.getElementById('multiLenderSection');
+            if (parentSection && parentSection.classList.contains('hidden')) {
+                console.log('Removing hidden class from multiLenderSection');
+                parentSection.classList.remove('hidden');
+            }
+            
             if (verificationSection) {
                 verificationSection.style.display = 'block';
+                console.log('Set verification section to display: block');
                 // Scroll to verification section
-                verificationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => {
+                    verificationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                console.error('mlVerificationSection not found in DOM!');
             }
             
             // Re-initialize icons for new content
