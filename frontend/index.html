@@ -4264,6 +4264,135 @@
                     </div>
                 </div>
 
+                <!-- Multi-Application Section -->
+                <div id="multiApplicationSection" class="hidden">
+                    <div class="card" style="margin-bottom: var(--space-8);">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i data-lucide="layers" style="width: 20px; height: 20px; color: var(--primary-400);"></i>
+                                Multi-Application Processing
+                            </div>
+                            <span class="badge badge-primary">Batch Processing</span>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--gray-400); margin-bottom: var(--space-6);">
+                                Process multiple loan applications at once. Upload CSV files with loan data or generate demo applications for testing.
+                            </p>
+
+                            <!-- Upload Section -->
+                            <div style="background: var(--surface-2); border: 2px dashed var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-8); text-align: center; margin-bottom: var(--space-6);" ondragover="event.preventDefault();" ondrop="handleBatchFileDrop(event)">
+                                <div style="color: var(--primary-400); margin-bottom: var(--space-4);">
+                                    <i data-lucide="upload-cloud" style="width: 48px; height: 48px;"></i>
+                                </div>
+                                <h4 style="color: var(--gray-200); margin-bottom: var(--space-2);">Upload Multiple Applications</h4>
+                                <p style="color: var(--gray-500); font-size: var(--text-sm); margin-bottom: var(--space-4);">
+                                    Drop CSV files here or click to browse. Each row should contain loan application data.
+                                </p>
+                                <button type="button" class="btn btn-primary" onclick="document.getElementById('batchFileInput').click()">
+                                    <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i>
+                                    Select CSV Files
+                                </button>
+                                <input type="file" id="batchFileInput" style="display: none;" accept=".csv,.txt" multiple onchange="handleBatchFileSelect(event)">
+                                <div id="batchUploadStatus" style="margin-top: var(--space-4); display: none;">
+                                    <span class="badge badge-info">Processing...</span>
+                                </div>
+                            </div>
+
+                            <!-- Generate Demo Applications -->
+                            <div style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+                                <h4 style="color: var(--gray-200); margin-bottom: var(--space-4);">
+                                    <i data-lucide="sparkles" style="width: 18px; height: 18px; display: inline; vertical-align: middle; margin-right: var(--space-2); color: var(--warning-400);"></i>
+                                    Generate Demo Applications
+                                </h4>
+                                <p style="color: var(--gray-500); font-size: var(--text-sm); margin-bottom: var(--space-4);">
+                                    Create realistic sample applications for testing (1-100 applications)
+                                </p>
+                                
+                                <div style="display: flex; gap: var(--space-4); align-items: end; flex-wrap: wrap;">
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <label style="display: block; color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-2);">Number of Applications</label>
+                                        <input type="range" id="batchSizeSlider" min="1" max="100" value="10" style="width: 100%;" oninput="document.getElementById('batchSizeValue').textContent = this.value">
+                                        <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--gray-500); margin-top: var(--space-1);">
+                                            <span>1</span>
+                                            <span id="batchSizeValue" style="color: var(--primary-400); font-weight: var(--font-semibold);">10</span>
+                                            <span>100</span>
+                                        </div>
+                                    </div>
+                                    <div style="min-width: 200px;">
+                                        <label style="display: block; color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-2);">Loan Type Mix</label>
+                                        <select id="batchLoanTypeMix" class="form-select" style="width: 100%;">
+                                            <option value="mixed">Mixed (All Types)</option>
+                                            <option value="dscr">DSCR Only</option>
+                                            <option value="fix_flip">Fix & Flip Only</option>
+                                            <option value="bridge">Bridge Only</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="generateBatchApplications()">
+                                        <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+                                        Generate & Process
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Batch Results -->
+                            <div id="batchResultsSection" style="display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                    <h4 style="color: var(--gray-200);">Processing Results</h4>
+                                    <div style="display: flex; gap: var(--space-2);">
+                                        <button type="button" class="btn btn-secondary" onclick="exportBatchResults()">
+                                            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                                            Export CSV
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="clearBatchResults()">
+                                            <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Summary Stats -->
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                                    <div style="background: var(--success-900); border: 1px solid var(--success-700); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;">
+                                        <div id="batchApprovedCount" style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--success-400);">0</div>
+                                        <div style="font-size: var(--text-sm); color: var(--success-300);">Approved</div>
+                                    </div>
+                                    <div style="background: var(--warning-900); border: 1px solid var(--warning-700); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;">
+                                        <div id="batchConditionalCount" style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--warning-400);">0</div>
+                                        <div style="font-size: var(--text-sm); color: var(--warning-300);">Conditional</div>
+                                    </div>
+                                    <div style="background: var(--danger-900); border: 1px solid var(--danger-700); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;">
+                                        <div id="batchDeclinedCount" style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--danger-400);">0</div>
+                                        <div style="font-size: var(--text-sm); color: var(--danger-300);">Declined</div>
+                                    </div>
+                                    <div style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;">
+                                        <div id="batchTotalCount" style="font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--gray-200);">0</div>
+                                        <div style="font-size: var(--text-sm); color: var(--gray-400);">Total</div>
+                                    </div>
+                                </div>
+
+                                <!-- Results Table -->
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid var(--surface-3);">
+                                                <th style="text-align: left; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">Applicant</th>
+                                                <th style="text-align: left; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">Type</th>
+                                                <th style="text-align: right; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">Amount</th>
+                                                <th style="text-align: center; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">FICO</th>
+                                                <th style="text-align: center; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">Status</th>
+                                                <th style="text-align: center; padding: var(--space-3); color: var(--gray-400); font-weight: var(--font-medium);">Best Lender</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="batchResultsTableBody">
+                                            <!-- Populated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- News Section -->
                 <div id="newsSection" class="hidden">
                     <div class="card" style="margin-bottom: var(--space-8);">
