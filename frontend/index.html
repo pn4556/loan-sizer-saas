@@ -7630,7 +7630,9 @@
             
             // Update stats display
             const statsDiv = document.getElementById('mlFilterStats');
-            statsDiv.innerHTML = `Showing ${filtered.length} of ${lastMultiLenderResults.results.length} lenders`;
+            if (statsDiv && lastMultiLenderResults && lastMultiLenderResults.results) {
+                statsDiv.innerHTML = `Showing ${filtered.length} of ${lastMultiLenderResults.results.length} lenders`;
+            }
             
             // Re-render cards with filtered/sorted results
             renderLenderCards(filtered);
@@ -8778,6 +8780,12 @@
         // Save processed application to localStorage
         function saveProcessedApplication(app) {
             let processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            
+            // Ensure processed is an array
+            if (!processed || !Array.isArray(processed)) {
+                processed = [];
+            }
+            
             processed.unshift(app);
             if (processed.length > 100) processed = processed.slice(0, 100);
             localStorage.setItem('loansizer_processed_apps', JSON.stringify(processed));
@@ -8786,7 +8794,12 @@
 
         // Update dashboard metrics
         function updateDashboardMetrics() {
-            const processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            let processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            
+            // Ensure processed is an array
+            if (!processed || !Array.isArray(processed)) {
+                processed = [];
+            }
             
             // Calculate metrics
             const totalApps = processed.length;
