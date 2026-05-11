@@ -8972,7 +8972,19 @@
 
         // Save processed application to localStorage
         function saveProcessedApplication(app) {
-            let processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            let processed = [];
+            try {
+                const stored = localStorage.getItem('loansizer_processed_apps');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        processed = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading processed apps:', e);
+                processed = [];
+            }
             
             // Ensure processed is an array
             if (!processed || !Array.isArray(processed)) {
@@ -8987,7 +8999,19 @@
 
         // Update dashboard metrics
         function updateDashboardMetrics() {
-            let processed = JSON.parse(localStorage.getItem('loansizer_processed_apps') || '[]');
+            let processed = [];
+            try {
+                const stored = localStorage.getItem('loansizer_processed_apps');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        processed = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading processed apps:', e);
+                processed = [];
+            }
             
             // Ensure processed is an array
             if (!processed || !Array.isArray(processed)) {
@@ -10096,7 +10120,19 @@ ltv_ratio: ${ltv}
             });
 
             // Save to localStorage
-            let drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            let drafts = [];
+            try {
+                const stored = localStorage.getItem('loanSizer_drafts');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        drafts = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading drafts:', e);
+                drafts = [];
+            }
             drafts = drafts.filter(d => d.section !== sectionId); // Remove old draft for this section
             drafts.unshift(draft);
             if (drafts.length > 20) drafts.pop(); // Keep only 20 drafts
@@ -10106,7 +10142,19 @@ ltv_ratio: ${ltv}
         }
 
         function loadLatestDraft(sectionId) {
-            const drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            let drafts = [];
+            try {
+                const stored = localStorage.getItem('loanSizer_drafts');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        drafts = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading drafts:', e);
+                drafts = [];
+            }
             const draft = drafts.find(d => d.section === sectionId);
 
             if (draft) {
@@ -10148,7 +10196,19 @@ ltv_ratio: ${ltv}
         }
 
         function discardDraft(sectionId) {
-            let drafts = JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]');
+            let drafts = [];
+            try {
+                const stored = localStorage.getItem('loanSizer_drafts');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        drafts = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading drafts:', e);
+                drafts = [];
+            }
             drafts = drafts.filter(d => d.section !== sectionId);
             localStorage.setItem('loanSizer_drafts', JSON.stringify(drafts));
         }
@@ -10547,7 +10607,19 @@ ltv_ratio: ${ltv}
         // APPLICATIONS PROCESSED - MULTI-LENDER DATA
         // ==========================================
         let processedApplications = JSON.parse(localStorage.getItem('loanSizer_processedApps') || '[]');
-        let currentUser = JSON.parse(localStorage.getItem('loanSizer_currentUser') || '{"username": "edward", "role": "admin"}');
+        let currentUser = {username: 'edward', role: 'admin'};
+        try {
+            const stored = localStorage.getItem('loanSizer_currentUser');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object') {
+                    currentUser = parsed;
+                }
+            }
+        } catch (e) {
+            console.error('Error loading current user:', e);
+            currentUser = {username: 'edward', role: 'admin'};
+        }
 
         // Function to add processed application from multi-lender analysis
         function addProcessedApplication(termSheetData) {
