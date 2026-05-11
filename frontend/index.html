@@ -10583,7 +10583,7 @@ ltv_ratio: ${ltv}
             if (targetSection) targetSection.classList.remove('hidden');
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if (event && event.target) {
+            if (typeof event !== 'undefined' && event && event.target) {
                 const navItem = event.target.closest('.nav-item');
                 if (navItem) navItem.classList.add('active');
             }
