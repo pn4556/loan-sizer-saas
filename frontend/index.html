@@ -4204,6 +4204,100 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Extracted Data Verification Section -->
+                                <div id="mlVerificationSection" style="display: none; margin-top: var(--space-6);">
+                                    <div style="background: var(--surface-2); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-6);">
+                                        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                                            <i data-lucide="file-check" style="width: 24px; height: 24px; color: var(--success-500);"></i>
+                                            <h4 style="color: var(--gray-200); margin: 0;">Verify Extracted Data</h4>
+                                            <span class="badge badge-info" id="mlExtractionConfidence">85% confidence</span>
+                                        </div>
+                                        <p style="color: var(--gray-400); font-size: var(--text-sm); margin-bottom: var(--space-4);">
+                                            Please review the data extracted from your file. Edit any incorrect values before proceeding.
+                                        </p>
+                                        
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                                            <!-- Property Value -->
+                                            <div class="form-group">
+                                                <label class="form-label">As-Is Value <span style="color: var(--danger-500);">*</span></label>
+                                                <input type="number" id="mlVerifyAsIsValue" class="form-control" placeholder="Enter property value">
+                                                <span class="form-hint">Current property value</span>
+                                            </div>
+                                            
+                                            <!-- ARV -->
+                                            <div class="form-group">
+                                                <label class="form-label">After Repair Value (ARV)</label>
+                                                <input type="number" id="mlVerifyARV" class="form-control" placeholder="Enter ARV">
+                                                <span class="form-hint">Post-rehab value</span>
+                                            </div>
+                                            
+                                            <!-- Purchase Price -->
+                                            <div class="form-group">
+                                                <label class="form-label">Purchase Price <span style="color: var(--danger-500);">*</span></label>
+                                                <input type="number" id="mlVerifyPurchasePrice" class="form-control" placeholder="Enter purchase price">
+                                                <span class="form-hint">Contract purchase price</span>
+                                            </div>
+                                            
+                                            <!-- Rehab Budget -->
+                                            <div class="form-group">
+                                                <label class="form-label">Rehab Budget</label>
+                                                <input type="number" id="mlVerifyRehabBudget" class="form-control" placeholder="Enter rehab budget">
+                                                <span class="form-hint">Estimated renovation costs</span>
+                                            </div>
+                                            
+                                            <!-- FICO -->
+                                            <div class="form-group">
+                                                <label class="form-label">Borrower FICO</label>
+                                                <input type="number" id="mlVerifyFICO" class="form-control" placeholder="Enter FICO score" min="300" max="850">
+                                                <span class="form-hint">Credit score (300-850)</span>
+                                            </div>
+                                            
+                                            <!-- Experience -->
+                                            <div class="form-group">
+                                                <label class="form-label">Experience (Years)</label>
+                                                <input type="number" id="mlVerifyExperience" class="form-control" placeholder="Enter years" min="0">
+                                                <span class="form-hint">Real estate investing experience</span>
+                                            </div>
+                                            
+                                            <!-- Property Type -->
+                                            <div class="form-group">
+                                                <label class="form-label">Property Type</label>
+                                                <select id="mlVerifyPropertyType" class="form-control">
+                                                    <option value="">Select type</option>
+                                                    <option value="single_family">Single Family</option>
+                                                    <option value="multi_family">Multi-Family</option>
+                                                    <option value="condo">Condo</option>
+                                                    <option value="townhouse">Townhouse</option>
+                                                    <option value="commercial">Commercial</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Loan Purpose -->
+                                            <div class="form-group">
+                                                <label class="form-label">Loan Purpose</label>
+                                                <select id="mlVerifyLoanPurpose" class="form-control">
+                                                    <option value="purchase">Purchase</option>
+                                                    <option value="refinance">Refinance</option>
+                                                    <option value="cashout">Cash Out Refi</option>
+                                                    <option value="bridge">Bridge Loan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                                            <button type="button" class="btn btn-primary" style="padding: var(--space-3) var(--space-6);" onclick="submitVerifiedData()">
+                                                <i data-lucide="calculator" style="width: 18px; height: 18px;"></i>
+                                                Compare Lenders
+                                            </button>
+                                            <button type="button" class="btn btn-outline" style="background: transparent; border: 1px solid var(--surface-3); color: var(--gray-400);" onclick="resetMultiLenderUpload()">
+                                                <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
+                                                Upload Different File
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </form>
 
                                 <!-- Comparison Results -->
@@ -6836,103 +6930,152 @@
         
         // Populate form with parsed data and trigger analysis
         function populateFormWithParsedData(parsed, filename, statusDiv) {
-            // Set loan type
-            const loanType = parsed.loan_type || 'fix_flip';
-            const loanTypeRadio = document.querySelector(`input[name="loanType"][value="${loanType}"]`);
-            if (loanTypeRadio) {
-                loanTypeRadio.checked = true;
-                updateLoanTypeFields(loanType);
+            // Store parsed data for later submission
+            window.lastParsedData = parsed;
+            
+            // Calculate confidence based on fields found
+            const criticalFields = ['purchase_price', 'as_is_value'];
+            const optionalFields = ['arv', 'rehab_budget', 'fico', 'experience', 'property_type'];
+            
+            let criticalFound = criticalFields.filter(f => parsed[f] && parsed[f] > 0).length;
+            let optionalFound = optionalFields.filter(f => parsed[f] && (parsed[f] > 0 || typeof parsed[f] === 'string')).length;
+            
+            const confidence = Math.round((criticalFound / criticalFields.length) * 70 + (optionalFound / optionalFields.length) * 30);
+            
+            // Update confidence badge
+            const confidenceBadge = document.getElementById('mlExtractionConfidence');
+            if (confidenceBadge) {
+                confidenceBadge.textContent = `${confidence}% confidence`;
+                if (confidence >= 80) {
+                    confidenceBadge.className = 'badge badge-success';
+                } else if (confidence >= 50) {
+                    confidenceBadge.className = 'badge badge-warning';
+                } else {
+                    confidenceBadge.className = 'badge badge-danger';
+                }
             }
             
-            // Track populated fields
-            const populatedFields = [];
-            const missingFields = [];
-            
-            // Helper to set field value
-            const setField = (id, value, formatter = null) => {
+            // Populate VISIBLE verification fields
+            const setVerifyField = (id, value) => {
                 const field = document.getElementById(id);
-                if (field && value !== undefined && value !== null) {
-                    field.value = formatter ? formatter(value) : value;
+                if (field && value !== undefined && value !== null && value !== '') {
+                    field.value = value;
                     return true;
                 }
                 return false;
             };
             
-            // Populate numeric fields (now hidden)
-            if (setField('mlAsIsValue', parsed.as_is_value)) {
-                populatedFields.push(`As-Is Value: $${Number(parsed.as_is_value).toLocaleString()}`);
-            } else {
-                missingFields.push('As-Is Value');
-            }
+            // Populate all verification fields
+            setVerifyField('mlVerifyAsIsValue', parsed.as_is_value || parsed.property_value);
+            setVerifyField('mlVerifyARV', parsed.arv);
+            setVerifyField('mlVerifyPurchasePrice', parsed.purchase_price);
+            setVerifyField('mlVerifyRehabBudget', parsed.rehab_budget);
+            setVerifyField('mlVerifyFICO', parsed.fico);
+            setVerifyField('mlVerifyExperience', parsed.experience);
+            setVerifyField('mlVerifyPropertyType', parsed.property_type);
+            setVerifyField('mlVerifyLoanPurpose', parsed.loan_purpose || 'purchase');
             
-            if (setField('mlARV', parsed.arv)) {
-                populatedFields.push(`ARV: $${Number(parsed.arv).toLocaleString()}`);
-            } else {
-                missingFields.push('ARV');
-            }
+            // Also populate hidden fields for submission
+            setVerifyField('mlAsIsValue', parsed.as_is_value || parsed.property_value);
+            setVerifyField('mlARV', parsed.arv);
+            setVerifyField('mlPurchasePrice', parsed.purchase_price);
+            setVerifyField('mlRehabBudget', parsed.rehab_budget);
+            setVerifyField('mlFICO', parsed.fico);
+            setVerifyField('mlExperience', parsed.experience);
+            setVerifyField('mlPropertyType', parsed.property_type);
+            setVerifyField('mlLoanPurpose', parsed.loan_purpose || 'purchase');
             
-            if (setField('mlPurchasePrice', parsed.purchase_price)) {
-                populatedFields.push(`Purchase Price: $${Number(parsed.purchase_price).toLocaleString()}`);
-            } else {
-                missingFields.push('Purchase Price');
-            }
+            // Track populated fields for toast message
+            const populatedFields = [];
+            if (parsed.as_is_value || parsed.property_value) populatedFields.push(`As-Is: $${Number(parsed.as_is_value || parsed.property_value).toLocaleString()}`);
+            if (parsed.purchase_price) populatedFields.push(`Purchase: $${Number(parsed.purchase_price).toLocaleString()}`);
+            if (parsed.arv) populatedFields.push(`ARV: $${Number(parsed.arv).toLocaleString()}`);
+            if (parsed.fico) populatedFields.push(`FICO: ${parsed.fico}`);
             
-            if (setField('mlRehabBudget', parsed.rehab_budget)) {
-                populatedFields.push(`Rehab Budget: $${Number(parsed.rehab_budget).toLocaleString()}`);
-            } else {
-                missingFields.push('Rehab Budget');
-            }
-            
-            if (setField('mlFICO', parsed.fico)) {
-                populatedFields.push(`FICO: ${parsed.fico}`);
-            }
-            
-            if (setField('mlExperience', parsed.experience)) {
-                populatedFields.push(`Experience: ${parsed.experience} years`);
-            }
-            
-            if (setField('mlPropertyType', parsed.property_type)) {
-                populatedFields.push(`Property Type: ${parsed.property_type}`);
-            }
-            
-            // Address fields
-            if (setField('mlPropertyAddress', parsed.property_address)) {
-                populatedFields.push(`Address: ${parsed.property_address}`);
-            }
-            if (setField('mlCity', parsed.city)) {
-                populatedFields.push(`City: ${parsed.city}`);
-            }
-            if (setField('mlState', parsed.state)) {
-                populatedFields.push(`State: ${parsed.state}`);
-            }
-            if (setField('mlZipCode', parsed.zip_code)) {
-                populatedFields.push(`Zip: ${parsed.zip_code}`);
-            }
-            
-            // Show summary of extracted data
+            // Show success toast
             if (populatedFields.length > 0) {
-                showToast(`Extracted from ${filename}:\n${populatedFields.map(f => '✓ ' + f).join('\n')}`, 5000);
+                showToast(`✓ Extracted from ${filename}:\n${populatedFields.join(', ')}`, 4000);
             }
             
-            // Check if we have minimum required fields
+            // Check for missing critical fields
             const hasPurchasePrice = !!parsed.purchase_price;
-            const hasAsIsValue = !!parsed.as_is_value;
+            const hasAsIsValue = !!(parsed.as_is_value || parsed.property_value);
             
             if (!hasPurchasePrice || !hasAsIsValue) {
-                showToast(`⚠️ Missing critical fields: ${missingFields.join(', ')}\nPlease check the file format.`, 5000);
-                statusDiv.innerHTML = '<span class="badge badge-warning">⚠️ Missing required fields</span>';
+                const missing = [];
+                if (!hasPurchasePrice) missing.push('Purchase Price');
+                if (!hasAsIsValue) missing.push('As-Is Value');
+                showToast(`⚠️ Missing: ${missing.join(', ')} - Please enter manually`, 6000);
+            }
+            
+            // HIDE upload section and status
+            const uploadSection = document.querySelector('#multiLenderForm > div:first-of-type');
+            if (uploadSection) uploadSection.style.display = 'none';
+            if (statusDiv) statusDiv.style.display = 'none';
+            
+            // SHOW verification section (instead of auto-submitting)
+            const verificationSection = document.getElementById('mlVerificationSection');
+            if (verificationSection) {
+                verificationSection.style.display = 'block';
+                // Scroll to verification section
+                verificationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Re-initialize icons for new content
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+        
+        // Submit verified data from visible fields
+        function submitVerifiedData() {
+            // Transfer values from visible fields to hidden fields
+            const transferValue = (sourceId, targetId) => {
+                const source = document.getElementById(sourceId);
+                const target = document.getElementById(targetId);
+                if (source && target) {
+                    target.value = source.value;
+                    return true;
+                }
+                return false;
+            };
+            
+            // Transfer all fields
+            transferValue('mlVerifyAsIsValue', 'mlAsIsValue');
+            transferValue('mlVerifyARV', 'mlARV');
+            transferValue('mlVerifyPurchasePrice', 'mlPurchasePrice');
+            transferValue('mlVerifyRehabBudget', 'mlRehabBudget');
+            transferValue('mlVerifyFICO', 'mlFICO');
+            transferValue('mlVerifyExperience', 'mlExperience');
+            transferValue('mlVerifyPropertyType', 'mlPropertyType');
+            transferValue('mlVerifyLoanPurpose', 'mlLoanPurpose');
+            
+            // Validate required fields
+            const asIsValue = parseFloat(document.getElementById('mlVerifyAsIsValue').value);
+            const purchasePrice = parseFloat(document.getElementById('mlVerifyPurchasePrice').value);
+            
+            if (!asIsValue || asIsValue <= 0) {
+                showToast('❌ Please enter a valid As-Is Value', 4000);
+                document.getElementById('mlVerifyAsIsValue').focus();
                 return;
             }
             
-            // Hide upload section, show analyzing state
-            const mlUploadStatusEl = document.getElementById('mlUploadStatus');
-            if (mlUploadStatusEl) mlUploadStatusEl.style.display = 'none';
+            if (!purchasePrice || purchasePrice <= 0) {
+                showToast('❌ Please enter a valid Purchase Price', 4000);
+                document.getElementById('mlVerifyPurchasePrice').focus();
+                return;
+            }
             
-            const mlFirstDiv = document.querySelector('#multiLenderForm > div:first-of-type');
-            if (mlFirstDiv) mlFirstDiv.style.display = 'none';
+            // Hide verification section
+            const verificationSection = document.getElementById('mlVerificationSection');
+            if (verificationSection) verificationSection.style.display = 'none';
             
-            const mlAnalyzingState = document.getElementById('mlAnalyzingState');
-            if (mlAnalyzingState) mlAnalyzingState.style.display = 'block';
+            // Show analyzing state
+            const analyzingState = document.getElementById('mlAnalyzingState');
+            if (analyzingState) {
+                analyzingState.style.display = 'block';
+                analyzingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             
             // Animate progress bar
             const progressBar = document.getElementById('mlProgressBar');
@@ -6942,10 +7085,38 @@
                 setTimeout(() => progressBar.style.width = '90%', 1500);
             }
             
-            // Auto-trigger comparison after short delay
+            // Submit after brief delay
             setTimeout(() => {
                 handleMultiLenderSubmit({ preventDefault: () => {} });
             }, 500);
+        }
+        
+        // Reset multi-lender upload to try different file
+        function resetMultiLenderUpload() {
+            // Show upload section again
+            const uploadSection = document.querySelector('#multiLenderForm > div:first-of-type');
+            if (uploadSection) uploadSection.style.display = 'block';
+            
+            // Hide verification section
+            const verificationSection = document.getElementById('mlVerificationSection');
+            if (verificationSection) verificationSection.style.display = 'none';
+            
+            // Hide analyzing state
+            const analyzingState = document.getElementById('mlAnalyzingState');
+            if (analyzingState) analyzingState.style.display = 'none';
+            
+            // Clear verification fields
+            const verifyFields = ['mlVerifyAsIsValue', 'mlVerifyARV', 'mlVerifyPurchasePrice', 
+                                  'mlVerifyRehabBudget', 'mlVerifyFICO', 'mlVerifyExperience'];
+            verifyFields.forEach(id => {
+                const field = document.getElementById(id);
+                if (field) field.value = '';
+            });
+            
+            // Scroll back to upload
+            if (uploadSection) uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            showToast('Upload a different file or enter data manually', 3000);
         }
 
         // Extract text from PDF using PDF.js
