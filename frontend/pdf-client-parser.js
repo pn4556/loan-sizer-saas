@@ -61,20 +61,25 @@ function parseLoanApplicationFromText(text) {
         console.log('All numbers found:', allNumbers);
         
         if (allNumbers && allNumbers.length >= 4) {
+            // Filter for property-sized numbers (5+ digits, > 10000)
+            const propertyNumbers = allNumbers
+                .map(n => parseFloat(n.replace(/,/g, '')))
+                .filter(n => n > 10000);
+            
+            console.log('Property-sized numbers:', propertyNumbers);
+            
             // For JotForm bridge loan applications, the order is typically:
             // 0: Purchase Price (260000)
             // 1: As-Is Value (269000)
             // 2: Rehab Budget (40000)
             // 3: ARV (405000)
-            // 4: Days to closing (0...)
             
-            const purchasePrice = parseFloat(allNumbers[0].replace(/,/g, ''));
-            const asIsValue = parseFloat(allNumbers[1].replace(/,/g, ''));
-            const rehabBudget = parseFloat(allNumbers[2].replace(/,/g, ''));
-            const arv = parseFloat(allNumbers[3].replace(/,/g, ''));
-            
-            // Validate the numbers make sense (purchase < as-is < arv typically)
-            if (purchasePrice > 10000 && asIsValue > 10000 && rehabBudget >= 0 && arv > 10000) {
+            if (propertyNumbers.length >= 4) {
+                const purchasePrice = propertyNumbers[0];
+                const asIsValue = propertyNumbers[1];
+                const rehabBudget = propertyNumbers[2];
+                const arv = propertyNumbers[3];
+                
                 result.purchase_price = purchasePrice;
                 result.as_is_value = asIsValue;
                 result.rehab_budget = rehabBudget;
