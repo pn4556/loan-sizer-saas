@@ -8113,6 +8113,14 @@
                 
                 let eastviewBridgeApprovalStatus = bridgeLtv <= 80 ? 'approved' : 'declined';
                 
+                // ICE / Guides Bridge Program
+                const iceBridgeMaxLtv = 0.75;
+                const iceBridgeMaxLoan = data.as_is_value * iceBridgeMaxLtv;
+                const iceBridgeRate = 9.75;
+                const iceBridgePoints = 0.01; // 1 point
+                
+                let iceBridgeApprovalStatus = bridgeLtv <= 75 ? 'approved' : (bridgeLtv <= 80 ? 'conditional' : 'declined');
+                
                 return {
                     results: [
                         {
@@ -8146,6 +8154,22 @@
                             monthly_payment: (eastviewBridgeMaxLoan * (eastviewBridgeRate / 100) / 12).toFixed(0),
                             total_cost: (eastviewBridgeMaxLoan * eastviewBridgePoints).toFixed(0),
                             note: 'Up to 80% LTV bridge financing'
+                        },
+                        {
+                            lender: 'ICE',
+                            program: 'Bridge Program',
+                            rate: iceBridgeRate.toFixed(2),
+                            rate_formatted: iceBridgeRate.toFixed(2) + '%',
+                            points: iceBridgePoints,
+                            points_formatted: (iceBridgePoints * 100).toFixed(1) + '%',
+                            max_loan: iceBridgeMaxLoan,
+                            max_loan_formatted: '$' + Math.round(iceBridgeMaxLoan).toLocaleString(),
+                            ltv: bridgeLtv.toFixed(1),
+                            approval_status: iceBridgeApprovalStatus,
+                            confidence: iceBridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
+                            monthly_payment: (iceBridgeMaxLoan * (iceBridgeRate / 100) / 12).toFixed(0),
+                            total_cost: (iceBridgeMaxLoan * iceBridgePoints).toFixed(0),
+                            note: 'Competitive bridge rates'
                         }
                     ],
                     input_summary: {
