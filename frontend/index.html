@@ -9291,48 +9291,59 @@ ltv_ratio: ${ltv}
             const bridgeLoanFields = document.getElementById('bridgeLoanFields');
             const loanPurpose = document.getElementById('mlLoanPurpose');
             
+            // Exit if elements don't exist (e.g., in multi-lender form context)
+            if (!arvField || !rehabField || !ficoField) return;
+            
             if (loanType === 'bridge') {
                 // Bridge loan - ARV and Rehab optional, FICO/Experience not required
-                arvField.querySelector('label').innerHTML = 'ARV <small style="color: var(--gray-500);">(Optional)</small>';
-                arvField.querySelector('input').removeAttribute('required');
+                const arvLabel = arvField.querySelector('label');
+                const arvInput = arvField.querySelector('input');
+                if (arvLabel) arvLabel.innerHTML = 'ARV <small style="color: var(--gray-500);">(Optional)</small>';
+                if (arvInput) arvInput.removeAttribute('required');
                 
-                rehabField.querySelector('label').innerHTML = 'Rehab Budget <small style="color: var(--gray-500);">(Optional)</small>';
-                rehabField.querySelector('input').removeAttribute('required');
+                const rehabLabel = rehabField.querySelector('label');
+                const rehabInput = rehabField.querySelector('input');
+                if (rehabLabel) rehabLabel.innerHTML = 'Rehab Budget <small style="color: var(--gray-500);">(Optional)</small>';
+                if (rehabInput) rehabInput.removeAttribute('required');
                 
                 ficoField.style.display = 'none';
-                experienceField.style.display = 'none';
+                if (experienceField) experienceField.style.display = 'none';
                 
-                bridgeLoanFields.style.display = 'block';
+                if (bridgeLoanFields) bridgeLoanFields.style.display = 'block';
                 
                 // Set loan purpose to bridge
-                loanPurpose.value = 'bridge';
+                if (loanPurpose) loanPurpose.value = 'bridge';
             } else if (loanType === 'dscr') {
                 // DSCR loan - ARV and Rehab not needed
                 arvField.style.display = 'none';
                 rehabField.style.display = 'none';
                 
                 ficoField.style.display = 'block';
-                experienceField.style.display = 'none';
+                if (experienceField) experienceField.style.display = 'none';
                 
-                bridgeLoanFields.style.display = 'none';
+                if (bridgeLoanFields) bridgeLoanFields.style.display = 'none';
                 
-                loanPurpose.value = 'refinance';
+                if (loanPurpose) loanPurpose.value = 'refinance';
             } else {
                 // Fix & Flip - all fields required
                 arvField.style.display = 'block';
-                arvField.querySelector('label').innerHTML = 'ARV <span style="color: var(--danger-500);">*</span>';
-                arvField.querySelector('input').setAttribute('required', 'true');
+                const arvLabel = arvField.querySelector('label');
+                const arvInput = arvField.querySelector('input');
+                if (arvLabel) arvLabel.innerHTML = 'ARV <span style="color: var(--danger-500);">*</span>';
+                if (arvInput) arvInput.setAttribute('required', 'true');
                 
                 rehabField.style.display = 'block';
-                rehabField.querySelector('label').innerHTML = 'Rehab Budget <span style="color: var(--danger-500);">*</span>';
-                rehabField.querySelector('input').setAttribute('required', 'true');
+                const rehabLabel = rehabField.querySelector('label');
+                const rehabInput = rehabField.querySelector('input');
+                if (rehabLabel) rehabLabel.innerHTML = 'Rehab Budget <span style="color: var(--danger-500);">*</span>';
+                if (rehabInput) rehabInput.setAttribute('required', 'true');
                 
                 ficoField.style.display = 'block';
-                experienceField.style.display = 'block';
+                if (experienceField) experienceField.style.display = 'block';
                 
-                bridgeLoanFields.style.display = 'none';
+                if (bridgeLoanFields) bridgeLoanFields.style.display = 'none';
                 
-                loanPurpose.value = 'purchase';
+                if (loanPurpose) loanPurpose.value = 'purchase';
             }
             
             // Re-render icons
