@@ -10526,12 +10526,37 @@ ltv_ratio: ${ltv}
 
         // Export all data
         function exportAllData() {
+            let workQueueData = [];
+            let draftsData = [];
+            try {
+                const wqStored = localStorage.getItem('loanSizer_workQueue');
+                if (wqStored) {
+                    const parsed = JSON.parse(wqStored);
+                    if (Array.isArray(parsed)) {
+                        workQueueData = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading workQueue:', e);
+            }
+            try {
+                const draftsStored = localStorage.getItem('loanSizer_drafts');
+                if (draftsStored) {
+                    const parsed = JSON.parse(draftsStored);
+                    if (Array.isArray(parsed)) {
+                        draftsData = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading drafts:', e);
+            }
+            
             const data = {
                 theme: currentTheme,
                 accent: currentAccent,
                 highContrast: highContrast,
-                workQueue: JSON.parse(localStorage.getItem('loanSizer_workQueue') || '[]'),
-                drafts: JSON.parse(localStorage.getItem('loanSizer_drafts') || '[]'),
+                workQueue: workQueueData,
+                drafts: draftsData,
                 exportedAt: new Date().toISOString()
             };
             
@@ -12037,7 +12062,19 @@ Contact your loan officer to discuss next steps.
         
         // Save batch results to Applications Processed
         function saveBatchToApplications(results) {
-            const existing = JSON.parse(localStorage.getItem('processedApplications') || '[]');
+            let existing = [];
+            try {
+                const stored = localStorage.getItem('processedApplications');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        existing = parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading processed applications:', e);
+                existing = [];
+            }
             
             const newApps = results.map(r => ({
                 id: 'APP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
