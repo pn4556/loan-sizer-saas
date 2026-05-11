@@ -7467,10 +7467,14 @@
 
         // Render lender cards based on filtered results
         function renderLenderCards(results) {
-            // Hide all cards first
-            document.getElementById('ifcCard').style.display = 'none';
-            document.getElementById('iceCard').style.display = 'none';
-            document.getElementById('eastviewCard').style.display = 'none';
+            // Hide all cards first (with null checks)
+            const ifcCard = document.getElementById('ifcCard');
+            const iceCard = document.getElementById('iceCard');
+            const eastviewCard = document.getElementById('eastviewCard');
+            
+            if (ifcCard) ifcCard.style.display = 'none';
+            if (iceCard) iceCard.style.display = 'none';
+            if (eastviewCard) eastviewCard.style.display = 'none';
             
             // Show only filtered cards
             results.forEach((result, index) => {
@@ -7483,16 +7487,20 @@
                 const cardId = cardMap[result.lender];
                 if (cardId) {
                     const card = document.getElementById(cardId);
-                    card.style.display = 'block';
-                    
-                    // Update ranking badge
-                    const rankingDiv = document.getElementById(cardId.replace('Card', 'Ranking'));
-                    if (index === 0) {
-                        rankingDiv.innerHTML = '<span class="badge badge-success">#1 Best Rate</span>';
-                    } else if (index === 1) {
-                        rankingDiv.innerHTML = '<span class="badge badge-warning">#2</span>';
-                    } else {
-                        rankingDiv.innerHTML = `<span class="badge badge-secondary">#${index + 1}</span>`;
+                    if (card) {
+                        card.style.display = 'block';
+                        
+                        // Update ranking badge
+                        const rankingDiv = document.getElementById(cardId.replace('Card', 'Ranking'));
+                        if (rankingDiv) {
+                            if (index === 0) {
+                                rankingDiv.innerHTML = '<span class="badge badge-success">#1 Best Rate</span>';
+                            } else if (index === 1) {
+                                rankingDiv.innerHTML = '<span class="badge badge-warning">#2</span>';
+                            } else {
+                                rankingDiv.innerHTML = `<span class="badge badge-secondary">#${index + 1}</span>`;
+                            }
+                        }
                     }
                 }
             });
@@ -7949,9 +7957,10 @@
             const aiBannerDiv = document.getElementById('aiRecommendationBanner');
             const simpleRecDiv = document.getElementById('simpleRecommendation');
             
-            // Hide analyzing state, show results
-            document.getElementById('mlAnalyzingState').style.display = 'none';
-            resultsDiv.style.display = 'block';
+            // Hide analyzing state, show results (with null check)
+            const mlAnalyzingState = document.getElementById('mlAnalyzingState');
+            if (mlAnalyzingState) mlAnalyzingState.style.display = 'none';
+            if (resultsDiv) resultsDiv.style.display = 'block';
             
             // Get form data for display
             const asIsValue = parseFloat(document.getElementById('mlAsIsValue').value) || 0;
@@ -8249,6 +8258,9 @@
             const rankingDiv = document.getElementById(mapping.ranking);
             const contentDiv = document.getElementById(mapping.content);
             const cardDiv = document.getElementById(mapping.card);
+            
+            // Exit if elements don't exist
+            if (!rankingDiv || !cardDiv) return;
 
             // Approval status styling
             const statusColors = {
@@ -9345,8 +9357,11 @@ ltv_ratio: ${ltv}
             lastMultiLenderResults = null;
             
             // Show upload area, hide analyzing state
-            document.getElementById('mlAnalyzingState').style.display = 'none';
-            document.querySelector('#multiLenderForm > div:first-of-type').style.display = 'block';
+            const mlAnalyzingState = document.getElementById('mlAnalyzingState');
+            if (mlAnalyzingState) mlAnalyzingState.style.display = 'none';
+            
+            const mlFormFirstDiv = document.querySelector('#multiLenderForm > div:first-of-type');
+            if (mlFormFirstDiv) mlFormFirstDiv.style.display = 'block';
             
             // Reset hidden fields
             document.getElementById('mlAsIsValue').value = '';
