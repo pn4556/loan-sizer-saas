@@ -10579,10 +10579,14 @@ ltv_ratio: ${ltv}
         const originalShowSection = showSection;
         showSection = function(section) {
             document.querySelectorAll('[id$="Section"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(section + 'Section').classList.remove('hidden');
+            const targetSection = document.getElementById(section + 'Section');
+            if (targetSection) targetSection.classList.remove('hidden');
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
+            if (event && event.target) {
+                const navItem = event.target.closest('.nav-item');
+                if (navItem) navItem.classList.add('active');
+            }
             
             if (section === 'history') {
                 renderLoanHistory();
