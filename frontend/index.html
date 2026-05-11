@@ -11532,10 +11532,7 @@ Contact your loan officer to discuss next steps.
     
     <!-- Multi-Application Batch Processing Functions -->
     <script>
-        // Store batch results
-        let currentBatchResults = [];
-        
-        // Handle batch file selection
+        // Handle batch file selection (for Multi-Application section)
         async function handleBatchFileSelect(event) {
             const files = Array.from(event.target.files);
             if (files.length === 0) return;
@@ -11568,10 +11565,7 @@ Contact your loan officer to discuss next steps.
                 }
             }
             
-            currentBatchResults = results;
             displayBatchResults(results);
-            
-            // Save to Applications Processed
             saveBatchToApplications(results);
             
             if (statusDiv) {
@@ -11686,7 +11680,7 @@ Contact your loan officer to discuss next steps.
                 results.push(result);
             }
             
-            currentBatchResults = results;
+            window.lastBatchResults = results;
             displayBatchResults(results);
             saveBatchToApplications(results);
             
@@ -11760,14 +11754,15 @@ Contact your loan officer to discuss next steps.
         
         // Export batch results
         function exportBatchResults() {
-            if (currentBatchResults.length === 0) {
+            const results = window.lastBatchResults || [];
+            if (results.length === 0) {
                 showToast('No results to export', 3000);
                 return;
             }
             
             const csv = [
                 ['Applicant', 'Loan Type', 'Amount', 'FICO', 'Status', 'Best Lender'].join(','),
-                ...currentBatchResults.map(r => [
+                ...results.map(r => [
                     r.applicantName,
                     r.loanType,
                     r.loanAmount,
@@ -11790,7 +11785,7 @@ Contact your loan officer to discuss next steps.
         
         // Clear batch results
         function clearBatchResults() {
-            currentBatchResults = [];
+            window.lastBatchResults = [];
             const section = document.getElementById('batchResultsSection');
             if (section) section.style.display = 'none';
             
