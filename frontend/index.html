@@ -6498,22 +6498,45 @@
         
         // Upload PDF to server - NOW USES CLIENT-SIDE PARSING
         async function uploadAndParsePDF(file, statusDiv) {
-            statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
+            console.log('Starting PDF upload:', file.name);
+            statusDiv.innerHTML = '<span class="badge badge-info">Loading PDF parser...</span>';
             
             try {
+                // Check if parser is available
+                if (typeof parsePDFFile !== 'function') {
+                    console.error('PDF parser not loaded');
+                    throw new Error('PDF parser not available. Please refresh the page.');
+                }
+                
+                statusDiv.innerHTML = '<span class="badge badge-info">Reading PDF...</span>';
+                
                 // Use client-side PDF parsing (no backend needed)
                 const result = await parsePDFFile(file);
                 
+                console.log('PDF parse result:', result);
+                
                 if (result.success && result.data) {
-                    statusDiv.innerHTML = `<span class="badge badge-success">✓ Parsed (${result.confidence}% confidence)</span>`;
+                    const confidence = result.confidence || 0;
+                    let badgeClass = 'badge-success';
+                    if (confidence < 40) badgeClass = 'badge-warning';
+                    if (confidence < 20) badgeClass = 'badge-danger';
+                    
+                    statusDiv.innerHTML = `<span class="badge ${badgeClass}">✓ Parsed (${confidence}% fields found)</span>`;
+                    
+                    if (confidence < 30) {
+                        showToast('Low confidence extraction. Please verify and fill missing fields.', 8000);
+                    }
+                    
                     populateFormWithParsedData(result.data, file.name, statusDiv);
                 } else {
-                    throw new Error(result.error || 'Could not extract data from PDF');
+                    const errorMsg = result.error || 'Could not extract data from PDF';
+                    console.error('Parse failed:', errorMsg);
+                    throw new Error(errorMsg);
                 }
             } catch (error) {
                 console.error('PDF parsing error:', error);
-                statusDiv.innerHTML = '<span class="badge badge-warning">PDF parsing failed - try manual entry</span>';
-                showToast('PDF parsing error: ' + error.message, 5000);
+                statusDiv.innerHTML = '<span class="badge badge-danger">✗ PDF Error: ' + error.message + '</span>';
+                showToast('PDF Error: ' + error.message + '. Try manual entry or a different PDF.', 8000);
             }
         }
         
@@ -11291,7 +11314,8 @@ Contact your loan officer to discuss next steps.
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
     
-    <!-- Client-side PDF Parser -->
-    <script src="pdf-client-parser.js"></script>
+    <!-- Client-side PDF Parser - Load before other scripts -->
+    <script src="pdf-client-parser.js?v=2"></script>
+    
 </body>
 </html>

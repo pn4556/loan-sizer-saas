@@ -1,51 +1,120 @@
 // Client-side PDF Parser for Loan Sizer
 // Uses pdf.js to extract text directly in browser
 
-// Load PDF.js from CDN
-const PDF_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-const PDF_JS_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
+// PDF.js loaded flag
 let pdfJsLoaded = false;
+let pdfJsLoading = false;
 
-// Initialize PDF.js
+// Initialize PDF.js with better error handling
 async function initPdfJs() {
-    if (pdfJsLoaded) return;
-    
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = PDF_JS_URL;
-        script.onload = () => {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER_URL;
-            pdfJsLoaded = true;
-            resolve();
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-}
-
-// Extract text from PDF file
-async function extractTextFromPDF(file) {
-    await initPdfJs();
-    
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    
-    let fullText = '';
-    const numPages = pdf.numPages;
-    
-    for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map(item => item.str).join(' ');
-        fullText += pageText + '\n';
+    if (pdfJsLoaded) return true;
+    if (pdfJsLoading) {
+        // Wait for existing load attempt
+        while (pdfJsLoading) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return pdfJsLoaded;
     }
     
-    return fullText;
+    pdfJsLoading = true;
+    
+    try {
+        // Check if pdfjsLib is already loaded
+        if (typeof pdfjsLib !== 'undefined') {
+            console.log('PDF.js already loaded');
+            pdfJsLoaded = true;
+            pdfJsLoading = false;
+            return true;
+        }
+        
+        // Load PDF.js from CDN
+        console.log('Loading PDF.js...');
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load PDF.js'));
+            document.head.appendChild(script);
+        });
+        
+        // Wait a bit for PDF.js to initialize
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Check if loaded
+        if (typeof pdfjsLib === 'undefined') {
+            throw new Error('PDF.js failed to initialize');
+        }
+        
+        // Set worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        console.log('PDF.js loaded successfully');
+        pdfJsLoaded = true;
+        return true;
+    } catch (error) {
+        console.error('PDF.js initialization error:', error);
+        pdfJsLoaded = false;
+        throw error;
+    } finally {
+        pdfJsLoading = false;
+    }
+}
+
+// Extract text from PDF file with error handling
+async function extractTextFromPDF(file) {
+    try {
+        await initPdfJs();
+        
+        console.log('Reading PDF file:', file.name, 'Size:', file.size);
+        const arrayBuffer = await file.arrayBuffer();
+        
+        console.log('Loading PDF document...');
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        console.log('PDF loaded, pages:', pdf.numPages);
+        
+        let fullText = '';
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+            try {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                if (textContent && textContent.items && textContent.items.length > 0) {
+                    const pageText = textContent.items
+                        .filter(item => item.str && item.str.trim())
+                        .map(item => item.str)
+                        .join(' ');
+                    fullText += pageText + '\n';
+                }
+                
+                page.cleanup && page.cleanup();
+            } catch (pageError) {
+                console.warn('Error reading page', i, ':', pageError);
+                // Continue with other pages
+            }
+        }
+        
+        console.log('Extracted text length:', fullText.length);
+        
+        if (fullText.length === 0) {
+            throw new Error('PDF appears to be a scanned image. No text found.');
+        }
+        
+        return fullText;
+    } catch (error) {
+        console.error('PDF extraction error:', error);
+        throw error;
+    }
 }
 
 // Parse loan application from extracted text
 function parseLoanApplicationFromText(text) {
+    if (!text || typeof text !== 'string') {
+        throw new Error('No text to parse');
+    }
+    
+    console.log('Parsing text, length:', text.length);
+    
     const data = {
         borrower_name: '',
         property_address: '',
@@ -71,36 +140,68 @@ function parseLoanApplicationFromText(text) {
         expenses: ''
     };
     
+    const textLower = text.toLowerCase();
+    
     // Borrower name patterns
-    const borrowerMatch = text.match(/(?:borrower|applicant|client|name)[\s:]*(\w+\s+\w+)/i);
-    if (borrowerMatch) data.borrower_name = borrowerMatch[1];
+    const borrowerPatterns = [
+        /(?:borrower|applicant|client|customer)[\s:]*([A-Z][a-z]+\s+[A-Z][a-z]+)/,
+        /name[\s:]*([A-Z][a-z]+\s+[A-Z][a-z]+)/i
+    ];
+    for (const pattern of borrowerPatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            data.borrower_name = match[1].trim();
+            break;
+        }
+    }
     
     // Property address
-    const addressMatch = text.match(/(\d+[^,\n]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|Court|Ct|Circle|Cir|Place|Pl|Trail|Trl|Parkway|Pkwy)[^,]*)/i);
+    const addressMatch = text.match(/(\d+\s+[^,\n]{10,60}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|Court|Ct|Circle|Cir|Place|Pl|Trail|Trl|Parkway|Pkwy)[^,]*)/i);
     if (addressMatch) data.property_address = addressMatch[1].trim();
     
     // City, State, ZIP
-    const cityStateZip = text.match(/([^,]+),?\s*(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s*(\d{5}(?:-\d{4})?)/i);
+    const cityStateZip = text.match(/([^,\n]{3,30}),?\s*([A-Z]{2})\s*(\d{5}(?:-\d{4})?)/);
     if (cityStateZip) {
         data.property_city = cityStateZip[1].trim();
         data.property_state = cityStateZip[2];
         data.property_zip = cityStateZip[3];
     }
     
-    // Loan amount
-    const loanMatch = text.match(/(?:loan amount|requested amount|financing)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (loanMatch) {
-        data.loan_amount = parseFloat(loanMatch[1].replace(/,/g, ''));
+    // Loan amount - look for dollar amounts
+    const loanPatterns = [
+        /(?:loan amount|requested|financing|loan)[\s:$]*([\d,]+(?:\.\d{2})?)/i,
+        /\$?([\d,]{6,10})(?:\.\d{2})?/g
+    ];
+    for (const pattern of loanPatterns) {
+        if (typeof pattern === 'string') continue;
+        const match = text.match(pattern);
+        if (match) {
+            const amount = parseFloat(match[1].replace(/,/g, ''));
+            if (amount >= 50000 && amount <= 50000000) {
+                data.loan_amount = amount;
+                break;
+            }
+        }
     }
     
     // Property value / purchase price
-    const valueMatch = text.match(/(?:purchase price|property value|appraised value|sales price)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (valueMatch) {
-        data.property_value = parseFloat(valueMatch[1].replace(/,/g, ''));
+    const valuePatterns = [
+        /(?:purchase price|property value|appraised|sales price)[\s:$]*([\d,]+(?:\.\d{2})?)/i,
+        /value[\s:$]*([\d,]{6,10})/i
+    ];
+    for (const pattern of valuePatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            const amount = parseFloat(match[1].replace(/,/g, ''));
+            if (amount >= 50000 && amount <= 50000000) {
+                data.property_value = amount;
+                break;
+            }
+        }
     }
     
     // Credit score
-    const creditMatch = text.match(/(?:credit score|fico|credit)[\s:]*(\d{3})/i);
+    const creditMatch = text.match(/(?:credit score|fico)[\s:]*(\d{3})/i);
     if (creditMatch) {
         const score = parseInt(creditMatch[1]);
         if (score >= 300 && score <= 850) {
@@ -108,115 +209,102 @@ function parseLoanApplicationFromText(text) {
         }
     }
     
-    // DSCR (Debt Service Coverage Ratio)
-    const dscrMatch = text.match(/(?:dscr|debt service coverage|coverage ratio)[\s:]*(\d+\.?\d*)/i);
+    // DSCR
+    const dscrMatch = text.match(/(?:dscr|coverage ratio)[\s:]*(\d+\.?\d*)/i);
     if (dscrMatch) {
-        data.dscr = parseFloat(dscrMatch[1]);
+        const dscr = parseFloat(dscrMatch[1]);
+        if (dscr >= 0.5 && dscr <= 5.0) {
+            data.dscr = dscr;
+        }
     }
     
-    // NOI (Net Operating Income)
-    const noiMatch = text.match(/(?:noi|net operating income)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
+    // NOI
+    const noiMatch = text.match(/(?:noi|net operating income)[\s:$]*([\d,]+)/i);
     if (noiMatch) {
         data.noi = parseFloat(noiMatch[1].replace(/,/g, ''));
     }
     
-    // Property type
-    const typeMatch = text.match(/(?:property type|type of property|building type)[\s:]*(\w+)/i);
-    if (typeMatch) {
-        data.property_type = typeMatch[1];
+    // Bedrooms
+    const bedsMatch = text.match(/(\d+)\s*(?:bed|br)/i);
+    if (bedsMatch) {
+        const beds = parseInt(bedsMatch[1]);
+        if (beds >= 0 && beds <= 20) data.beds = beds;
     }
     
-    // Bedrooms
-    const bedsMatch = text.match(/(\d+)\s*(?:bed|bedroom|br)/i);
-    if (bedsMatch) data.beds = parseInt(bedsMatch[1]);
-    
     // Bathrooms
-    const bathsMatch = text.match(/(\d+(?:\.5)?)\s*(?:bath|bathroom|ba)/i);
-    if (bathsMatch) data.baths = parseFloat(bathsMatch[1]);
+    const bathsMatch = text.match(/(\d+(?:\.5)?)\s*(?:bath|ba)/i);
+    if (bathsMatch) {
+        const baths = parseFloat(bathsMatch[1]);
+        if (baths >= 0 && baths <= 20) data.baths = baths;
+    }
     
     // Square footage
-    const sqftMatch = text.match(/(\d{3,5})\s*(?:sq\.?\s*ft\.?|square feet|sf)/i);
+    const sqftMatch = text.match(/(\d{3,5})\s*(?:sq\.?\s*ft|sf|square feet)/i);
     if (sqftMatch) data.sqft = parseInt(sqftMatch[1]);
     
     // Year built
-    const yearMatch = text.match(/(?:year built|built|construction year)[\s:]*(\d{4})/i);
+    const yearMatch = text.match(/(?:year built|built)[\s:]*(\d{4})/i);
     if (yearMatch) {
         const year = parseInt(yearMatch[1]);
-        if (year >= 1800 && year <= 2026) {
-            data.year_built = year;
-        }
+        if (year >= 1800 && year <= 2026) data.year_built = year;
     }
     
-    // Rental income
-    const rentMatch = text.match(/(?:rental income|monthly rent|gross rent)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (rentMatch) {
-        data.rental_income = parseFloat(rentMatch[1].replace(/,/g, ''));
-    }
-    
-    // Occupancy
-    const occMatch = text.match(/(\d+)%?\s*(?:occupancy|occupied)/i);
-    if (occMatch) data.occupancy = parseInt(occMatch[1]);
-    
-    // Property taxes
-    const taxMatch = text.match(/(?:property tax|taxes|annual tax)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (taxMatch) {
-        data.property_taxes = parseFloat(taxMatch[1].replace(/,/g, ''));
-    }
-    
-    // Insurance
-    const insMatch = text.match(/(?:insurance|hazard insurance)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (insMatch) {
-        data.insurance = parseFloat(insMatch[1].replace(/,/g, ''));
-    }
-    
-    // Gross income
-    const grossMatch = text.match(/(?:gross income|gross revenue|total income)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (grossMatch) {
-        data.gross_income = parseFloat(grossMatch[1].replace(/,/g, ''));
-    }
-    
-    // Expenses
-    const expMatch = text.match(/(?:expenses|operating expenses|total expenses)[\s:$]*([\d,]+(?:\.\d{2})?)/i);
-    if (expMatch) {
-        data.expenses = parseFloat(expMatch[1].replace(/,/g, ''));
-    }
+    console.log('Parsed fields:', Object.entries(data).filter(([k,v]) => v).map(([k,v]) => k));
     
     return data;
 }
 
 // Main function to parse PDF file
 async function parsePDFFile(file) {
+    console.log('Starting PDF parse for:', file.name);
+    
     try {
-        console.log('Parsing PDF:', file.name);
+        if (!file || file.size === 0) {
+            throw new Error('No file provided or file is empty');
+        }
+        
+        if (file.size > 20 * 1024 * 1024) {
+            throw new Error('PDF too large (max 20MB)');
+        }
+        
+        // Extract text
         const text = await extractTextFromPDF(file);
-        console.log('Extracted text length:', text.length);
         
+        if (!text || text.length === 0) {
+            throw new Error('Could not extract text from PDF');
+        }
+        
+        // Parse data
         const data = parseLoanApplicationFromText(text);
-        console.log('Parsed data:', data);
         
-        // Calculate confidence score
+        // Calculate confidence
         const filledFields = Object.values(data).filter(v => v !== '' && v !== null && v !== undefined).length;
         const totalFields = Object.keys(data).length;
         const confidence = Math.round((filledFields / totalFields) * 100);
+        
+        console.log('Parse complete. Confidence:', confidence + '%');
         
         return {
             success: true,
             data: data,
             confidence: confidence,
-            raw_text: text.substring(0, 500) + '...',
+            raw_text_preview: text.substring(0, 500),
             method: 'client-side-pdf-js'
         };
     } catch (error) {
-        console.error('PDF parsing error:', error);
+        console.error('PDF parse error:', error);
         return {
             success: false,
             error: error.message,
-            data: {}
+            data: {},
+            confidence: 0
         };
     }
 }
 
-// Export for use in other scripts
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { parsePDFFile, extractTextFromPDF, parseLoanApplicationFromText };
-}
+// Make functions globally available
+window.parsePDFFile = parsePDFFile;
+window.extractTextFromPDF = extractTextFromPDF;
+window.parseLoanApplicationFromText = parseLoanApplicationFromText;
+
+console.log('PDF Client Parser loaded');
