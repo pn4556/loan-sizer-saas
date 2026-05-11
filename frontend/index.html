@@ -5410,7 +5410,19 @@
         }
 
         // Loan History Management
-        let loanHistory = JSON.parse(localStorage.getItem('loanHistory') || '[]');
+        let loanHistory = [];
+        try {
+            const stored = localStorage.getItem('loanHistory');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    loanHistory = parsed;
+                }
+            }
+        } catch (e) {
+            console.error('Error loading loan history:', e);
+            loanHistory = [];
+        }
 
         function addToLoanHistory(loanData) {
             const historyEntry = {
@@ -9773,7 +9785,19 @@ ltv_ratio: ${ltv}
         // ============================================
 
         // Work Queue Management
-        let workQueue = JSON.parse(localStorage.getItem('loanSizer_workQueue') || '[]');
+        let workQueue = [];
+        try {
+            const stored = localStorage.getItem('loanSizer_workQueue');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    workQueue = parsed;
+                }
+            }
+        } catch (e) {
+            console.error('Error loading work queue:', e);
+            workQueue = [];
+        }
 
         function addToWorkQueue(item) {
             const existing = workQueue.find(q => q.id === item.id);
