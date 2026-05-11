@@ -6988,6 +6988,7 @@
             };
             
             // Populate all verification fields
+            console.log('Populating verification form with:', parsed);
             setVerifyField('mlVerifyAsIsValue', parsed.as_is_value || parsed.property_value);
             setVerifyField('mlVerifyARV', parsed.arv);
             setVerifyField('mlVerifyPurchasePrice', parsed.purchase_price);
@@ -6996,6 +6997,13 @@
             setVerifyField('mlVerifyExperience', parsed.experience);
             setVerifyField('mlVerifyPropertyType', parsed.property_type);
             setVerifyField('mlVerifyLoanPurpose', parsed.loan_purpose || 'purchase');
+            
+            // Log what was actually set
+            console.log('Verification form values:', {
+                asIs: document.getElementById('mlVerifyAsIsValue')?.value,
+                rehab: document.getElementById('mlVerifyRehabBudget')?.value,
+                purchase: document.getElementById('mlVerifyPurchasePrice')?.value
+            });
             
             // Also populate hidden fields for submission
             setVerifyField('mlAsIsValue', parsed.as_is_value || parsed.property_value);
@@ -7898,6 +7906,11 @@
                     const contentDiv = document.getElementById(cardId.replace('Card', 'Content'));
                     if (card) {
                         card.style.display = 'block';
+                        card.style.visibility = 'visible';
+                        console.log('✓ Set card', cardId, 'to display:block, visibility:visible');
+                        
+                        // Force reflow
+                        void card.offsetHeight;
                         
                         // Update ranking badge
                         const rankingDiv = document.getElementById(cardId.replace('Card', 'Ranking'));
@@ -8592,7 +8605,13 @@
                 console.error('No results to render:', result);
             }
 
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            // Scroll to results with delay to ensure rendering
+            if (resultsDiv) {
+                setTimeout(() => {
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    console.log('Scrolled to resultsDiv');
+                }, 200);
+            }
         }
 
         // Generate AI recommendation based on all factors
