@@ -4213,6 +4213,48 @@
                                     <!-- Populated by JS -->
                                 </div>
 
+                                <!-- 3 Lender Comparison Cards -->
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
+                                    <!-- IFC Card -->
+                                    <div id="ifcCard" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); overflow: hidden; display: none;">
+                                        <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); padding: var(--space-4); color: white;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <h4 style="margin: 0; font-size: var(--text-lg);">IFC</h4>
+                                                <div id="ifcRanking"></div>
+                                            </div>
+                                        </div>
+                                        <div id="ifcContent" style="padding: var(--space-5);">
+                                            <!-- Populated by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- ICE Card -->
+                                    <div id="iceCard" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); overflow: hidden; display: none;">
+                                        <div style="background: linear-gradient(135deg, #1e40af, #60a5fa); padding: var(--space-4); color: white;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <h4 style="margin: 0; font-size: var(--text-lg);">ICE / Guides</h4>
+                                                <div id="iceRanking"></div>
+                                            </div>
+                                        </div>
+                                        <div id="iceContent" style="padding: var(--space-5);">
+                                            <!-- Populated by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Eastview Card -->
+                                    <div id="eastviewCard" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); overflow: hidden; display: none;">
+                                        <div style="background: linear-gradient(135deg, #0f766e, #14b8a6); padding: var(--space-4); color: white;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <h4 style="margin: 0; font-size: var(--text-lg);">Eastview</h4>
+                                                <div id="eastviewRanking"></div>
+                                            </div>
+                                        </div>
+                                        <div id="eastviewContent" style="padding: var(--space-5);">
+                                            <!-- Populated by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Simple Recommendation Card -->
                                 <div id="simpleRecommendation" style="background: var(--surface-1); border: 1px solid var(--surface-3); border-radius: var(--radius-lg); padding: var(--space-6);">
                                     <!-- Populated by JS with simple, clean format -->
