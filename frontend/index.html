@@ -11702,10 +11702,21 @@ Contact your loan officer to discuss next steps.
 
         // Update dashboard metrics with batch results
         function updateDashboardMetrics(results) {
+            // Defensive check - ensure results is an array
+            if (!results || !Array.isArray(results)) {
+                console.log('updateDashboardMetrics: No results to display');
+                return;
+            }
+            
             const total = results.length;
+            if (total === 0) {
+                console.log('updateDashboardMetrics: Empty results array');
+                return;
+            }
+            
             const pass = results.filter(r => r.result === 'PASS').length;
-            const avgFico = Math.round(results.reduce((sum, r) => sum + r.fico, 0) / total);
-            const totalVolume = results.reduce((sum, r) => sum + r.loanAmount, 0);
+            const avgFico = Math.round(results.reduce((sum, r) => sum + (r.fico || 0), 0) / total);
+            const totalVolume = results.reduce((sum, r) => sum + (r.loanAmount || 0), 0);
             
             // Update stat cards
             const totalAppsEl = document.getElementById('metricTotalApplications');
