@@ -7048,7 +7048,8 @@
             
             if (verificationSection) {
                 verificationSection.style.display = 'block';
-                console.log('Set verification section to display: block');
+                verificationSection.classList.remove('hidden');
+                console.log('Set verification section to display: block and removed hidden class');
                 // Scroll to verification section
                 setTimeout(() => {
                     verificationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
