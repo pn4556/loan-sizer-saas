@@ -6452,6 +6452,11 @@
             clearCompareState();
 
             const statusDiv = document.getElementById('mlUploadStatus');
+            if (!statusDiv) {
+                console.error('mlUploadStatus element not found');
+                showToast('Error: Upload status element not found. Please refresh the page.', 5000);
+                return;
+            }
             statusDiv.style.display = 'block';
             statusDiv.innerHTML = '<span class="badge badge-info">Uploading...</span>';
 
@@ -6749,9 +6754,14 @@
             }
             
             // Hide upload section, show analyzing state
-            document.getElementById('mlUploadStatus').style.display = 'none';
-            document.querySelector('#multiLenderForm > div:first-of-type').style.display = 'none';
-            document.getElementById('mlAnalyzingState').style.display = 'block';
+            const mlUploadStatusEl = document.getElementById('mlUploadStatus');
+            if (mlUploadStatusEl) mlUploadStatusEl.style.display = 'none';
+            
+            const mlFirstDiv = document.querySelector('#multiLenderForm > div:first-of-type');
+            if (mlFirstDiv) mlFirstDiv.style.display = 'none';
+            
+            const mlAnalyzingState = document.getElementById('mlAnalyzingState');
+            if (mlAnalyzingState) mlAnalyzingState.style.display = 'block';
             
             // Animate progress bar
             const progressBar = document.getElementById('mlProgressBar');
