@@ -29,69 +29,126 @@ async function extractTextFromPDF(file) {
 // Parse loan application from extracted text
 function parseLoanApplicationFromText(text) {
     const result = {};
+    const lineMap = {};
     
     console.log('=== PARSING PDF TEXT ===');
     console.log('Text length:', text.length);
     console.log('First 2000 chars:', text.substring(0, 2000));
     
-    // Extract values using regex patterns
+    // Split into lines and clean up
+    const lines = text.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+    
+    // Find the data section - look for the line with field labels
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const lowerLine = line.toLowerCase();
+        
+        // Check if this line contains the field labels we're looking for
+        if (lowerLine.includes('purchase price') && lowerLine.includes('as-is')) {
+            console.log('Found label line at index', i, ':', line);
+            
+            // The next line should have the values
+            if (i + 1 < lines.length) {
+                const valuesLine = lines[i + 1];
+                console.log('Values line:', valuesLine);
+                
+                // Extract all numbers from the values line
+                const allNumbers = valuesLine.match(/(\d[\d,]+)/g);
+                console.log('All numbers found:', allNumbers);
+                
+                if (allNumbers) {
+                    // Parse labels to determine field order
+                    // Format: "Is The Property Under Contract: Purchase Price: As-Is Property Value: Rehab Amount Requested: After Repair Property Value: Property Type:"
+                    const labelOrder = [];
+                    
+                    if (line.match(/purchase price/i)) labelOrder.push('purchase_price');
+                    if (line.match(/as-is/i)) labelOrder.push('as_is_value');
+                    if (line.match(/rehab/i)) labelOrder.push('rehab_budget');
+                    if (line.match(/after repair/i) || line.match(/arv/i)) labelOrder.push('arv');
+                    
+                    console.log('Label order:', labelOrder);
+                    
+                    // Map numbers to fields
+                    labelOrder.forEach((field, idx) => {
+                        if (allNumbers[idx]) {
+                            const numVal = parseFloat(allNumbers[idx].replace(/,/g, ''));
+                            if (!isNaN(numVal) && numVal > 0) {
+                                result[field] = numVal;
+                                console.log(`✓ Set ${field}:`, numVal);
+                            }
+                        }
+                    });
+                }
+            }
+            break; // Found the data section
+        }
+    }
+    
+    // Fallback: Use regex patterns if line-based parsing didn't find values
     const extractValue = (patterns, fieldName) => {
+        if (result[fieldName]) return; // Already found
         for (const pattern of patterns) {
             const match = text.match(pattern);
             if (match && match[1]) {
                 const val = match[1].replace(/[$,\s]/g, '').trim();
                 const numVal = parseFloat(val);
                 if (!isNaN(numVal) && numVal > 0) {
-                    console.log(`✓ Extracted ${fieldName}:`, numVal);
-                    return numVal;
+                    console.log(`✓ Extracted ${fieldName} (regex):`, numVal);
+                    result[fieldName] = numVal;
+                    return;
                 }
             }
         }
-        return null;
     };
     
-    // Purchase Price patterns
-    result.purchase_price = extractValue([
-        /Purchase Price[:\s]+\$?([\d,]+)/i,
-        /Purchase Price[:\s]*\n+\$?(\d[\d,]*)/i,
-        /Purchase Price[:\s]*\n+Yes\s+\w+[\s\w]*\n+(\d{5,})/i,
-        /purchase.*?\$?([\d,]{5,})/i
-    ], 'purchase_price');
+    // Only use regex fallbacks for fields not found via line parsing
+    if (!result.purchase_price) {
+        extractValue([
+            /Purchase Price[:\s]+\$?([\d,]+)/i,
+            /purchase.*?\$?([\d,]{5,})/i
+        ], 'purchase_price');
+    }
     
-    // As-Is Value patterns
-    result.as_is_value = extractValue([
-        /As-Is (?:Property )?Value[:\s]+\$?([\d,]+)/i,
-        /Current Value[:\s]+\$?([\d,]+)/i,
-        /as.is.*?\$?([\d,]{5,})/i
-    ], 'as_is_value');
+    if (!result.as_is_value) {
+        extractValue([
+            /As-Is (?:Property )?Value[:\s]+\$?([\d,]+)/i,
+            /as.is.*?\$?([\d,]{5,})/i
+        ], 'as_is_value');
+    }
     
-    // ARV patterns
-    result.arv = extractValue([
-        /After Repair (?:Property )?Value[:\s]+\$?([\d,]+)/i,
-        /ARV[:\s]+\$?([\d,]+)/i,
-        /arv.*?\$?([\d,]{5,})/i
-    ], 'arv');
+    if (!result.arv) {
+        extractValue([
+            /After Repair (?:Property )?Value[:\s]+\$?([\d,]+)/i,
+            /ARV[:\s]+\$?([\d,]+)/i,
+            /arv.*?\$?([\d,]{5,})/i
+        ], 'arv');
+    }
     
-    // Rehab Budget patterns
-    result.rehab_budget = extractValue([
-        /Rehab (?:Amount|Budget)[:\s]+\$?([\d,]+)/i,
-        /Renovation Budget[:\s]+\$?([\d,]+)/i,
-        /rehab.*?\$?([\d,]{3,})/i
-    ], 'rehab_budget');
+    if (!result.rehab_budget) {
+        extractValue([
+            /Rehab (?:Amount|Budget)[:\s]+\$?([\d,]+)/i,
+            /Renovation Budget[:\s]+\$?([\d,]+)/i,
+            /rehab.*?\$?([\d,]{3,})/i
+        ], 'rehab_budget');
+    }
     
     // FICO patterns
-    result.fico = extractValue([
-        /FICO[:\s]+(\d{3})/i,
-        /Credit Score[:\s]+(\d{3})/i,
-        /fico.*?\b(\d{3})\b/i
-    ], 'fico');
+    if (!result.fico) {
+        extractValue([
+            /FICO[:\s]+(\d{3})/i,
+            /Credit Score[:\s]+(\d{3})/i,
+            /fico.*?\b(\d{3})\b/i
+        ], 'fico');
+    }
     
     // Experience patterns
-    result.experience = extractValue([
-        /Experience[:\s]+(\d+)/i,
-        /(\d+)\s+(?:years|deals|flips|sold)/i,
-        /(\d+)\s+sold/i
-    ], 'experience');
+    if (!result.experience) {
+        extractValue([
+            /Experience[:\s]+(\d+)/i,
+            /(\d+)\s+(?:years|deals|flips|sold)/i,
+            /(\d+)\s+sold/i
+        ], 'experience');
+    }
     
     // Property Type
     const propTypeMatch = text.match(/Property Type[:\s]+([A-Za-z\-]+(?:\s+[A-Za-z]+)?)/i);
