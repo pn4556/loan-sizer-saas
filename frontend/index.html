@@ -8138,6 +8138,11 @@
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
+            
+            // Render lender comparison cards
+            if (result && result.results) {
+                renderLenderCards(result.results);
+            }
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
