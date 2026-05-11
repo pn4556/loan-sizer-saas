@@ -7277,52 +7277,54 @@
                         
                         // Split value line by looking for patterns
                         // Values could be: "Yes No 260000" or "269000 40000" or "405000 Single-Family"
-                        // Strategy: Look for the last numeric value as the boundary
-                        const valueMatches = valueLine.match(/(\d[\d,]*|\b(?:Yes|No)\b|[A-Za-z][A-Za-z\s]*)/gi);
+                        // For multi-column layouts, extract ALL numbers and map them by position
+                        const allNumbers = valueLine.match(/(\d[\d,]+)/g);
+                        console.log('Two-column parsing - labelParts:', labelParts, 'allNumbers:', allNumbers, 'valueLine:', valueLine);
                         
-                        if (labelParts.length >= 2) {
-                            // Map first label to first value(s), second label to remaining value(s)
-                            // For "Is The Property Under Contract: Purchase Price:" with "Yes No 260000"
-                            // First label gets "Yes No", second gets "260000"
+                        if (allNumbers && allNumbers.length >= 2) {
+                            // Count how many numeric fields we expect in this label group
+                            const numericFieldLabels = labelParts.filter(lp => 
+                                lp.toLowerCase().includes('price') ||
+                                lp.toLowerCase().includes('value') ||
+                                lp.toLowerCase().includes('rehab') ||
+                                lp.toLowerCase().includes('arv')
+                            );
                             
-                            if (labelParts[0].toLowerCase().includes('under contract')) {
-                                // Extract Yes/No from value line
-                                const contractMatch = valueLine.match(/\b(yes|no)\b/i);
-                                lineMap['under_contract'] = contractMatch ? contractMatch[1] : '';
-                            }
+                            // Map numbers to fields based on label order
+                            let numIndex = 0;
                             
-                            if (labelParts[1].toLowerCase().includes('purchase price')) {
-                                const priceMatch = valueLine.match(/(\d[\d,]+)/);
-                                if (priceMatch) lineMap['purchase_price'] = priceMatch[1].replace(/,/g, '');
-                            }
-                        }
-                        
-                        if (labelParts.length >= 2) {
-                            // Handle "As-Is Property Value: Rehab Amount Requested:"
-                            // Only extract if not already set (to prevent ARV line from overwriting)
-                            if ((labelParts[0].toLowerCase().includes('as-is') || 
-                                 (labelParts[0].toLowerCase().includes('property value') && 
-                                  !labelParts[0].toLowerCase().includes('after')))) {
-                                const numMatches = valueLine.match(/(\d[\d,]+)/g);
-                                console.log('As-Is extraction - label:', labelParts[0], 'valueLine:', valueLine, 'matches:', numMatches);
-                                if (numMatches && numMatches[0] && !lineMap['as_is_value']) {
-                                    lineMap['as_is_value'] = numMatches[0].replace(/,/g, '');
-                                    console.log('✓ Set as_is_value from line parsing:', lineMap['as_is_value']);
+                            labelParts.forEach((label, idx) => {
+                                const lowerLabel = label.toLowerCase();
+                                
+                                // Skip non-numeric labels
+                                if (lowerLabel.includes('under contract')) {
+                                    const contractMatch = valueLine.match(/\b(yes|no)\b/i);
+                                    if (contractMatch) lineMap['under_contract'] = contractMatch[1];
                                 }
-                            }
-                            
-                            if (labelParts[1].toLowerCase().includes('rehab')) {
-                                const numMatches = valueLine.match(/(\d[\d,]+)/g);
-                                console.log('Rehab extraction - label:', labelParts[1], 'valueLine:', valueLine, 'matches:', numMatches);
-                                if (numMatches && numMatches[1]) {
-                                    lineMap['rehab_budget'] = numMatches[1].replace(/,/g, '');
-                                    console.log('✓ Set rehab_budget from line parsing:', lineMap['rehab_budget']);
-                                } else if (numMatches && numMatches[0] && !lineMap['rehab_budget']) {
-                                    // Fallback: if only one number and we haven't set rehab yet
-                                    lineMap['rehab_budget'] = numMatches[0].replace(/,/g, '');
-                                    console.log('✓ Set rehab_budget from fallback:', lineMap['rehab_budget']);
+                                else if (lowerLabel.includes('purchase price') && allNumbers[numIndex]) {
+                                    lineMap['purchase_price'] = allNumbers[numIndex].replace(/,/g, '');
+                                    console.log('✓ Set purchase_price:', lineMap['purchase_price']);
+                                    numIndex++;
                                 }
-                            }
+                                else if ((lowerLabel.includes('as-is') || 
+                                         (lowerLabel.includes('property value') && !lowerLabel.includes('after'))) 
+                                         && allNumbers[numIndex]) {
+                                    lineMap['as_is_value'] = allNumbers[numIndex].replace(/,/g, '');
+                                    console.log('✓ Set as_is_value:', lineMap['as_is_value']);
+                                    numIndex++;
+                                }
+                                else if (lowerLabel.includes('rehab') && allNumbers[numIndex]) {
+                                    lineMap['rehab_budget'] = allNumbers[numIndex].replace(/,/g, '');
+                                    console.log('✓ Set rehab_budget:', lineMap['rehab_budget']);
+                                    numIndex++;
+                                }
+                                else if ((lowerLabel.includes('after repair') || lowerLabel.includes('arv')) 
+                                         && allNumbers[numIndex]) {
+                                    lineMap['arv'] = allNumbers[numIndex].replace(/,/g, '');
+                                    console.log('✓ Set arv:', lineMap['arv']);
+                                    numIndex++;
+                                }
+                            });
                         }
                         
                         if (labelParts.length >= 2) {
