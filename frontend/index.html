@@ -7853,16 +7853,27 @@
             const iceCard = document.getElementById('iceCard');
             const eastviewCard = document.getElementById('eastviewCard');
             
-            if (ifcCard) ifcCard.style.display = 'none';
-            if (iceCard) iceCard.style.display = 'none';
-            if (eastviewCard) eastviewCard.style.display = 'none';
+            if (ifcCard) {
+                ifcCard.style.display = 'none';
+                ifcCard.classList.remove('hidden');
+            }
+            if (iceCard) {
+                iceCard.style.display = 'none';
+                iceCard.classList.remove('hidden');
+            }
+            if (eastviewCard) {
+                eastviewCard.style.display = 'none';
+                eastviewCard.classList.remove('hidden');
+            }
             
             // Show only filtered cards
             results.forEach((result, index) => {
                 const cardMap = {
                     'IFC': 'ifcCard',
                     'ICE': 'iceCard',
-                    'Eastview': 'eastviewCard'
+                    'Eastview': 'eastviewCard',
+                    'Bridge Capital': 'ifcCard',  // Map bridge lenders to cards
+                    'ICE / Guides': 'iceCard'
                 };
                 
                 const cardId = cardMap[result.lender];
@@ -8337,11 +8348,22 @@
             const resultsDiv = document.getElementById('multiLenderResults');
             const aiBannerDiv = document.getElementById('aiRecommendationBanner');
             const simpleRecDiv = document.getElementById('simpleRecommendation');
+            const multiLenderSection = document.getElementById('multiLenderSection');
+            
+            // Ensure parent section is visible
+            if (multiLenderSection) {
+                multiLenderSection.classList.remove('hidden');
+                console.log('Removed hidden class from multiLenderSection');
+            }
             
             // Hide analyzing state, show results (with null check)
             const mlAnalyzingState = document.getElementById('mlAnalyzingState');
             if (mlAnalyzingState) mlAnalyzingState.style.display = 'none';
-            if (resultsDiv) resultsDiv.style.display = 'block';
+            if (resultsDiv) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.classList.remove('hidden');
+                console.log('Set multiLenderResults to display: block');
+            }
             
             // Get form data for display
             const asIsValue = parseFloat(document.getElementById('mlAsIsValue').value) || 0;
