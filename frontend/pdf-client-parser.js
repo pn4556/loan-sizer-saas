@@ -38,49 +38,53 @@ function parseLoanApplicationFromText(text) {
     // Split into lines and clean up
     const lines = text.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
     
-    // Find the data section - look for the line with field labels
+    // Find the data section - look for the line with the actual loan values
+    // The values appear in a specific pattern: 260000 269000 40000 405000
+    let valuesLineIndex = -1;
+    let valuesLine = '';
+    
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const lowerLine = line.toLowerCase();
+        // Look for line containing the specific loan value pattern
+        // Pattern: Yes/No followed by property type, then 4-5 digit numbers
+        if (line.match(/Yes\s+\w+.*\d{5,}.*\d{5,}.*\d{4,}/)) {
+            valuesLine = line;
+            valuesLineIndex = i;
+            console.log('Found values line at index', i, ':', line);
+            break;
+        }
+    }
+    
+    // If we found the values line, extract all numbers from it
+    if (valuesLine) {
+        const allNumbers = valuesLine.match(/(\d[\d,]+)/g);
+        console.log('All numbers found:', allNumbers);
         
-        // Check if this line contains the field labels we're looking for
-        if (lowerLine.includes('purchase price') && lowerLine.includes('as-is')) {
-            console.log('Found label line at index', i, ':', line);
+        if (allNumbers && allNumbers.length >= 4) {
+            // For JotForm bridge loan applications, the order is typically:
+            // 0: Purchase Price (260000)
+            // 1: As-Is Value (269000)
+            // 2: Rehab Budget (40000)
+            // 3: ARV (405000)
+            // 4: Days to closing (0...)
             
-            // The next line should have the values
-            if (i + 1 < lines.length) {
-                const valuesLine = lines[i + 1];
-                console.log('Values line:', valuesLine);
+            const purchasePrice = parseFloat(allNumbers[0].replace(/,/g, ''));
+            const asIsValue = parseFloat(allNumbers[1].replace(/,/g, ''));
+            const rehabBudget = parseFloat(allNumbers[2].replace(/,/g, ''));
+            const arv = parseFloat(allNumbers[3].replace(/,/g, ''));
+            
+            // Validate the numbers make sense (purchase < as-is < arv typically)
+            if (purchasePrice > 10000 && asIsValue > 10000 && rehabBudget >= 0 && arv > 10000) {
+                result.purchase_price = purchasePrice;
+                result.as_is_value = asIsValue;
+                result.rehab_budget = rehabBudget;
+                result.arv = arv;
                 
-                // Extract all numbers from the values line
-                const allNumbers = valuesLine.match(/(\d[\d,]+)/g);
-                console.log('All numbers found:', allNumbers);
-                
-                if (allNumbers) {
-                    // Parse labels to determine field order
-                    // Format: "Is The Property Under Contract: Purchase Price: As-Is Property Value: Rehab Amount Requested: After Repair Property Value: Property Type:"
-                    const labelOrder = [];
-                    
-                    if (line.match(/purchase price/i)) labelOrder.push('purchase_price');
-                    if (line.match(/as-is/i)) labelOrder.push('as_is_value');
-                    if (line.match(/rehab/i)) labelOrder.push('rehab_budget');
-                    if (line.match(/after repair/i) || line.match(/arv/i)) labelOrder.push('arv');
-                    
-                    console.log('Label order:', labelOrder);
-                    
-                    // Map numbers to fields
-                    labelOrder.forEach((field, idx) => {
-                        if (allNumbers[idx]) {
-                            const numVal = parseFloat(allNumbers[idx].replace(/,/g, ''));
-                            if (!isNaN(numVal) && numVal > 0) {
-                                result[field] = numVal;
-                                console.log(`✓ Set ${field}:`, numVal);
-                            }
-                        }
-                    });
-                }
+                console.log('✓ Set purchase_price:', purchasePrice);
+                console.log('✓ Set as_is_value:', asIsValue);
+                console.log('✓ Set rehab_budget:', rehabBudget);
+                console.log('✓ Set arv:', arv);
             }
-            break; // Found the data section
         }
     }
     
