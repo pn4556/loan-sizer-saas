@@ -8024,7 +8024,7 @@
 
             try {
                 showToast(loanType === 'bridge' ? 'Analyzing bridge loan options...' : 'Comparing lenders...');
-                const response = await fetch(`${API_BASE_URL}/multi-lender/compare`, {
+                const response = await fetch(`${API_BASE_URL}/api/multi-lender/compare`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
