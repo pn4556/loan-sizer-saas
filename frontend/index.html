@@ -5889,22 +5889,26 @@
 
         // Populate multi-lender form with extracted data
         function populateMultiLenderForm(data) {
+            // Handle both snake_case (from PDF parser) and camelCase field names
             const fieldMappings = {
-                'mlBorrowerName': data.borrowerName || data.entityName || '',
-                'mlLoanAmount': data.loanAmount || '',
-                'mlAsIsValue': data.propertyValue || data.purchasePrice || '',
-                'mlARV': data.arv || '',
-                'mlFICO': data.fico || '',
-                'mlExperience': data.experience || '',
-                'mlPropertyAddress': data.propertyAddress || '',
+                'mlBorrowerName': data.borrowerName || data.entityName || data.borrower_name || '',
+                'mlLoanAmount': data.loanAmount || data.loan_amount || data.purchase_price || data.purchasePrice || '',
+                'mlAsIsValue': data.as_is_value || data.asIsValue || data.propertyValue || data.purchase_price || data.purchasePrice || '',
+                'mlPurchasePrice': data.purchase_price || data.purchasePrice || '',
+                'mlARV': data.arv || data.ARV || '',
+                'mlFICO': data.fico || data.FICO || data.credit_score || '',
+                'mlExperience': data.experience || data.experience_years || '',
+                'mlPropertyAddress': data.propertyAddress || data.property_address || data.address || '',
                 'mlCity': data.city || '',
                 'mlState': data.state || '',
-                'mlZipCode': data.zipCode || '',
-                'mlPropertyType': data.propertyType || '',
-                'mlRehabBudget': data.rehabBudget || '',
-                'mlLTV': data.ltv || '',
-                'mlLTC': data.ltc || '',
-                'mlLoanTerm': data.term || ''
+                'mlZipCode': data.zipCode || data.zip_code || '',
+                'mlPropertyType': data.propertyType || data.property_type || '',
+                'mlRehabBudget': data.rehab_budget || data.rehabBudget || data.renovation_budget || '',
+                'mlLTV': data.ltv || data.LTV || '',
+                'mlLTC': data.ltc || data.LTC || '',
+                'mlLoanTerm': data.term || data.loan_term || '',
+                'mlLiquidity': data.liquidity || '',
+                'mlExitStrategy': data.exit_strategy || 'refinance'
             };
             
             Object.entries(fieldMappings).forEach(([fieldId, value]) => {
@@ -8003,24 +8007,74 @@
             // Get loan type
             const loanType = document.querySelector('input[name="loanType"]:checked')?.value || 'fix_flip';
 
+            // Helper to safely parse numbers with validation
+            const safeParseFloat = (value, defaultVal = 0, fieldName = '') => {
+                if (!value || value === '' || value === 'undefined' || value === 'null') {
+                    return defaultVal;
+                }
+                const parsed = parseFloat(String(value).replace(/[$,\s]/g, ''));
+                if (isNaN(parsed)) {
+                    console.warn(`Invalid ${fieldName} value: "${value}", using default: ${defaultVal}`);
+                    return defaultVal;
+                }
+                return parsed;
+            };
+
+            const safeParseInt = (value, defaultVal = 0, fieldName = '') => {
+                if (!value || value === '' || value === 'undefined' || value === 'null') {
+                    return defaultVal;
+                }
+                const parsed = parseInt(String(value).replace(/[$,\s]/g, ''));
+                if (isNaN(parsed)) {
+                    console.warn(`Invalid ${fieldName} value: "${value}", using default: ${defaultVal}`);
+                    return defaultVal;
+                }
+                return parsed;
+            };
+
+            // Get form values with safe parsing
+            const rawAsIsValue = document.getElementById('mlAsIsValue')?.value;
+            const rawARV = document.getElementById('mlARV')?.value;
+            const rawPurchasePrice = document.getElementById('mlPurchasePrice')?.value;
+            const rawRehabBudget = document.getElementById('mlRehabBudget')?.value;
+            const rawFICO = document.getElementById('mlFICO')?.value;
+            const rawExperience = document.getElementById('mlExperience')?.value;
+
             const data = {
-                as_is_value: parseFloat(document.getElementById('mlAsIsValue').value),
-                arv: parseFloat(document.getElementById('mlARV').value) || 0,
-                purchase_price: parseFloat(document.getElementById('mlPurchasePrice').value),
-                rehab_budget: parseFloat(document.getElementById('mlRehabBudget').value) || 0,
-                fico: parseInt(document.getElementById('mlFICO').value) || 0,
-                experience: parseInt(document.getElementById('mlExperience').value) || 0,
-                loan_purpose: document.getElementById('mlLoanPurpose').value,
-                property_type: document.getElementById('mlPropertyType').value,
+                as_is_value: safeParseFloat(rawAsIsValue, 0, 'As-Is Value'),
+                arv: safeParseFloat(rawARV, 0, 'ARV'),
+                purchase_price: safeParseFloat(rawPurchasePrice, 0, 'Purchase Price'),
+                rehab_budget: safeParseFloat(rawRehabBudget, 0, 'Rehab Budget'),
+                fico: safeParseInt(rawFICO, 680, 'FICO'),  // Default to 680 (minimum for most lenders)
+                experience: safeParseInt(rawExperience, 0, 'Experience'),
+                loan_purpose: document.getElementById('mlLoanPurpose')?.value || 'purchase',
+                property_type: document.getElementById('mlPropertyType')?.value || 'SFR',
                 loan_type: loanType
             };
+            
+            // Validate required fields
+            const errors = [];
+            if (data.as_is_value <= 0) errors.push('As-Is Value is required');
+            if (data.purchase_price <= 0) errors.push('Purchase Price is required');
+            if (data.fico < 300 || data.fico > 850) errors.push('FICO must be between 300-850');
+            
+            if (errors.length > 0) {
+                showToast('Missing required fields: ' + errors.join(', '), 'error');
+                // Highlight missing fields
+                if (data.as_is_value <= 0) document.getElementById('mlAsIsValue')?.classList.add('error');
+                if (data.purchase_price <= 0) document.getElementById('mlPurchasePrice')?.classList.add('error');
+                return;
+            }
             
             // Add bridge-specific fields if applicable
             if (loanType === 'bridge') {
                 data.exit_strategy = document.getElementById('mlExitStrategy')?.value || 'refinance';
-                data.loan_term = parseInt(document.getElementById('mlLoanTerm')?.value) || 12;
-                data.liquidity = parseFloat(document.getElementById('mlLiquidity')?.value) || 0;
+                data.loan_term = safeParseInt(document.getElementById('mlLoanTerm')?.value, 12, 'Loan Term');
+                data.liquidity = safeParseFloat(document.getElementById('mlLiquidity')?.value, 0, 'Liquidity');
             }
+            
+            // Log the data for debugging
+            console.log('📊 Multi-lender form data:', data);
 
             try {
                 showToast(loanType === 'bridge' ? 'Analyzing bridge loan options...' : 'Comparing lenders...');
@@ -8050,10 +8104,42 @@
 
         // Client-side fallback calculation
         function calculateMultiLenderFallback(data) {
-            const totalCost = data.purchase_price + (data.rehab_budget || 0);
+            // Helper to safely format currency without NaN
+            const safeFormatCurrency = (value, defaultValue = '$0') => {
+                if (value === null || value === undefined || isNaN(value) || !isFinite(value)) {
+                    return defaultValue;
+                }
+                return '$' + Math.round(value).toLocaleString();
+            };
+            
+            // Helper to safely format percentage without NaN
+            const safeFormatPercent = (value, decimals = 1, defaultValue = '0%') => {
+                if (value === null || value === undefined || isNaN(value) || !isFinite(value)) {
+                    return defaultValue;
+                }
+                return value.toFixed(decimals) + '%';
+            };
+            
+            // Ensure all required data values are valid numbers
+            const safeData = {
+                as_is_value: Number(data.as_is_value) || 0,
+                purchase_price: Number(data.purchase_price) || 0,
+                rehab_budget: Number(data.rehab_budget) || 0,
+                arv: Number(data.arv) || Number(data.as_is_value) || 0,
+                fico: Number(data.fico) || 680,
+                experience: Number(data.experience) || 0,
+                loan_type: data.loan_type || 'fix_flip',
+                loan_purpose: data.loan_purpose || 'purchase'
+            };
+            
+            // Log data for debugging
+            console.log('🔧 calculateMultiLenderFallback input:', data);
+            console.log('🔧 sanitized data:', safeData);
+            
+            const totalCost = safeData.purchase_price + safeData.rehab_budget;
             
             // Check if this is a bridge loan
-            const isBridgeLoan = data.loan_type === 'bridge' || data.loan_purpose === 'bridge';
+            const isBridgeLoan = safeData.loan_type === 'bridge' || safeData.loan_purpose === 'bridge';
             
             // For bridge loans, use different approval logic
             let approvalStatus = 'approved';
@@ -8062,7 +8148,7 @@
             if (isBridgeLoan) {
                 // Bridge loans are primarily asset-based
                 // Approval based on LTV and liquidity, not FICO/experience
-                const ltv = (totalCost / data.as_is_value) * 100;
+                const ltv = safeData.as_is_value > 0 ? (totalCost / safeData.as_is_value) * 100 : 0;
                 if (ltv <= 75) {
                     approvalStatus = 'approved';
                     confidence = 'High';
@@ -8075,39 +8161,39 @@
                 }
             } else {
                 // Traditional fix & flip logic based on FICO and experience
-                if (data.fico < 680 || data.experience === 0) {
+                if (safeData.fico < 680 || safeData.experience === 0) {
                     approvalStatus = 'conditional';
                     confidence = 'Medium';
                 }
-                if (data.fico < 660) {
+                if (safeData.fico < 660) {
                     approvalStatus = 'declined';
                     confidence = 'Low';
                 }
             }
             
             // Calculate borrower grade for Eastview
-            let creditPoints = data.fico >= 700 ? 3 : (data.fico >= 680 ? 1 : 0);
-            let expPoints = data.experience >= 10 ? 7 : (data.experience >= 3 ? 5 : 1);
+            let creditPoints = safeData.fico >= 700 ? 3 : (safeData.fico >= 680 ? 1 : 0);
+            let expPoints = safeData.experience >= 10 ? 7 : (safeData.experience >= 3 ? 5 : 1);
             let totalScore = creditPoints + expPoints;
             let borrowerGrade = totalScore >= 7 ? 'A+' : (totalScore >= 5 ? 'A' : (totalScore >= 2 ? 'B' : 'C'));
             
             // Get FICO tier (default to 700-739 if not provided for bridge loans)
-            let ficoTier = data.fico >= 740 ? '740+' : (data.fico >= 700 ? '700-739' : (data.fico >= 680 ? '680-699' : (data.fico >= 660 ? '660-679' : '700-739')));
+            let ficoTier = safeData.fico >= 740 ? '740+' : (safeData.fico >= 700 ? '700-739' : (safeData.fico >= 680 ? '680-699' : (safeData.fico >= 660 ? '660-679' : '700-739')));
             
             // ========== BRIDGE LOAN LENDERS ==========
             if (isBridgeLoan) {
                 // Bridge Capital (bridge loan specialist)
                 const bridgeMaxLtv = 0.75;
-                const bridgeMaxLoan = data.as_is_value * bridgeMaxLtv;
+                const bridgeMaxLoan = safeData.as_is_value * bridgeMaxLtv;
                 const bridgeRate = 9.5; // Bridge loans typically 9-11%
                 const bridgePoints = 0.015; // 1.5 points
                 
-                const bridgeLtv = (totalCost / data.as_is_value) * 100;
+                const bridgeLtv = safeData.as_is_value > 0 ? (totalCost / safeData.as_is_value) * 100 : 0;
                 let bridgeApprovalStatus = bridgeLtv <= 75 ? 'approved' : (bridgeLtv <= 80 ? 'conditional' : 'declined');
                 
                 // Eastview Bridge Program
                 const eastviewBridgeMaxLtv = 0.80;
-                const eastviewBridgeMaxLoan = data.as_is_value * eastviewBridgeMaxLtv;
+                const eastviewBridgeMaxLoan = safeData.as_is_value * eastviewBridgeMaxLtv;
                 const eastviewBridgeRate = 9.25; 
                 const eastviewBridgePoints = 0.02;
                 
@@ -8115,7 +8201,7 @@
                 
                 // ICE / Guides Bridge Program
                 const iceBridgeMaxLtv = 0.75;
-                const iceBridgeMaxLoan = data.as_is_value * iceBridgeMaxLtv;
+                const iceBridgeMaxLoan = safeData.as_is_value * iceBridgeMaxLtv;
                 const iceBridgeRate = 9.75;
                 const iceBridgePoints = 0.01; // 1 point
                 
@@ -8131,12 +8217,12 @@
                             points: bridgePoints,
                             points_formatted: (bridgePoints * 100).toFixed(1) + '%',
                             max_loan: bridgeMaxLoan,
-                            max_loan_formatted: '$' + Math.round(bridgeMaxLoan).toLocaleString(),
+                            max_loan_formatted: safeFormatCurrency(bridgeMaxLoan),
                             ltv: bridgeLtv.toFixed(1),
                             approval_status: bridgeApprovalStatus,
                             confidence: bridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
-                            monthly_payment: (bridgeMaxLoan * (bridgeRate / 100) / 12).toFixed(0),
-                            total_cost: (bridgeMaxLoan * bridgePoints).toFixed(0),
+                            monthly_payment: Math.round(bridgeMaxLoan * (bridgeRate / 100) / 12).toString(),
+                            total_cost: Math.round(bridgeMaxLoan * bridgePoints).toString(),
                             note: 'Asset-based bridge loan'
                         },
                         {
@@ -8147,12 +8233,12 @@
                             points: eastviewBridgePoints,
                             points_formatted: (eastviewBridgePoints * 100).toFixed(1) + '%',
                             max_loan: eastviewBridgeMaxLoan,
-                            max_loan_formatted: '$' + Math.round(eastviewBridgeMaxLoan).toLocaleString(),
+                            max_loan_formatted: safeFormatCurrency(eastviewBridgeMaxLoan),
                             ltv: bridgeLtv.toFixed(1),
                             approval_status: eastviewBridgeApprovalStatus,
                             confidence: eastviewBridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
-                            monthly_payment: (eastviewBridgeMaxLoan * (eastviewBridgeRate / 100) / 12).toFixed(0),
-                            total_cost: (eastviewBridgeMaxLoan * eastviewBridgePoints).toFixed(0),
+                            monthly_payment: Math.round(eastviewBridgeMaxLoan * (eastviewBridgeRate / 100) / 12).toString(),
+                            total_cost: Math.round(eastviewBridgeMaxLoan * eastviewBridgePoints).toString(),
                             note: 'Up to 80% LTV bridge financing'
                         },
                         {
@@ -8163,24 +8249,24 @@
                             points: iceBridgePoints,
                             points_formatted: (iceBridgePoints * 100).toFixed(1) + '%',
                             max_loan: iceBridgeMaxLoan,
-                            max_loan_formatted: '$' + Math.round(iceBridgeMaxLoan).toLocaleString(),
+                            max_loan_formatted: safeFormatCurrency(iceBridgeMaxLoan),
                             ltv: bridgeLtv.toFixed(1),
                             approval_status: iceBridgeApprovalStatus,
                             confidence: iceBridgeApprovalStatus === 'approved' ? 'High' : 'Medium',
-                            monthly_payment: (iceBridgeMaxLoan * (iceBridgeRate / 100) / 12).toFixed(0),
-                            total_cost: (iceBridgeMaxLoan * iceBridgePoints).toFixed(0),
+                            monthly_payment: Math.round(iceBridgeMaxLoan * (iceBridgeRate / 100) / 12).toString(),
+                            total_cost: Math.round(iceBridgeMaxLoan * iceBridgePoints).toString(),
                             note: 'Competitive bridge rates'
                         }
                     ],
                     input_summary: {
-                        as_is_value: '$' + data.as_is_value.toLocaleString(),
-                        arv: '$' + (data.arv || data.as_is_value).toLocaleString(),
-                        purchase_price: '$' + data.purchase_price.toLocaleString(),
-                        rehab_budget: '$' + (data.rehab_budget || 0).toLocaleString(),
-                        fico: data.fico || 'N/A',
-                        experience: data.experience || 'N/A'
+                        as_is_value: safeFormatCurrency(safeData.as_is_value),
+                        arv: safeFormatCurrency(safeData.arv),
+                        purchase_price: safeFormatCurrency(safeData.purchase_price),
+                        rehab_budget: safeFormatCurrency(safeData.rehab_budget),
+                        fico: safeData.fico || 'N/A',
+                        experience: safeData.experience || 'N/A'
                     },
-                    comparison_summary: `Bridge Loan: ${bridgeLtv.toFixed(1)}% LTV on $${data.as_is_value.toLocaleString()} property`,
+                    comparison_summary: `Bridge Loan: ${bridgeLtv.toFixed(1)}% LTV on ${safeFormatCurrency(safeData.as_is_value)} property`,
                     best_rate_lender: 'Bridge Capital',
                     best_rate_formatted: bridgeRate.toFixed(2) + '%',
                     loan_type: 'bridge'
@@ -8202,15 +8288,15 @@
             const ifcMaxLtarv = 0.75;
             const ifcPoints = 0.02; // 2 points for Renovation
             
-            const ifcMaxLtLoan = data.as_is_value * ifcMaxLtv;
+            const ifcMaxLtLoan = safeData.as_is_value * ifcMaxLtv;
             const ifcMaxLtcLoan = totalCost * ifcMaxLtc;
-            const ifcMaxLtarvLoan = (data.arv || data.as_is_value) * ifcMaxLtarv;
+            const ifcMaxLtarvLoan = safeData.arv * ifcMaxLtarv;
             const ifcMaxLoan = Math.min(ifcMaxLtLoan, ifcMaxLtcLoan, ifcMaxLtarvLoan);
             
             // Calculate LTV/LTC/LTARV based on actual max loan
-            const ifcLtv = (ifcMaxLoan / data.as_is_value) * 100;
-            const ifcLtc = (ifcMaxLoan / totalCost) * 100;
-            const ifcLtarv = (ifcMaxLoan / (data.arv || data.as_is_value)) * 100;
+            const ifcLtv = safeData.as_is_value > 0 ? (ifcMaxLoan / safeData.as_is_value) * 100 : 0;
+            const ifcLtc = totalCost > 0 ? (ifcMaxLoan / totalCost) * 100 : 0;
+            const ifcLtarv = safeData.arv > 0 ? (ifcMaxLoan / safeData.arv) * 100 : 0;
             
             // Get IFC rate based on FICO tier and LTV bucket
             let ifcRateIndex = Math.min(Math.floor(ifcLtv / 5) - 13, 5); // Convert LTV to index (65-70=0, 70-75=1, etc.)
@@ -8218,13 +8304,13 @@
             let ifcBaseRate = ifcBaseRates[ficoTier]?.[ifcRateIndex] || 8.00;
             
             // Cash out adjustment
-            if (data.loan_purpose === 'cash_out') {
+            if (safeData.loan_purpose === 'cash_out') {
                 ifcBaseRate += 0.50;
             }
             
             // Check min FICO (660 for Renovation)
-            let ifcApprovalStatus = data.fico >= 660 ? approvalStatus : 'declined';
-            let ifcConfidence = data.fico >= 700 ? 'High' : 'Medium';
+            let ifcApprovalStatus = safeData.fico >= 660 ? approvalStatus : 'declined';
+            let ifcConfidence = safeData.fico >= 700 ? 'High' : 'Medium';
             
             const ifcMonthlyPayment = ifcMaxLoan * (ifcBaseRate / 100) / 12;
             const ifcTotalCost = ifcMaxLoan * ifcPoints + (ifcMonthlyPayment * 12);
@@ -8238,28 +8324,28 @@
             const iceMaxLtarv = 0.75;
             
             // ICE adjustments
-            if (data.loan_purpose === 'cash_out') {
+            if (safeData.loan_purpose === 'cash_out') {
                 iceBaseRate += 0.50; // 0.5% for cash out
             }
-            if (data.fico < 700) {
+            if (safeData.fico < 700) {
                 iceBaseRate += 0.25; // 0.25% for FICO < 700
             }
-            if (data.experience >= 10 && totalCost >= 2500000) {
+            if (safeData.experience >= 10 && totalCost >= 2500000) {
                 iceBaseRate -= 0.50; // Institutional discount
             }
             
-            const iceMaxLtLoan = data.as_is_value * iceMaxLtv;
+            const iceMaxLtLoan = safeData.as_is_value * iceMaxLtv;
             const iceMaxLtcLoan = totalCost * iceMaxLtc;
-            const iceMaxLtarvLoan = (data.arv || data.as_is_value) * iceMaxLtarv;
+            const iceMaxLtarvLoan = safeData.arv * iceMaxLtarv;
             const iceMaxLoan = Math.min(iceMaxLtLoan, iceMaxLtcLoan, iceMaxLtarvLoan);
             
-            const iceLtv = (iceMaxLoan / data.as_is_value) * 100;
-            const iceLtc = (iceMaxLoan / totalCost) * 100;
-            const iceLtarv = (iceMaxLoan / (data.arv || data.as_is_value)) * 100;
+            const iceLtv = safeData.as_is_value > 0 ? (iceMaxLoan / safeData.as_is_value) * 100 : 0;
+            const iceLtc = totalCost > 0 ? (iceMaxLoan / totalCost) * 100 : 0;
+            const iceLtarv = safeData.arv > 0 ? (iceMaxLoan / safeData.arv) * 100 : 0;
             
             // ICE min FICO: 680
-            let iceApprovalStatus = data.fico >= 680 ? approvalStatus : 'declined';
-            let iceConfidence = data.experience >= 5 ? 'High' : 'Medium';
+            let iceApprovalStatus = safeData.fico >= 680 ? approvalStatus : 'declined';
+            let iceConfidence = safeData.experience >= 5 ? 'High' : 'Medium';
             
             const iceMonthlyPayment = iceMaxLoan * (iceBaseRate / 100) / 12;
             const iceTotalCost = iceMaxLoan * icePoints + (iceMonthlyPayment * 12);
@@ -8278,23 +8364,23 @@
             const evPoints = 0.015; // 1.5 points
             
             // Eastview adjustments
-            if (data.loan_purpose === 'cash_out') {
+            if (safeData.loan_purpose === 'cash_out') {
                 evBaseRate += 0.25;
-            } else if (data.loan_purpose === 'refinance') {
+            } else if (safeData.loan_purpose === 'refinance') {
                 evBaseRate -= 0.25;
             }
             
-            const evMaxLtLoan = data.as_is_value * evConfig.max_ltv;
+            const evMaxLtLoan = safeData.as_is_value * evConfig.max_ltv;
             const evMaxLtcLoan = totalCost * evConfig.max_ltc;
-            const evMaxLtarvLoan = data.arv * evConfig.max_ltarv;
+            const evMaxLtarvLoan = safeData.arv * evConfig.max_ltarv;
             const evMaxLoan = Math.min(evMaxLtLoan, evMaxLtcLoan, evMaxLtarvLoan);
             
-            const evLtv = (evMaxLoan / data.as_is_value) * 100;
-            const evLtc = (evMaxLoan / totalCost) * 100;
-            const evLtarv = (evMaxLoan / data.arv) * 100;
+            const evLtv = safeData.as_is_value > 0 ? (evMaxLoan / safeData.as_is_value) * 100 : 0;
+            const evLtc = totalCost > 0 ? (evMaxLoan / totalCost) * 100 : 0;
+            const evLtarv = safeData.arv > 0 ? (evMaxLoan / safeData.arv) * 100 : 0;
             
             // Eastview min FICO: 660
-            let evApprovalStatus = data.fico >= 660 ? approvalStatus : 'declined';
+            let evApprovalStatus = safeData.fico >= 660 ? approvalStatus : 'declined';
             let evConfidence = (borrowerGrade === 'A+' || borrowerGrade === 'A') ? 'High' : 'Medium';
             
             const evMonthlyPayment = evMaxLoan * (evBaseRate / 100) / 12;
@@ -8305,13 +8391,13 @@
             const bridgeBaseRate = 9.50; // 9.5% typical bridge rate
             const bridgePoints = 0.015; // 1.5 points
             const bridgeMaxLtv = 0.75; // 75% LTV for bridge
-            const bridgeMaxLoan = data.as_is_value * bridgeMaxLtv;
-            const bridgeLtv = (bridgeMaxLoan / data.as_is_value) * 100;
-            const bridgeLtc = (bridgeMaxLoan / totalCost) * 100;
+            const bridgeMaxLoan = safeData.as_is_value * bridgeMaxLtv;
+            const bridgeLtv = safeData.as_is_value > 0 ? (bridgeMaxLoan / safeData.as_is_value) * 100 : 0;
+            const bridgeLtc = totalCost > 0 ? (bridgeMaxLoan / totalCost) * 100 : 0;
             
             // Bridge loan approval (more lenient, based on equity)
-            let bridgeApprovalStatus = data.fico >= 620 ? approvalStatus : 'conditional';
-            let bridgeConfidence = data.fico >= 680 ? 'High' : 'Medium';
+            let bridgeApprovalStatus = safeData.fico >= 620 ? approvalStatus : 'conditional';
+            let bridgeConfidence = safeData.fico >= 680 ? 'High' : 'Medium';
             
             const bridgeMonthlyPayment = bridgeMaxLoan * (bridgeBaseRate / 100) / 12;
             const bridgeTotalCost = bridgeMaxLoan * bridgePoints + (bridgeMonthlyPayment * 12);
@@ -8319,7 +8405,7 @@
             // Build results array based on loan purpose
             let results = [];
             
-            if (data.loan_purpose === 'bridge') {
+            if (safeData.loan_purpose === 'bridge') {
                 // For bridge loans, prioritize bridge lenders
                 results = [
                     {
@@ -8330,17 +8416,17 @@
                         points: bridgePoints * 100,
                         points_formatted: (bridgePoints * 100).toFixed(2) + '%',
                         max_loan: Math.round(bridgeMaxLoan),
-                        max_loan_formatted: '$' + Math.round(bridgeMaxLoan).toLocaleString(),
+                        max_loan_formatted: safeFormatCurrency(bridgeMaxLoan),
                         ltv: bridgeLtv,
-                        ltv_formatted: bridgeLtv.toFixed(1) + '%',
+                        ltv_formatted: safeFormatPercent(bridgeLtv, 1),
                         ltc: bridgeLtc,
-                        ltc_formatted: bridgeLtc.toFixed(1) + '%',
+                        ltc_formatted: safeFormatPercent(bridgeLtc, 1),
                         ltarv: null,
                         ltarv_formatted: 'N/A',
                         monthly_payment: Math.round(bridgeMonthlyPayment),
-                        monthly_payment_formatted: '$' + Math.round(bridgeMonthlyPayment).toLocaleString(),
+                        monthly_payment_formatted: safeFormatCurrency(bridgeMonthlyPayment),
                         total_cost: Math.round(bridgeTotalCost),
-                        total_cost_formatted: '$' + Math.round(bridgeTotalCost).toLocaleString(),
+                        total_cost_formatted: safeFormatCurrency(bridgeTotalCost),
                         approval_confidence: bridgeConfidence,
                         approval_status: bridgeApprovalStatus,
                         borrower_grade: null,
@@ -8354,17 +8440,17 @@
                         points: evPoints * 100,
                         points_formatted: (evPoints * 100).toFixed(2) + '%',
                         max_loan: Math.round(evMaxLoan * 0.8), // Lower max for bridge
-                        max_loan_formatted: '$' + Math.round(evMaxLoan * 0.8).toLocaleString(),
+                        max_loan_formatted: safeFormatCurrency(evMaxLoan * 0.8),
                         ltv: evLtv,
-                        ltv_formatted: evLtv.toFixed(1) + '%',
+                        ltv_formatted: safeFormatPercent(evLtv, 1),
                         ltc: evLtc,
-                        ltc_formatted: evLtc.toFixed(1) + '%',
+                        ltc_formatted: safeFormatPercent(evLtc, 1),
                         ltarv: null,
                         ltarv_formatted: 'N/A',
                         monthly_payment: Math.round(evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12),
-                        monthly_payment_formatted: '$' + Math.round(evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12).toLocaleString(),
+                        monthly_payment_formatted: safeFormatCurrency(evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12),
                         total_cost: Math.round(evMaxLoan * 0.8 * evPoints + (evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12) * 12),
-                        total_cost_formatted: '$' + Math.round(evMaxLoan * 0.8 * evPoints + (evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12) * 12).toLocaleString(),
+                        total_cost_formatted: safeFormatCurrency(evMaxLoan * 0.8 * evPoints + (evMaxLoan * 0.8 * ((evBaseRate + 0.50) / 100) / 12) * 12),
                         approval_confidence: evConfidence,
                         approval_status: evApprovalStatus,
                         borrower_grade: borrowerGrade,
@@ -8382,17 +8468,17 @@
                         points: ifcPoints * 100,
                         points_formatted: (ifcPoints * 100).toFixed(2) + '%',
                         max_loan: Math.round(ifcMaxLoan),
-                        max_loan_formatted: '$' + Math.round(ifcMaxLoan).toLocaleString(),
+                        max_loan_formatted: safeFormatCurrency(ifcMaxLoan),
                         ltv: ifcLtv,
-                        ltv_formatted: ifcLtv.toFixed(1) + '%',
+                        ltv_formatted: safeFormatPercent(ifcLtv, 1),
                         ltc: ifcLtc,
-                        ltc_formatted: ifcLtc.toFixed(1) + '%',
+                        ltc_formatted: safeFormatPercent(ifcLtc, 1),
                         ltarv: ifcLtarv,
-                        ltarv_formatted: ifcLtarv.toFixed(1) + '%',
+                        ltarv_formatted: safeFormatPercent(ifcLtarv, 1),
                         monthly_payment: Math.round(ifcMonthlyPayment),
-                        monthly_payment_formatted: '$' + Math.round(ifcMonthlyPayment).toLocaleString(),
+                        monthly_payment_formatted: safeFormatCurrency(ifcMonthlyPayment),
                         total_cost: Math.round(ifcTotalCost),
-                        total_cost_formatted: '$' + Math.round(ifcTotalCost).toLocaleString(),
+                        total_cost_formatted: safeFormatCurrency(ifcTotalCost),
                         approval_confidence: ifcConfidence,
                         approval_status: ifcApprovalStatus,
                         borrower_grade: null,
@@ -8406,17 +8492,17 @@
                         points: icePoints * 100,
                         points_formatted: (icePoints * 100).toFixed(2) + '%',
                         max_loan: Math.round(iceMaxLoan),
-                        max_loan_formatted: '$' + Math.round(iceMaxLoan).toLocaleString(),
+                        max_loan_formatted: safeFormatCurrency(iceMaxLoan),
                         ltv: iceLtv,
-                        ltv_formatted: iceLtv.toFixed(1) + '%',
+                        ltv_formatted: safeFormatPercent(iceLtv, 1),
                         ltc: iceLtc,
-                        ltc_formatted: iceLtc.toFixed(1) + '%',
+                        ltc_formatted: safeFormatPercent(iceLtc, 1),
                         ltarv: iceLtarv,
-                        ltarv_formatted: iceLtarv.toFixed(1) + '%',
+                        ltarv_formatted: safeFormatPercent(iceLtarv, 1),
                         monthly_payment: Math.round(iceMonthlyPayment),
-                        monthly_payment_formatted: '$' + Math.round(iceMonthlyPayment).toLocaleString(),
+                        monthly_payment_formatted: safeFormatCurrency(iceMonthlyPayment),
                         total_cost: Math.round(iceTotalCost),
-                        total_cost_formatted: '$' + Math.round(iceTotalCost).toLocaleString(),
+                        total_cost_formatted: safeFormatCurrency(iceTotalCost),
                         approval_confidence: iceConfidence,
                         approval_status: iceApprovalStatus,
                         borrower_grade: null,
@@ -8430,17 +8516,17 @@
                         points: evPoints * 100,
                         points_formatted: (evPoints * 100).toFixed(2) + '%',
                         max_loan: Math.round(evMaxLoan),
-                        max_loan_formatted: '$' + Math.round(evMaxLoan).toLocaleString(),
+                        max_loan_formatted: safeFormatCurrency(evMaxLoan),
                         ltv: evLtv,
-                        ltv_formatted: evLtv.toFixed(1) + '%',
+                        ltv_formatted: safeFormatPercent(evLtv, 1),
                         ltc: evLtc,
-                        ltc_formatted: evLtc.toFixed(1) + '%',
+                        ltc_formatted: safeFormatPercent(evLtc, 1),
                         ltarv: evLtarv,
-                        ltarv_formatted: evLtarv.toFixed(1) + '%',
+                        ltarv_formatted: safeFormatPercent(evLtarv, 1),
                         monthly_payment: Math.round(evMonthlyPayment),
-                        monthly_payment_formatted: '$' + Math.round(evMonthlyPayment).toLocaleString(),
+                        monthly_payment_formatted: safeFormatCurrency(evMonthlyPayment),
                         total_cost: Math.round(evTotalCost),
-                        total_cost_formatted: '$' + Math.round(evTotalCost).toLocaleString(),
+                        total_cost_formatted: safeFormatCurrency(evTotalCost),
                         approval_confidence: evConfidence,
                         approval_status: evApprovalStatus,
                         borrower_grade: borrowerGrade,
@@ -8454,14 +8540,14 @@
             results.forEach((r, i) => r.ranking = i + 1);
             
             return {
-                best_rate_lender: results[0].lender,
-                best_rate_formatted: results[0].rate_formatted,
+                best_rate_lender: results[0]?.lender || 'N/A',
+                best_rate_formatted: results[0]?.rate_formatted || 'N/A',
                 comparison_summary: `${results.filter(r => r.approval_status === 'approved').length} of 3 lenders approved this deal`,
                 input_summary: {
-                    as_is_value: '$' + data.as_is_value.toLocaleString(),
-                    arv: '$' + data.arv.toLocaleString(),
-                    fico: data.fico,
-                    experience: data.experience
+                    as_is_value: safeFormatCurrency(safeData.as_is_value),
+                    arv: safeFormatCurrency(safeData.arv),
+                    fico: safeData.fico,
+                    experience: safeData.experience
                 },
                 results: results
             };
