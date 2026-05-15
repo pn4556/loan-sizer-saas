@@ -7964,15 +7964,15 @@
                                 <div style="margin-bottom: var(--space-4);">
                                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
                                         <span style="color: var(--gray-400); font-size: var(--text-sm);">Max Loan:</span>
-                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">${result.max_loan_formatted || '$' + Math.round(result.max_loan).toLocaleString()}</span>
+                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">${result.max_loan_formatted && result.max_loan_formatted !== '$NaN' ? result.max_loan_formatted : (result.max_loan && !isNaN(result.max_loan) ? '$' + Math.round(result.max_loan).toLocaleString() : '$0')}</span>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
                                         <span style="color: var(--gray-400); font-size: var(--text-sm);">LTV:</span>
-                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">${result.ltv}%</span>
+                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">${result.ltv_formatted && result.ltv_formatted !== 'NaN%' ? result.ltv_formatted : (result.ltv && !isNaN(result.ltv) ? result.ltv.toFixed(1) + '%' : '0%')}</span>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
                                         <span style="color: var(--gray-400); font-size: var(--text-sm);">Monthly Payment:</span>
-                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">$${parseInt(result.monthly_payment).toLocaleString()}</span>
+                                        <span style="color: var(--gray-200); font-weight: var(--font-semibold);">${result.monthly_payment_formatted && result.monthly_payment_formatted !== '$NaN' ? result.monthly_payment_formatted : (result.monthly_payment && !isNaN(result.monthly_payment) ? '$' + parseInt(result.monthly_payment).toLocaleString() : '$0')}</span>
                                     </div>
                                     ${result.note ? `
                                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
@@ -9074,19 +9074,19 @@
             </div>
             <div class="field">
                 <span class="field-label">As-Is Value:</span>
-                <span class="field-value">$${parseInt(formData.as_is_value).toLocaleString()}</span>
+                <span class="field-value">${formData.as_is_value && !isNaN(parseFloat(formData.as_is_value)) ? '$' + parseInt(formData.as_is_value).toLocaleString() : '$0'}</span>
             </div>
             <div class="field">
                 <span class="field-label">After Repair Value (ARV):</span>
-                <span class="field-value">$${parseInt(formData.arv).toLocaleString()}</span>
+                <span class="field-value">${formData.arv && !isNaN(parseFloat(formData.arv)) ? '$' + parseInt(formData.arv).toLocaleString() : '$0'}</span>
             </div>
             <div class="field">
                 <span class="field-label">Purchase Price:</span>
-                <span class="field-value">$${parseInt(formData.purchase_price).toLocaleString()}</span>
+                <span class="field-value">${formData.purchase_price && !isNaN(parseFloat(formData.purchase_price)) ? '$' + parseInt(formData.purchase_price).toLocaleString() : '$0'}</span>
             </div>
             <div class="field">
                 <span class="field-label">Rehab Budget:</span>
-                <span class="field-value">$${parseInt(formData.rehab_budget).toLocaleString()}</span>
+                <span class="field-value">${formData.rehab_budget && !isNaN(parseFloat(formData.rehab_budget)) ? '$' + parseInt(formData.rehab_budget).toLocaleString() : '$0'}</span>
             </div>
             <div class="field">
                 <span class="field-label">Borrower FICO:</span>
